@@ -8,6 +8,6 @@ import tunnel from 'astro-tunnel';
 // https://astro.build/config
 export default defineConfig({
   site: 'https://alx005dp.github.io',
-  base: '/marco-aldany-peluqueria',
+  // base: '/marco-aldany-peluqueria',
   integrations: [react(), tunnel()]
 });

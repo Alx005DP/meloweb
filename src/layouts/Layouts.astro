@@ -1,0 +1,31 @@
+---
+import { ViewTransitions } from 'astro:transitions';
+import '../pages/css/main.css';
+
+interface Props {
+	title?: string;
+}
+
+const { title = 'Marco Aldany' } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="es">
+	<head>
+		<meta charset="UTF-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="icon" href="/favicon.ico" />
+		<meta name="viewport" content="width=device-width" />
+
+		<link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v7.2.0/css/solid.css" />
+		<link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v7.2.0/css/sharp-duotone-solid.css" />
+		<link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v7.2.0/css/fontawesome.css" />
+
+		<meta name="generator" content={Astro.generator} />
+		<title>{title}</title>
+		<ViewTransitions />
+	</head>
+	<body>
+		<slot />
+	</body>
+</html>

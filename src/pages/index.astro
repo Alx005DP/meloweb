@@ -1,59 +1,18 @@
 ---
 import "./css/main.css";
+import Layout from '../layouts/Layouts.astro';
 ---
 
-<html lang="es">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
+<Layout title="Marco Aldany - Peluquería">
+	<header>
+		<img src="./image.png" alt="marcoaldany" class="mobile" />
+		<label id="menumobilelabel" for="menumobile"
+			><i class="fa-sharp-duotone fa-solid fa-bars"></i></label
+		>
+		<input type="checkbox" name="menumobile" id="menumobile" />
 
-		<link
-			rel="stylesheet"
-			href="https://site-assets.fontawesome.com/releases/v7.2.0/css/solid.css"
-		/>
-		<link
-			rel="stylesheet"
-			href="https://site-assets.fontawesome.com/releases/v7.2.0/css/sharp-duotone-solid.css"
-		/>
-		<link
-			rel="stylesheet"
-			href="https://site-assets.fontawesome.com/releases/v7.2.0/css/fontawesome.css"
-		/>
-
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<header>
-			<img src="./image.png" alt="marcoaldany" class="mobile" />
-			<label id="menumobilelabel" for="menumobile"
-				><i class="fa-sharp-duotone fa-solid fa-bars"></i></label
-			>
-			<input type="checkbox" name="menumobile" id="menumobile" />
-
-			<nav>
-				<img src="./image.png" alt="marcoaldany" />
-				<ul>
-					<li><a href="#hero">Inicio</a></li>
-					<li><a href="#services">Servicios</a></li>
-					<li><a href="#us">Nosotros</a></li>
-					<li><a href="#galery">Galería</a></li>
-					<li><a href="#ubication">Ubicación</a></li>
-					<li><a href="#date">Reservar Cita</a></li>
-				</ul>
-				<ul>
-					<li><button>Iniciar Sesion</button></li>
-					<li><button>Regístrate</button></li>
-				</ul>
-			</nav>
-		</header>
-
-		<div class="cross">
-			<button><i class="fa-solid fa-xmark"></i></button>
-		</div>
-		<nav class="menumobile">
+		<nav>
+			<img src="./image.png" alt="marcoaldany" />
 			<ul>
 				<li><a href="#hero">Inicio</a></li>
 				<li><a href="#services">Servicios</a></li>
@@ -61,68 +20,87 @@ import "./css/main.css";
 				<li><a href="#galery">Galería</a></li>
 				<li><a href="#ubication">Ubicación</a></li>
 				<li><a href="#date">Reservar Cita</a></li>
-				<li><a href="#date">Iniciar Sesion</a></li>
-				<li><a href="#date">Registrate</a></li>
+			</ul>
+			<ul>
+				<li><a href="/login"><button>Iniciar Sesion</button></a></li>
+				<li><a href="/registro"><button>Regístrate</button></a></li>
 			</ul>
 		</nav>
+	</header>
 
-		<main>
-			<section id="hero">
-				<div class="overlay"></div>
-				<div class="info">
-					<h1>Es momento de convertirte en tu mejor versión</h1>
-					<p>
-						Corte, coloración y tratamientos profesionales en Som
-						Multiespai
-					</p>
-					<div class="buttons">
-						<button class="acpbutton">Reservar Ahora</button>
-						<button class="acsbutton">Ver Servicios</button>
-					</div>
+	<div class="cross">
+		<button><i class="fa-solid fa-xmark"></i></button>
+	</div>
+	<nav class="menumobile">
+		<ul>
+			<li><a href="#hero">Inicio</a></li>
+			<li><a href="#services">Servicios</a></li>
+			<li><a href="#us">Nosotros</a></li>
+			<li><a href="#galery">Galería</a></li>
+			<li><a href="#ubication">Ubicación</a></li>
+			<li><a href="#date">Reservar Cita</a></li>
+			<li><a href="/login">Iniciar Sesion</a></li>
+			<li><a href="/registro">Registrate</a></li>
+		</ul>
+	</nav>
+
+	<main>
+		<section id="hero">
+			<div class="overlay"></div>
+			<div class="info">
+				<h1>Es momento de convertirte en tu mejor versión</h1>
+				<p>
+					Corte, coloración y tratamientos profesionales en Som
+					Multiespai
+				</p>
+				<div class="buttons">
+					<button class="acpbutton">Reservar Ahora</button>
+					<button class="acsbutton">Ver Servicios</button>
 				</div>
-			</section>
-			<section id="services">
-				<h1>Servicios</h1>
-				<div class="cards">
-					<div id="card">
-						<div class="title">
-							<h2>Corte Profesional</h2><i
-								class="fa-sharp-duotone fa-solid fa-scissors"
-							></i>
-						</div>
-						<p>
-							Desde cortes clásicos hasta los estilos más
-							modernos, adaptados a tu tipo de cabello y
-							personalidad.
-						</p>
+			</div>
+		</section>
+		<section id="services">
+			<h1>Servicios</h1>
+			<div class="cards">
+				<div id="card">
+					<div class="title">
+						<h2>Corte Profesional</h2><i
+							class="fa-sharp-duotone fa-solid fa-scissors"
+						></i>
 					</div>
-					<div id="card">
-						<div class="title">
-							<h2>Coloración</h2><i
-								class="fa-sharp-duotone fa-solid fa-palette"
-							></i>
-						</div>
-						<p>
-							Mechas, tintes, balayage y técnicas de última
-							tendencia para transformar tu look con los mejores
-							productos.
-						</p>
+					<p>
+						Desde cortes clásicos hasta los estilos más
+						modernos, adaptados a tu tipo de cabello y
+						personalidad.
+					</p>
+				</div>
+				<div id="card">
+					<div class="title">
+						<h2>Coloración</h2><i
+							class="fa-sharp-duotone fa-solid fa-palette"
+						></i>
 					</div>
-					<div id="card">
-						<div class="title">
-							<h2>Tratamientos</h2><i
-								class="fa-sharp-duotone fa-solid fa-spray-can-sparkles"
-							></i>
-						</div>
-						<p>
-							Hidratación, keratina y cuidados especiales para
-							devolver la salud y el brillo a tu cabello.
-						</p>
+					<p>
+						Mechas, tintes, balayage y técnicas de última
+						tendencia para transformar tu look con los mejores
+						productos.
+					</p>
+				</div>
+				<div id="card">
+					<div class="title">
+						<h2>Tratamientos</h2><i
+							class="fa-sharp-duotone fa-solid fa-spray-can-sparkles"
+						></i>
 					</div>
-					<div id="card">
-						<div class="title">
-							<h2>Peinados</h2><i
-								class="fa-sharp-duotone fa-solid fa-wind"></i>
+					<p>
+						Hidratación, keratina y cuidados especiales para
+						devolver la salud y el brillo a tu cabello.
+					</p>
+				</div>
+				<div id="card">
+					<div class="title">
+						<h2>Peinados</h2><i
+							class="fa-sharp-duotone fa-solid fa-wind"></i>
 						</div>
 						<p>
 							Recogidos, ondas y acabados profesionales para
@@ -282,6 +260,7 @@ import "./css/main.css";
 				<h1>Reserva tu cita hoy mismo</h1>
 				<button class="acpbutton">Reservar ahora</button>
 			</section>
+
 			<script>
 				const header = document.querySelector("header") as HTMLElement;
 				const threshold = 20;
@@ -312,7 +291,6 @@ import "./css/main.css";
 						closeButton2.classList.toggle("activecross");
 					};
 
-
 					const closeMenu = () => {
 						menuCheckbox.checked = false;
 						menuMobile.classList.remove("active");
@@ -342,18 +320,17 @@ import "./css/main.css";
 					});
 				});
 			</script>
-		</main>
-		<footer>
-			<p>
-				© 2026 Marco Aldany SOM Multiespai | <a href="google.com"
-					>Política de Privacidad</a
-				> | <a href="">Aviso legal</a> | <a href=""
-					>Política de Cookies</a
-				>
-			</p>
-			<ul>
-				<li><img src="./som.png" alt="SOM" /></li>
-			</ul>
-		</footer>
-	</body>
-</html>
+	</main>
+	<footer>
+		<p>
+			© 2026 Marco Aldany SOM Multiespai | <a href="google.com"
+				>Política de Privacidad</a
+			> | <a href="">Aviso legal</a> | <a href=""
+				>Política de Cookies</a
+			>
+		</p>
+		<ul>
+			<li><img src="./som.png" alt="SOM" /></li>
+		</ul>
+	</footer>
+</Layout>
