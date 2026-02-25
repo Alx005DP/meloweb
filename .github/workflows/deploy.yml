@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Sample workflow for building and deploying an Astro site to GitHub Pages
 #
 # To get started with Astro see: https://docs.astro.build/en/getting-started/
@@ -89,6 +88,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-=======
-
->>>>>>> ed40870de628ca7f8e969645253ddd0b13c56b91
