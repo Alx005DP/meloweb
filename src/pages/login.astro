@@ -2,7 +2,7 @@
 import Layout from "../layouts/Layouts.astro";
 ---
 
-<Layout title="Iniciar Sesión">
+<Layout title="Acceder">
 	<main
 		style="top: 0px; height: 100vh; display: flex; justify-content: center;"
 	>
@@ -11,10 +11,24 @@ import Layout from "../layouts/Layouts.astro";
 				<h1>Acceder</h1>
 				<hr />
 				<label for="mail">Correo Electronico:</label>
-				<input type="email" name="mail" id="mail" placeholder="example@domain.com" />
+				<input
+					type="email"
+					name="mail"
+					id="mail"
+					placeholder="example@domain.com"
+				/>
 				<label for="password">Contraseña:</label>
-				<input type="password" name="password" id="password" placeholder="******" />
-				<input class="acpbutton" type="submit" value="Acceder">
+				<input
+					type="password"
+					name="password"
+					id="password"
+					placeholder="******"
+				/>
+				<input class="acpbutton" type="submit" value="Acceder" />
+				<div class="setpswdre">
+					<a href="#" class="lwsv">He olvidado la contraseña</a>
+					<a href="register" class="lwsv">No tengo cuenta, registrarme</a>
+				</div>
 			</div>
 		</form>
 	</main>
