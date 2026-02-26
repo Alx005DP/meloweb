@@ -581,7 +581,7 @@ footer {
             flex-direction: row;
             align-items: center;
             justify-content: center;
-            transform: scale(1);
+            transform: scale(1) translateX(-50%);
 
             button {
                 margin: 0px 10px;
@@ -661,7 +661,7 @@ footer {
             flex-direction: row;
             align-items: center;
             justify-content: center;
-            transform: scale(1);
+            transform: scale(1) translateX(-50%);
 
             button {
                 margin: 0px 10px;
@@ -928,7 +928,7 @@ footer {
             flex-direction: row;
             align-items: center;
             justify-content: center;
-            transform: scale(1);
+            transform: scale(1) translateX(-50%);
 
             button {
                 margin: 0px 10px;
