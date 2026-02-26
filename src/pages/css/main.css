@@ -162,6 +162,11 @@ button:hover, input[type="submit"]:hover {
     transition: .2s ease color;
 }
 
+button, a {
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
 main {
     width: 100%;
     min-height: 100%;
@@ -480,6 +485,7 @@ input:focus {
     outline: none;
     border-bottom: 2px solid var(--imp);
     transition: .15s ease-in-out border-bottom;
+    -webkit-tap-highlight-color: transparent;
 }
 
 
@@ -817,7 +823,7 @@ footer {
 
     button {
         position: absolute;
-        top: 5px;
+        top: 20px;
         right: 5%;
         background: none;
         border: none;
