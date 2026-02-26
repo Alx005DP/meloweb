@@ -1,15 +1,15 @@
 ---
-import { ViewTransitions } from 'astro:transitions';
-import '../pages/css/main.css';
+import { ViewTransitions } from "astro:transitions";
+import "../pages/css/main.css";
 
 interface Props {
 	title?: string;
 }
 
-const { title = 'Marco Aldany' } = Astro.props;
+const { title = "Marco Aldany" } = Astro.props;
 ---
 
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 	<head>
 		<meta charset="UTF-8" />
@@ -17,14 +17,63 @@ const { title = 'Marco Aldany' } = Astro.props;
 		<link rel="icon" href="/favicon.ico" />
 		<meta name="viewport" content="width=device-width" />
 
-		<link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v7.2.0/css/solid.css" />
-		<link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v7.2.0/css/sharp-duotone-solid.css" />
-		<link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v7.2.0/css/fontawesome.css" />
+		<link
+			rel="stylesheet"
+			href="https://site-assets.fontawesome.com/releases/v7.2.0/css/solid.css"
+		/>
+		<link
+			rel="stylesheet"
+			href="https://site-assets.fontawesome.com/releases/v7.2.0/css/sharp-duotone-solid.css"
+		/>
+		<link
+			rel="stylesheet"
+			href="https://site-assets.fontawesome.com/releases/v7.2.0/css/fontawesome.css"
+		/>
 
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
-		
+
 		<ViewTransitions />
+		<script>
+			document.addEventListener("astro:page-load", () => {
+				const header = document.querySelector("header");
+				const threshold = 20;
+
+				function checkScroll() {
+					if (window.scrollY > threshold) {
+						header?.classList.add("scrolled");
+					} else {
+						header?.classList.remove("scrolled");
+					}
+				}
+
+				checkScroll();
+				window.addEventListener("scroll", checkScroll);
+
+				const menuCheckbox = document.getElementById("menumobile");
+				const menuMobile = document.querySelector(".menumobile");
+				const closeButton = document.querySelector(".closemenu");
+				const closeButton2 = document.querySelector(".closemenu");
+				const menuLinks = document.querySelectorAll(".menumobile a");
+
+				const toggleMenu = () => {
+					menuMobile?.classList.toggle("active");
+					closeButton2?.classList.toggle("activecross");
+				};
+
+				const closeMenu = () => {
+					if (menuCheckbox) menuCheckbox.checked = false;
+					menuMobile?.classList.remove("active");
+					closeButton2?.classList.remove("activecross");
+				};
+
+				menuCheckbox?.addEventListener("change", toggleMenu);
+				closeButton?.addEventListener("click", closeMenu);
+				menuLinks.forEach((link) => {
+					link.addEventListener("click", closeMenu);
+				});
+			});
+		</script>
 	</head>
 	<body>
 		<slot />
