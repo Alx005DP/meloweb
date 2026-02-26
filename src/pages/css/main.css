@@ -1033,6 +1033,23 @@ footer {
     }
 }
 
+@media only screen and (max-width: 1024px) {
+    ::view-transition-old(root),
+    ::view-transition-new(root) {
+        animation: none !important;
+    }
+
+    @keyframes blur-out {
+        from { filter: blur(0); opacity: 1; }
+        to { filter: blur(0); opacity: 1; }
+    }
+
+    @keyframes blur-in {
+        from { filter: blur(0); opacity: 1; }
+        to { filter: blur(0); opacity: 1; }
+    }
+}
+
   ::view-transition-old(root) {
     animation: blur-out 0.6s ease-out forwards;
   }

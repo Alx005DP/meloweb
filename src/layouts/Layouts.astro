@@ -7,7 +7,6 @@ interface Props {
 }
 
 const { title = 'Marco Aldany' } = Astro.props;
-const isMobile = Astro.request.headers.get('user-agent')?.includes('Mobile');
 ---
 
 <!DOCTYPE html>
@@ -25,7 +24,7 @@ const isMobile = Astro.request.headers.get('user-agent')?.includes('Mobile');
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
 		
-		{!isMobile && <ViewTransitions />}
+		<ViewTransitions />
 	</head>
 	<body>
 		<slot />
