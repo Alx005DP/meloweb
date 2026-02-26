@@ -1,6 +1,7 @@
 ---
 import { ViewTransitions } from 'astro:transitions';
 import '../pages/css/main.css';
+import LoadingScreen from '../components/LoadingScreen.astro';
 
 interface Props {
 	title?: string;
@@ -27,6 +28,7 @@ const { title = 'Marco Aldany' } = Astro.props;
 		<ViewTransitions />
 	</head>
 	<body>
+		<LoadingScreen />
 		<slot />
 	</body>
 </html>
