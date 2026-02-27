@@ -182,6 +182,8 @@ section {
     margin: 100px 0px 0px;
 }
 
+
+
 section:nth-child(1) {
     margin: 0px 0px;
 }
@@ -409,11 +411,66 @@ iframe {
     padding: 0px 0px 150px;
     z-index: 2;
 
-    button {
+    a {
         margin: 80px 0px;
         transform: scale(2);
     }
 }
+
+.item {
+    display: flex;
+    margin: 15px 0px 30px;
+}
+
+.item2 {
+    display: flex;
+    flex-direction: column;
+}
+
+#login {
+    .item label {
+        margin: 0px 10px;
+        font-size: 16px;
+        font-family: "EdgeLiteit";
+    }
+}
+                #getdate {
+                    width: 60%;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    background-color: var(--secondary);
+                    border-radius: 8px;
+                    padding: 20px 0px;
+                    margin: 100px 0px 50px;
+        
+                    hr {
+                        margin: 30px 0px;
+                        border: 2px solid var(--imp);
+                        /* position: relative;
+                            left: 50%;
+                            transform: translateX(-50%); */
+                        width: 10%;
+                    }
+        
+                    h1 {
+                        text-align: center;
+                        margin: 30px 0px 0px;
+                    }
+        
+                    .contenedor {
+                        display: grid;
+                        grid-template-columns: 1fr 1fr;
+                        grid-gap: 30px;
+                        width: 90%;
+                        height: 100%;
+        
+                        label {
+                            font-size: 18px;
+                        }
+                    }
+                }
+
 
     #login {
         width: 60%;
@@ -423,6 +480,7 @@ iframe {
         background-color: var(--secondary);
         border-radius: 8px;
         padding: 20px 0px;
+        margin: 100px 0px 50px;
         .contenedor {
             display: flex;
             flex-direction: column;
@@ -466,7 +524,7 @@ iframe {
 
 
 
-input[type="text"],input[type="email"],input[type="password"] {
+input[type="text"],input[type="email"],input[type="password"],input[type="tel"],select {
     background-color: var(--background);
     margin: 15px 0px;
     padding: 8px;
@@ -476,12 +534,12 @@ input[type="text"],input[type="email"],input[type="password"] {
     transition: .15s ease-in-out border-bottom;
 }
 
-input[type="text"]::placeholder,input[type="email"]::placeholder,input[type="password"]::placeholder {
+input[type="text"]::placeholder,input[type="email"]::placeholder,input[type="password"]::placeholder, input[type="tel"]::placeholder, select::placeholder, option::placeholder {
     font-family: "EdgeLiteit";
     color: #373737;
 }
 
-input:focus {
+input:focus, select, option {
     outline: none;
     border-bottom: 2px solid var(--imp);
     transition: .15s ease-in-out border-bottom;
@@ -539,12 +597,14 @@ footer {
     color: var(--secondary) !important;
     padding: 8px 15px !important;
     border: none !important;
+    border-radius: 8px;
     transition: .3s ease-in-out color, .3s ease-in-out background-color !important;
 }
 
 .acpbutton:hover {
     background-color: var(--btn-hover) !important ;
     color: var(--text) !important;
+    text-decoration: none;
     transition: .3s ease-in-out color, .3s ease-in-out background-color !important;
 }
 
@@ -573,6 +633,46 @@ footer {
     right: 5%;
     top: 50%;
     transform: translateY(-50%);
+}
+
+.react-datepicker__time-list-item--disabled {
+    display: none;
+}
+
+.react-datepicker__day--selected {
+    background-color: var(--imp) !important;
+    color: var(--text);
+}
+
+.react-datepicker {
+    background-color: var(--background) !important;
+    color: var(--text);
+    font-family: "EdgeLiteit" !important;
+}
+
+.react-datepicker__day {
+    color: var(--text) !important;
+}
+
+.react-datepicker__day--disabled {
+    color: #4e4e4e!important;
+} 
+
+.react-datepicker__day:not([aria-disabled=true]):hover { 
+    background-color: var(--hover) !important;
+    color: black !important;
+}
+
+.react-datepicker__day-name {
+    color: var(--text) !important;
+}
+
+.react-datepicker__header {
+    background-color: var(--secondary) !important; 
+}
+
+.react-datepicker__current-month {
+    color: var(--text) !important;
 }
 
 @media only screen and (max-width: 1280px) {

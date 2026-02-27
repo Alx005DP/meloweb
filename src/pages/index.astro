@@ -4,204 +4,165 @@ import Layout from "../layouts/Layouts.astro";
 ---
 
 <Layout title="Marco Aldany - Peluquería">
-	<header>
-		<img src="./image.png" alt="marcoaldany" class="mobile" />
-		<label id="menumobilelabel" for="menumobile"
-			><i class="fa-sharp-duotone fa-solid fa-bars"></i></label
-		>
-		<input type="checkbox" name="menumobile" id="menumobile" />
-
-		<nav>
-			<img src="./image.png" alt="marcoaldany" />
-			<ul>
-				<li><a href="#hero">Inicio</a></li>
-				<li><a href="#services">Servicios</a></li>
-				<li><a href="#us">Nosotros</a></li>
-				<!-- <li><a href="#galery">Galería</a></li> -->
-				<li><a href="#ubication">Ubicación</a></li>
-				<li><a href="#date">Reservar Cita</a></li>
-			</ul>
-			<ul>
-				<li><a href="./login"><button>Iniciar Sesion</button></a></li>
-				<li><a href="./register"><button>Regístrate</button></a></li>
-			</ul>
-		</nav>
-	</header>
-
-	<nav class="menumobile">
-			<button class="closemenu"
-				><i class="fa-sharp-duotone fa-solid fa-arrow-right-from-line"
-				></i></button
-			>
-		<ul>
-					<li><a href="#hero">Inicio</a></li>
-		<li><a href="#services">Servicios</a></li>
-		<li><a href="#us">Nosotros</a></li>
-		<!-- <li><a href="#galery">Galería</a></li> -->
-		<li><a href="#ubication">Ubicación</a></li>
-		<li><a href="#date">Reservar Cita</a></li>
-		<li><a href="./login">Iniciar Sesion</a></li>
-		<li><a href="./register">Registrate</a></li>
-		</ul>
-
-	</nav>
-</Layout>
-
-<main>
-	<section id="hero">
-		<div class="overlay"></div>
-		<div class="info">
-			<h1>Es momento de convertirte en tu mejor versión</h1>
-			<p>
-				Corte, coloración y tratamientos profesionales en Som Multiespai
-			</p>
-			<div class="buttons">
-				<button class="acpbutton">Reservar Ahora</button>
-				<button class="acsbutton">Ver Servicios</button>
-			</div>
-		</div>
-	</section>
-	<section id="services">
-		<h1>Servicios</h1>
-		<div class="cards">
-			<div id="card">
-				<div class="title">
-					<h2>Corte Profesional</h2><i
-						class="fa-sharp-duotone fa-solid fa-scissors"></i>
-				</div>
+	<main>
+		<section id="hero">
+			<div class="overlay"></div>
+			<div class="info">
+				<h1>Es momento de convertirte en tu mejor versión</h1>
 				<p>
-					Desde cortes clásicos hasta los estilos más modernos,
-					adaptados a tu tipo de cabello y personalidad.
+					Corte, coloración y tratamientos profesionales en Som
+					Multiespai
 				</p>
-			</div>
-			<div id="card">
-				<div class="title">
-					<h2>Coloración</h2><i
-						class="fa-sharp-duotone fa-solid fa-palette"></i>
+				<div class="buttons">
+					<a href="getdate" class="acpbutton">Reservar Ahora</a>
+					<button class="acsbutton">Ver Servicios</button>
 				</div>
-				<p>
-					Mechas, tintes, balayage y técnicas de última tendencia para
-					transformar tu look con los mejores productos.
-				</p>
 			</div>
-			<div id="card">
-				<div class="title">
-					<h2>Tratamientos</h2><i
-						class="fa-sharp-duotone fa-solid fa-spray-can-sparkles"
-					></i>
+		</section>
+		<section id="services">
+			<h1>Servicios</h1>
+			<div class="cards">
+				<div id="card">
+					<div class="title">
+						<h2>Corte Profesional</h2><i
+							class="fa-sharp-duotone fa-solid fa-scissors"></i>
+					</div>
+					<p>
+						Desde cortes clásicos hasta los estilos más modernos,
+						adaptados a tu tipo de cabello y personalidad.
+					</p>
 				</div>
-				<p>
-					Hidratación, keratina y cuidados especiales para devolver la
-					salud y el brillo a tu cabello.
-				</p>
-			</div>
-			<div id="card">
-				<div class="title">
-					<h2>Peinados</h2><i
-						class="fa-sharp-duotone fa-solid fa-wind"></i>
+				<div id="card">
+					<div class="title">
+						<h2>Coloración</h2><i
+							class="fa-sharp-duotone fa-solid fa-palette"></i>
+					</div>
+					<p>
+						Mechas, tintes, balayage y técnicas de última tendencia
+						para transformar tu look con los mejores productos.
+					</p>
 				</div>
-				<p>
-					Recogidos, ondas y acabados profesionales para cualquier
-					ocasión, desde el día a día hasta eventos especiales.
-				</p>
-			</div>
-		</div>
-	</section>
-	<section id="us">
-		<h1>¿Por qué elegirnos?</h1>
-		<div class="blocks">
-			<div class="block">
-				<div class="info">
-					<h2>
-						Profesionales certificados <i
-							class="fa-sharp-duotone fa-solid fa-badge-check"
+				<div id="card">
+					<div class="title">
+						<h2>Tratamientos</h2><i
+							class="fa-sharp-duotone fa-solid fa-spray-can-sparkles"
 						></i>
-					</h2>
+					</div>
 					<p>
-						Nuestro equipo está formado por estilistas con formación
-						continua y certificaciones oficiales, garantizando
-						resultados de nivel profesional en cada visita.
+						Hidratación, keratina y cuidados especiales para
+						devolver la salud y el brillo a tu cabello.
 					</p>
 				</div>
-				<img src="./about.jpeg" alt="aboutsalon" />
-			</div>
-			<div class="block">
-				<img src="./about2.png" alt="aboutsalon" />
-				<div class="info">
-					<h2>
-						<i class="fa-sharp-duotone fa-solid fa-jug-bottle"></i> Productos
-						de alta calidad
-					</h2>
+				<div id="card">
+					<div class="title">
+						<h2>Peinados</h2><i
+							class="fa-sharp-duotone fa-solid fa-wind"></i>
+					</div>
 					<p>
-						Trabajamos exclusivamente con marcas líderes del sector
-						como L'Oréal Professionnel y Wella, cuidando la salud de
-						tu cabello en cada tratamiento.
+						Recogidos, ondas y acabados profesionales para cualquier
+						ocasión, desde el día a día hasta eventos especiales.
 					</p>
 				</div>
 			</div>
+		</section>
+		<section id="us">
+			<h1>¿Por qué elegirnos?</h1>
+			<div class="blocks">
+				<div class="block">
+					<div class="info">
+						<h2>
+							Profesionales certificados <i
+								class="fa-sharp-duotone fa-solid fa-badge-check"
+							></i>
+						</h2>
+						<p>
+							Nuestro equipo está formado por estilistas con
+							formación continua y certificaciones oficiales,
+							garantizando resultados de nivel profesional en cada
+							visita.
+						</p>
+					</div>
+					<img src="./about.jpeg" alt="aboutsalon" />
+				</div>
+				<div class="block">
+					<img src="./about2.png" alt="aboutsalon" />
+					<div class="info">
+						<h2>
+							<i class="fa-sharp-duotone fa-solid fa-jug-bottle"
+							></i> Productos de alta calidad
+						</h2>
+						<p>
+							Trabajamos exclusivamente con marcas líderes del
+							sector como L'Oréal Professionnel y Wella, cuidando
+							la salud de tu cabello en cada tratamiento.
+						</p>
+					</div>
+				</div>
 
-			<div class="block">
-				<div class="info">
-					<h2>
-						Más de 20 años de experiencia <i
-							class="fa-sharp-duotone fa-solid fa-calendar"></i>
-					</h2>
-					<p>
-						Llevamos dos décadas transformando looks y superando
-						expectativas, consolidándonos como referente en
-						peluquería y estética.
-					</p>
+				<div class="block">
+					<div class="info">
+						<h2>
+							Más de 20 años de experiencia <i
+								class="fa-sharp-duotone fa-solid fa-calendar"
+							></i>
+						</h2>
+						<p>
+							Llevamos dos décadas transformando looks y superando
+							expectativas, consolidándonos como referente en
+							peluquería y estética.
+						</p>
+					</div>
+					<img src="./about.jpeg" alt="aboutsalon" />
 				</div>
-				<img src="./about.jpeg" alt="aboutsalon" />
-			</div>
 
-			<div class="block">
-				<img src="./about3.png" alt="sommultiesplai" />
-				<div class="info">
-					<h2>
-						<i class="fa-sharp-duotone fa-solid fa-map"></i> Ubicación
-						cercana y accesible
-					</h2>
-					<p>
-						Nos encontramos en el centro comercial Som Multiespai,
-						un espacio moderno y accesible con parking gratuito y
-						fácil acceso en transporte público.
-					</p>
+				<div class="block">
+					<img src="./about3.png" alt="sommultiesplai" />
+					<div class="info">
+						<h2>
+							<i class="fa-sharp-duotone fa-solid fa-map"></i> Ubicación
+							cercana y accesible
+						</h2>
+						<p>
+							Nos encontramos en el centro comercial Som
+							Multiespai, un espacio moderno y accesible con
+							parking gratuito y fácil acceso en transporte
+							público.
+						</p>
+					</div>
+				</div>
+				<div class="block">
+					<div class="info">
+						<h2>
+							Atención personalizada <i
+								class="fa-sharp-duotone fa-solid fa-user-hair-long"
+							></i>
+						</h2>
+						<p>
+							Cada cliente es único. Antes de cualquier servicio,
+							realizamos una consulta personalizada para entender
+							tus necesidades y ofrecerte el mejor resultado.
+						</p>
+					</div>
+					<img src="./about4.png" alt="aboutsalon" />
+				</div>
+				<div class="block">
+					<img src="./about3.png" alt="sommultiesplai" />
+					<div class="info">
+						<h2>
+							<i class="fa-sharp-duotone fa-solid fa-map"></i> Reserva
+							fácil y rápida
+						</h2>
+						<p>
+							Reserva tu cita en minutos desde nuestra web. Elige
+							el día y la hora que mejor te venga.
+						</p>
+						<button class="acpbutton">Reservar</button>
+					</div>
 				</div>
 			</div>
-			<div class="block">
-				<div class="info">
-					<h2>
-						Atención personalizada <i
-							class="fa-sharp-duotone fa-solid fa-user-hair-long"
-						></i>
-					</h2>
-					<p>
-						Cada cliente es único. Antes de cualquier servicio,
-						realizamos una consulta personalizada para entender tus
-						necesidades y ofrecerte el mejor resultado.
-					</p>
-				</div>
-				<img src="./about4.png" alt="aboutsalon" />
-			</div>
-			<div class="block">
-				<img src="./about3.png" alt="sommultiesplai" />
-				<div class="info">
-					<h2>
-						<i class="fa-sharp-duotone fa-solid fa-map"></i> Reserva fácil
-						y rápida
-					</h2>
-					<p>
-						Reserva tu cita en minutos desde nuestra web. Elige el
-						día y la hora que mejor te venga.
-					</p>
-					<button class="acpbutton">Reservar</button>
-				</div>
-			</div>
-		</div>
-	</section>
+		</section>
 
-	<!-- <section id="galery">
+		<!-- <section id="galery">
 				<h1>Nuestra Galería</h1>
 				<p>Una muestra de nuestro trabajo, corte a corte</p>
 				<div class="photos">
@@ -219,46 +180,38 @@ import Layout from "../layouts/Layouts.astro";
 				</div>
 			</section> -->
 
-	<section id="ubication">
-		<h1>¿Donde estamos?</h1>
-		<div class="position">
-			<iframe
-				src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1467.0216435975403!2d2.1800949431495087!3d41.43466050575857!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x12a4a2940e15a537%3A0xf2d4ccff16336375!2sMarco%20Aldany!5e1!3m2!1ses!2ses!4v1772021947472!5m2!1ses!2ses"
-				width="100%"
-				height="450"
-				style="border:0;"
-				allowfullscreen=""
-				loading="lazy"
-				referrerpolicy="no-referrer-when-downgrade"></iframe>
-			<div class="info">
-				<p>
-					<i class="fa-sharp-duotone fa-solid fa-location-dot"></i> Carrer
-					del Pintor Alsamora, 14, Nou Barris, 08016 Barcelona
-					<br />
-					<i class="fa-sharp-duotone fa-solid fa-shop"></i> Centro Comercial
-					Som Multiespai <br />
-					<i class="fa-sharp-duotone fa-solid fa-clock"></i> 9:30 a 21:00
-					<br />
-					<i class="fa-sharp-duotone fa-solid fa-phone"></i> +34 653 71
-					73 75
-				</p>
-				<button class="acpbutton">Cómo llegar</button>
+		<section id="ubication">
+			<h1>¿Donde estamos?</h1>
+			<div class="position">
+				<iframe
+					src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1467.0216435975403!2d2.1800949431495087!3d41.43466050575857!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x12a4a2940e15a537%3A0xf2d4ccff16336375!2sMarco%20Aldany!5e1!3m2!1ses!2ses!4v1772021947472!5m2!1ses!2ses"
+					width="100%"
+					height="450"
+					style="border:0;"
+					allowfullscreen=""
+					loading="lazy"
+					referrerpolicy="no-referrer-when-downgrade"></iframe>
+				<div class="info">
+					<p>
+						<i class="fa-sharp-duotone fa-solid fa-location-dot"
+						></i> Carrer del Pintor Alsamora, 14, Nou Barris, 08016 Barcelona
+						<br />
+						<i class="fa-sharp-duotone fa-solid fa-shop"></i> Centro Comercial
+						Som Multiespai <br />
+						<i class="fa-sharp-duotone fa-solid fa-clock"></i> 9:30 a
+						21:00
+						<br />
+						<i class="fa-sharp-duotone fa-solid fa-phone"></i> +34 653
+						71 73 75
+					</p>
+					<button class="acpbutton">Cómo llegar</button>
+				</div>
 			</div>
-		</div>
-	</section>
+		</section>
 
-	<section id="date">
-		<h1>Reserva tu cita hoy mismo</h1>
-		<button class="acpbutton">Reservar ahora</button>
-	</section>
-</main>
-<footer>
-	<p>
-		© 2026 Marco Aldany SOM Multiespai | <a href="google.com"
-			>Política de Privacidad</a
-		> | <a href="">Aviso legal</a> | <a href="">Política de Cookies</a>
-	</p>
-	<ul>
-		<li><img src="./som.png" alt="SOM" /></li>
-	</ul>
-</footer>
+		<section id="date">
+			<h1>Reserva tu cita hoy mismo</h1>
+			<a href="getdate" class="acpbutton">Reservar ahora</a>
+		</section>
+	</main>
+</Layout>

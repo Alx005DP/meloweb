@@ -1,0 +1,41 @@
+---
+import Layout from "../layouts/Layouts.astro";
+import Calendar from "../components/Calendar.jsx";
+---
+
+<Layout title="Reservar Cita">
+    <main
+        style="top: 0px; height: 100vh; display: flex; justify-content: center;"
+    >
+        <form action="" id="getdate">
+            <h1>Coge tu reserva</h1>
+            <hr />
+            <div class="contenedor">
+                <div class="item2">
+                    <label for="name">Nombre:</label>
+                    <input type="text" name="name" id="name" />
+                </div>
+
+                <div class="item2">
+                    <label for="tel">Telefono de Contacto:</label>
+                    <input type="tel" name="tel" id="tel">
+                </div>
+
+                <div class="item2">
+                    <label for="service">Tipo de Servicio</label>
+                    <select name="service" id="service">
+                        <option value="corte">Corte</option>
+                        <option value="coloracion">Coloración</option>
+                        <option value="tratamiento">Tratamiento</option>
+                        <option value="peinado">Peinado</option>
+                    </select>
+                    
+                </div>
+                <div class="item2">
+                    <label for="">Seleccionar Fecha</label>
+                    <Calendar client:load />
+                </div>
+            </div>
+        </form>
+    </main>
+</Layout>

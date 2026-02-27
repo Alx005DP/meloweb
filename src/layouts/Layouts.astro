@@ -76,6 +76,57 @@ const { title = "Marco Aldany" } = Astro.props;
 		</script>
 	</head>
 	<body>
+		<header>
+		<img src="./image.png" alt="marcoaldany" class="mobile" />
+		<label id="menumobilelabel" for="menumobile"
+			><i class="fa-sharp-duotone fa-solid fa-bars"></i></label
+		>
+		<input type="checkbox" name="menumobile" id="menumobile" />
+
+		<nav>
+			<img src="./image.png" alt="marcoaldany" />
+			<ul>
+				<li><a href="/#hero">Inicio</a></li>
+				<li><a href="/#services">Servicios</a></li>
+				<li><a href="/#us">Nosotros</a></li>
+				<!-- <li><a href="#galery">Galería</a></li> -->
+				<li><a href="/#ubication">Ubicación</a></li>
+				<li><a href="/#date">Reservar Cita</a></li>
+			</ul>
+			<ul>
+				<li><a href="/login"><button>Iniciar Sesion</button></a></li>
+				<li><a href="/register"><button>Regístrate</button></a></li>
+			</ul>
+		</nav>
+	</header>
+
+	<nav class="menumobile">
+			<button class="closemenu"
+				><i class="fa-sharp-duotone fa-solid fa-arrow-right-from-line"
+				></i></button
+			>
+		<ul>
+					<li><a href="/#hero">Inicio</a></li>
+		<li><a href="/#services">Servicios</a></li>
+		<li><a href="/#us">Nosotros</a></li>
+		<!-- <li><a href="#galery">Galería</a></li> -->
+		<li><a href="/#ubication">Ubicación</a></li>
+		<li><a href="/#date">Reservar Cita</a></li>
+		<li><a href="/login">Iniciar Sesion</a></li>
+		<li><a href="/register">Registrate</a></li>
+		</ul>
+
+	</nav>
 		<slot />
+		<footer>
+	<p>
+		© 2026 Marco Aldany SOM Multiespai | <a href="google.com"
+			>Política de Privacidad</a
+		> | <a href="">Aviso legal</a> | <a href="">Política de Cookies</a>
+	</p>
+	<ul>
+		<li><img src="./som.png" alt="SOM" /></li>
+	</ul>
+</footer>
 	</body>
 </html>
