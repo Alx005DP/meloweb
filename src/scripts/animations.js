@@ -1,5 +1,4 @@
-// Importar anime (asumiendo que ya está en tu HTML)
-// <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+import anime from "animejs";
 
 // Función para detectar si un elemento está en viewport
 function isInViewport(element) {
