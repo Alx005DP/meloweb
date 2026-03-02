@@ -163,10 +163,10 @@ function animateHeroOnLoad() {
 }
 
 // Event listeners
-document.addEventListener("astro:page-load", () => {
-  window.addEventListener('scroll', animateOnScroll, { passive: true });
-  animateHeroOnLoad();
-  animateOnScroll();
-});
+// document.addEventListener("astro:page-load", () => {
+//   window.addEventListener('scroll', animateOnScroll, { passive: true });
+//   animateHeroOnLoad();
+//   animateOnScroll();
+// });
 // Ejecutar una vez al cargar por si el usuario está abajo
 setTimeout(animateOnScroll, 100);
