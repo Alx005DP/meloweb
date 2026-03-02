@@ -698,6 +698,13 @@ footer {
     width: 100%;
 }
 
+.nvcalendar {
+    width: 30px;
+    height: 100vh;
+}
+
+
+
 @media only screen and (max-width: 1280px) {
 
     #hero {

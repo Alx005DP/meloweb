@@ -14,12 +14,12 @@ import Layout from "../layouts/Layouts.astro";
 					Multiespai
 				</p>
 				<div class="buttons">
-					<a href="getdate" class="acpbutton">Reservar Ahora</a>
-					<a class="acsbutton">Ver Servicios</a>
+					<a href="getdate" class="acpbutton mrs">Reservar Ahora</a>
+					<a href="#services" class="acsbutton">Ver Servicios</a>
 				</div>
 			</div>
 		</section>
-		<section id="services">
+		<section id="services" class="scn">
 			<h1>Servicios</h1>
 			<div class="cards">
 				<div id="card">
@@ -65,7 +65,7 @@ import Layout from "../layouts/Layouts.astro";
 				</div>
 			</div>
 		</section>
-		<section id="us">
+		<section id="us" class="scn">
 			<h1>¿Por qué elegirnos?</h1>
 			<div class="blocks">
 				<div class="block">
@@ -156,7 +156,7 @@ import Layout from "../layouts/Layouts.astro";
 							Reserva tu cita en minutos desde nuestra web. Elige
 							el día y la hora que mejor te venga.
 						</p>
-						<button class="acpbutton">Reservar</button>
+						<a href="getdate" class="acpbutton mrs">Reservar</a>
 					</div>
 				</div>
 			</div>
@@ -180,7 +180,7 @@ import Layout from "../layouts/Layouts.astro";
 				</div>
 			</section> -->
 
-		<section id="ubication">
+		<section id="ubication" class="scn">
 			<h1>¿Donde estamos?</h1>
 			<div class="position">
 				<iframe
@@ -204,14 +204,16 @@ import Layout from "../layouts/Layouts.astro";
 						<i class="fa-sharp-duotone fa-solid fa-phone"></i> +34 653
 						71 73 75
 					</p>
-					<button class="acpbutton">Cómo llegar</button>
+					<button class="acpbutton mrs">Cómo llegar</button>
 				</div>
 			</div>
 		</section>
 
-		<section id="date">
+		<section id="date" class="scn">
 			<h1>Reserva tu cita hoy mismo</h1>
-			<a href="getdate" class="acpbutton">Reservar ahora</a>
+			<a href="getdate" class="acpbutton mrb">Reservar ahora</a>
 		</section>
 	</main>
 </Layout>
+
+<script type="module" src="/src/scripts/animations.js"></script>
