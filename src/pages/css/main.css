@@ -464,7 +464,7 @@ iframe {
                         grid-gap: 30px;
                         width: 90%;
                         height: 100%;
-        
+                        overflow: hidden;
                         label {
                             font-size: 18px;
                         }
@@ -553,7 +553,7 @@ input:focus, select, option {
     left: 50%;
     transform: scale(1.1) translateX(-50%);
     width: fit-content;
-    button {
+    a {
         margin: 0px var(--mgtop);
     }
 
@@ -613,12 +613,14 @@ footer {
     color: var(--secondary);
     padding: 8px 15px;
     border: none;
+    border-radius: 8px;
     transition: .3s ease-in-out color, .3s ease-in-out background-color;
 }
 
 .acsbutton:hover {
     background-color: var(--btn-hover);
     color: var(--text);
+    text-decoration: none;
     transition: .3s ease-in-out color, .3s ease-in-out background-color;
 }
 
@@ -673,6 +675,27 @@ footer {
 
 .react-datepicker__current-month {
     color: var(--text) !important;
+}
+
+.react-datepicker__current-month::first-letter {
+    text-transform: uppercase;
+}
+
+.react-datepicker__time-list-item {
+    background-color: var(--secondary) !important;
+}
+
+.react-datepicker-time__header, .react-datepicker__time-list-item  {
+    color: var(--text) !important;
+}
+
+.react-datepicker__triangle {
+    fill: var(--hover) !important;
+    color: var(--hover) !important;
+}
+
+.mi-datepicker {
+    width: 100%;
 }
 
 @media only screen and (max-width: 1280px) {
