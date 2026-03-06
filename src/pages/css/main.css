@@ -167,6 +167,32 @@ button, a {
   -webkit-tap-highlight-color: transparent;
 }
 
+
+
+.nvcalendar {
+    button::after {
+        content: attr(data-tooltip);
+        position: absolute;
+        right: -20px;
+        text-wrap: nowrap;
+
+        background: rgba(20, 20, 20, 0.8);
+        backdrop-filter: blur(6px);
+        color: white;
+
+        padding: 6px 12px;
+        border-radius: 8px;
+        font-size: 13px;
+        opacity: 0;
+        transition: 0.2s;
+    }
+    button:hover::after {
+        opacity: 1;
+        right: 74px;
+    }
+}
+
+
 main {
     width: 100%;
     min-height: 100%;
@@ -315,8 +341,9 @@ section:nth-child(1) {
                     margin-bottom: 20px;
                 }
 
-                button {
-                    margin-top: 20px;
+                a {
+                    position: relative;
+                    top: 20px;
                 }
             }
 
@@ -333,6 +360,9 @@ section:nth-child(1) {
 
     }
 }
+
+
+
 
 #galery {
     width: 60%;

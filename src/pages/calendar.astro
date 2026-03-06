@@ -8,12 +8,10 @@ import Layout from "../layouts/Layouts.astro";
     <main>
         <nav class="nvcalendar">
             <ul>
-                <li><a href=""><i class="fa-sharp-duotone fa-solid fa-map"></i></a></li>
-                <li><a href=""><i class="fa-sharp-duotone fa-solid fa-map"></i></a></li>
-                <li><a href=""><i class="fa-sharp-duotone fa-solid fa-map"></i></a></li>
-                <li><a href=""><i class="fa-sharp-duotone fa-solid fa-map"></i></a></li>
-                <li><a href=""><i class="fa-sharp-duotone fa-solid fa-map"></i></a></li>
-                <li><a href=""><i class="fa-sharp-duotone fa-solid fa-map"></i></a></li>
+                <li><a href=""><i class="fa-sharp-duotone fa-solid fa-house"></i></a></li>
+                <li><button data-tooltip="Opciones"><i class="fa-sharp-duotone fa-solid fa-wrench"></i></button></li>
+                <li><button data-tooltip="Editar"><i class="fa-sharp-duotone fa-solid fa-pencil"></i></button></li>
+                <li><button data-tooltip="Cambiar Modo"><i class="fa-sharp-duotone fa-solid fa-grid-2"></i></button></li>
             </ul>
         </nav>
     </main>
@@ -27,6 +25,10 @@ import Layout from "../layouts/Layouts.astro";
     }
     footer {
         display: none;
+    }
+
+    .menumobile {
+        display: none !important;
     }
 </style>
 
