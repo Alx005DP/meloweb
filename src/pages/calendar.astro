@@ -1,11 +1,9 @@
 ---
 import "./css/main.css";
 import Layout from "../layouts/Layouts.astro";
+import AlxCalendar from "../components/AlxCalendar.jsx"
 ---
-
-
-<Layout title="Calendario">
-    <main>
+    <!-- <main>
         <nav class="nvcalendar">
             <ul>
                 <li><a href=""><i class="fa-sharp-duotone fa-solid fa-house"></i></a></li>
@@ -15,6 +13,9 @@ import Layout from "../layouts/Layouts.astro";
             </ul>
         </nav>
     </main>
+ -->
+<Layout title="Calendario">
+    <AlxCalendar client:load/>
 
 </Layout>
 
