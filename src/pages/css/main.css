@@ -145,7 +145,8 @@ header.scrolled {
     border-bottom: 1px solid var(--imp);
 }
 
-button, input[type="submit"] {
+button,
+input[type="submit"] {
     font-family: "EdgeLiteM";
     background-color: transparent;
     border: none;
@@ -156,15 +157,17 @@ button, input[type="submit"] {
     transition: .2s ease color;
 }
 
-button:hover, input[type="submit"]:hover {
+button:hover,
+input[type="submit"]:hover {
     color: var(--hover);
     cursor: pointer;
     transition: .2s ease color;
 }
 
-button, a {
-  outline: none;
-  -webkit-tap-highlight-color: transparent;
+button,
+a {
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
 }
 
 /* Header */
@@ -184,7 +187,7 @@ button, a {
     align-items: center;
 }
 
-.infonav { 
+.infonav {
     display: flex;
     align-items: center;
     background-color: var(--secondary);
@@ -206,7 +209,8 @@ button, a {
     margin: 0px 20px;
 }
 
-.calendar-nav button, .calendar-mode button {
+.calendar-nav button,
+.calendar-mode button {
     background-color: var(--secondary);
     color: var(--text);
     border: none;
@@ -372,7 +376,7 @@ button, a {
 
 .week-col {
     position: relative;
-    border-left: 1px solid rgba(255,255,255,0.05);
+    border-left: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .week-col.today-col {
@@ -388,7 +392,7 @@ button, a {
     left: 0;
     right: 0;
     height: 1px;
-    background-color: rgba(255,255,255,0.05);
+    background-color: rgba(255, 255, 255, 0.05);
 }
 
 .week-event-abs {
@@ -578,7 +582,7 @@ button, a {
     display: flex;
     flex-direction: column;
     gap: 24px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
 }
 
 .modal-header {
@@ -651,7 +655,7 @@ button, a {
 .color-dot.selected {
     border-color: var(--text);
     transform: scale(1.2);
-    box-shadow: 0 0 0 3px rgba(255,255,255,0.2);
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2);
 }
 
 .modal-footer {
@@ -659,7 +663,7 @@ button, a {
     justify-content: flex-end;
     gap: 12px;
     padding-top: 8px;
-    border-top: 1px solid rgba(255,255,255,0.1);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 
@@ -984,79 +988,82 @@ iframe {
         font-family: "EdgeLiteit";
     }
 }
-                #getdate {
-                    width: 60%;
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    background-color: var(--secondary);
-                    border-radius: 8px;
-                    padding: 20px 0px;
-                    margin: 100px 0px 50px;
-        
-                    hr {
-                        margin: 30px 0px;
-                        border: 2px solid var(--imp);
-                        /* position: relative;
+
+#getdate {
+    width: 60%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: var(--secondary);
+    border-radius: 8px;
+    padding: 20px 0px;
+    margin: 100px 0px 50px;
+
+    hr {
+        margin: 30px 0px;
+        border: 2px solid var(--imp);
+        /* position: relative;
                             left: 50%;
                             transform: translateX(-50%); */
-                        width: 10%;
-                    }
-        
-                    h1 {
-                        text-align: center;
-                        margin: 30px 0px 0px;
-                    }
-        
-                    .contenedor {
-                        display: grid;
-                        grid-template-columns: 1fr 1fr;
-                        grid-gap: 30px;
-                        width: 90%;
-                        height: 100%;
-                        overflow: hidden;
-                        label {
-                            font-size: 18px;
-                        }
-                    }
-                }
+        width: 10%;
+    }
 
+    h1 {
+        text-align: center;
+        margin: 30px 0px 0px;
+    }
 
-    #login {
-        width: 60%;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        background-color: var(--secondary);
-        border-radius: 8px;
-        padding: 20px 0px;
-        margin: 100px 0px 50px;
-        .contenedor {
-            display: flex;
-            flex-direction: column;
-           
-            width: 90%;
-            height: 100%;
+    .contenedor {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-gap: 30px;
+        width: 90%;
+        height: 100%;
+        overflow: hidden;
 
-            h1 {
-                 text-align: center;
-                 margin: 30px 0px 0px;
-            }
-            
-            hr {
-                margin: 30px 0px;
-                border: 2px solid var(--imp);
-                position: relative;
-                left: 50%;
-                transform: translateX(-50%);
-                width: 10%;
-            }
-
-            label {
-                font-size: 18px;
-            }
+        label {
+            font-size: 18px;
         }
     }
+}
+
+
+#login {
+    width: 60%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: var(--secondary);
+    border-radius: 8px;
+    padding: 20px 0px;
+    margin: 100px 0px 50px;
+
+    .contenedor {
+        display: flex;
+        flex-direction: column;
+
+        width: 90%;
+        height: 100%;
+
+        h1 {
+            text-align: center;
+            margin: 30px 0px 0px;
+        }
+
+        hr {
+            margin: 30px 0px;
+            border: 2px solid var(--imp);
+            position: relative;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 10%;
+        }
+
+        label {
+            font-size: 18px;
+        }
+    }
+}
 
 .lwsv {
     color: #333333;
@@ -1074,22 +1081,33 @@ iframe {
 
 
 
-input[type="text"],input[type="email"],input[type="password"],input[type="tel"],select {
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="tel"],
+select {
     background-color: var(--background);
     margin: 15px 0px;
     padding: 8px;
-    border:  2px solid transparent;
+    border: 2px solid transparent;
     color: var(--text);
     font-family: "EdgeLiteM";
     transition: .15s ease-in-out border-bottom;
 }
 
-input[type="text"]::placeholder,input[type="email"]::placeholder,input[type="password"]::placeholder, input[type="tel"]::placeholder, select::placeholder, option::placeholder {
+input[type="text"]::placeholder,
+input[type="email"]::placeholder,
+input[type="password"]::placeholder,
+input[type="tel"]::placeholder,
+select::placeholder,
+option::placeholder {
     font-family: "EdgeLiteit";
     color: #373737;
 }
 
-input:focus, select, option {
+input:focus,
+select,
+option {
     outline: none;
     border-bottom: 2px solid var(--imp);
     transition: .15s ease-in-out border-bottom;
@@ -1103,6 +1121,7 @@ input:focus, select, option {
     left: 50%;
     transform: scale(1.1) translateX(-50%);
     width: fit-content;
+
     a {
         margin: 0px var(--mgtop);
     }
@@ -1152,7 +1171,7 @@ footer {
 }
 
 .acpbutton:hover {
-    background-color: var(--btn-hover) !important ;
+    background-color: var(--btn-hover) !important;
     color: var(--text) !important;
     text-decoration: none;
     transition: .3s ease-in-out color, .3s ease-in-out background-color !important;
@@ -1160,7 +1179,7 @@ footer {
 
 .acsbutton {
     background-color: transparent;
-    border: 1px solid rgba(255,255,255,0.2);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     color: var(--text);
     padding: 10px 20px;
     border-radius: 8px;
@@ -1210,10 +1229,10 @@ footer {
 }
 
 .react-datepicker__day--disabled {
-    color: #4e4e4e!important;
-} 
+    color: #4e4e4e !important;
+}
 
-.react-datepicker__day:not([aria-disabled=true]):hover { 
+.react-datepicker__day:not([aria-disabled=true]):hover {
     background-color: var(--hover) !important;
     color: black !important;
 }
@@ -1223,7 +1242,7 @@ footer {
 }
 
 .react-datepicker__header {
-    background-color: var(--secondary) !important; 
+    background-color: var(--secondary) !important;
 }
 
 .react-datepicker__current-month {
@@ -1238,7 +1257,8 @@ footer {
     background-color: var(--secondary) !important;
 }
 
-.react-datepicker-time__header, .react-datepicker__time-list-item  {
+.react-datepicker-time__header,
+.react-datepicker__time-list-item {
     color: var(--text) !important;
 }
 
@@ -1257,7 +1277,8 @@ footer {
     background-color: var(--secondary);
     position: fixed;
     right: 0px;
-    top: 0px; 
+    top: 0px;
+
     ul {
         display: flex;
         flex-direction: column;
@@ -1265,6 +1286,7 @@ footer {
         height: 100%;
         align-items: center;
         justify-content: center;
+
         li {
             width: 100%;
             height: fit-content;
@@ -1429,6 +1451,7 @@ footer {
 
     #galery {
         width: 85%;
+
         .photos {
             grid-template-columns: 1fr 1fr 1fr;
             width: 100%;
@@ -1486,16 +1509,18 @@ footer {
     background-color: var(--secondary);
     right: 0px;
     top: 0px;
-    z-index: 1000; /* Aumenta el z-index */
+    z-index: 1000;
+    /* Aumenta el z-index */
     display: flex;
     align-items: center;
     justify-content: flex-end;
     flex-direction: column;
-    transform: translateX(100%); /* Cambia a 100% en lugar de 102% */
-    transition: transform 0.3s ease; 
+    transform: translateX(100%);
+    /* Cambia a 100% en lugar de 102% */
+    transition: transform 0.3s ease;
 
     &.active {
-        transform: translateX(0); 
+        transform: translateX(0);
     }
 
     ul {
@@ -1506,13 +1531,15 @@ footer {
         flex-direction: column;
         justify-content: flex-end;
         align-items: flex-end;
-        padding-right: 65px; /* Mueve el padding aquí */
-        
+        padding-right: 65px;
+        /* Mueve el padding aquí */
+
         li {
-            width: calc(100% - 50px); /* Ajusta el ancho */
+            width: calc(100% - 50px);
+            /* Ajusta el ancho */
             margin: 10px 0px;
-        } 
-        
+        }
+
         a {
             display: flex;
             text-align: right;
@@ -1549,6 +1576,8 @@ footer {
     font-size: 24px;
     z-index: 99;
 }
+
+
 
 @media only screen and (max-width: 800px) {
 
@@ -1724,38 +1753,90 @@ footer {
             }
         }
     }
+
+    .calendar-container {
+        width: 95%;
+    }
+
+    .calendar-header {
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        margin: 0px 13px 30px;
+
+        h2 {
+            text-align: center;
+            margin: 20px 0px;
+        }
+    }
+
+    .infonav {
+        width: 100%;
+        flex-direction: column;
+        gap: 20px;
+    }
 }
 
 @media only screen and (max-width: 1024px) {
+
     ::view-transition-old(root),
     ::view-transition-new(root) {
         animation: none !important;
     }
 
     @keyframes blur-out {
-        from { filter: blur(0); opacity: 1; }
-        to { filter: blur(0); opacity: 1; }
+        from {
+            filter: blur(0);
+            opacity: 1;
+        }
+
+        to {
+            filter: blur(0);
+            opacity: 1;
+        }
     }
 
     @keyframes blur-in {
-        from { filter: blur(0); opacity: 1; }
-        to { filter: blur(0); opacity: 1; }
+        from {
+            filter: blur(0);
+            opacity: 1;
+        }
+
+        to {
+            filter: blur(0);
+            opacity: 1;
+        }
     }
 }
 
-  ::view-transition-old(root) {
+::view-transition-old(root) {
     animation: blur-out 0.6s ease-out forwards;
-  }
-  ::view-transition-new(root) {
+}
+
+::view-transition-new(root) {
     animation: blur-in 0.6s ease-in forwards;
-  }
+}
 
-  @keyframes blur-out {
-    from { filter: blur(0); opacity: 1; }
-    to { filter: blur(10px); opacity: 0; }
-  }
+@keyframes blur-out {
+    from {
+        filter: blur(0);
+        opacity: 1;
+    }
 
-  @keyframes blur-in {
-    from { filter: blur(10px); opacity: 0; }
-    to { filter: blur(0); opacity: 1; }
-  }
+    to {
+        filter: blur(10px);
+        opacity: 0;
+    }
+}
+
+@keyframes blur-in {
+    from {
+        filter: blur(10px);
+        opacity: 0;
+    }
+
+    to {
+        filter: blur(0);
+        opacity: 1;
+    }
+}
