@@ -1733,6 +1733,16 @@ footer {
         display: flex;
         flex-direction: column;
     }
+
+    #getdate {
+        width: 90%;
+        display: flex;
+        flex-direction: column;
+        .contenedor {
+            display: flex;
+            flex-direction: column;
+        }
+    }
 }
 
 .menumobile {
@@ -1934,6 +1944,12 @@ footer {
                 p {
                     font-size: 18px !important;
                     text-align: left;
+                }
+
+                a {
+                    display: block;
+                    width: fit-content;
+                    margin: 20px 0px;
                 }
             }
 
