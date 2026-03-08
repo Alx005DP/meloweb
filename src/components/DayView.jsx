@@ -1,5 +1,5 @@
 export default function DayView({ currentDate = new Date(), events = [], onEventDrop, onCellClick, onEventClick }) {
-    const hours = Array.from({ length: 24 }, (_, i) => i)
+    const hours = Array.from({ length: 15 }, (_, i) => i + 8)
     const today = new Date()
 
     const isToday =

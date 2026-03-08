@@ -15,21 +15,19 @@ import AlxCalendar from "../components/AlxCalendar.jsx"
     </main>
  -->
 <Layout title="Calendario">
-    <AlxCalendar client:load/>
 
+    <main>
+         <AlxCalendar client:load/>
+    </main>
+   
 </Layout>
 
     <style is:inline> 
-    header {
-        display: none !important;
-    
-    }
-    footer {
-        display: none;
-    }
+    main  {
 
-    .menumobile {
-        display: none !important;
+        display: block;
+        margin: 100px 0px;
+        top: 3vh;
     }
-</style>
+</style> 
 
