@@ -128,25 +128,35 @@ header {
     nav {
         width: 100%;
         height: 100%;
-        display: flex;
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;  
         align-items: center;
-        justify-content: space-around;
-
-        ul {
-            display: flex;
-            gap: 30px;
-            font-size: 18px;
-        }
+        padding: 0 40px;
+        box-sizing: border-box;
 
         img {
             width: 170px;
-
+            justify-self: start;  
         }
+
+        ul:nth-child(2) {
+            display: flex;
+            gap: 30px;
+            font-size: 18px;
+            justify-self: center;  
+        }
+
+        ul:nth-child(3) {
+            display: flex;
+            gap: 30px;
+            font-size: 18px;
+            justify-self: end;  
+        }
+    }
 
         a:hover {
             text-decoration: none;
         }
-    }
 }
 
 header.scrolled {
@@ -1284,7 +1294,135 @@ iframe {
     margin: 30px 0px 10px;
 }
 
+.info-contain-error {
+    display: none;
+    width: 100%;
+    background-color: #7f000017;
+    margin: 10px 0px 20px;
+    border-radius: 8px;
+    border: 1px solid #b2000042;
+    transition: background-color .3s ease, border .3s ease;
 
+    p {
+        padding: 10px 20px;
+        font-size: 14px;
+        opacity: 0.5;
+        transition: color .2s ease, opacity .2s ease;
+    }
+}
+
+.req-ok {
+    color: #2ecc71 !important;
+    opacity: 1 !important;
+}
+
+.req-ok::before {
+    content: "✓ ";
+}
+
+.req-fail {
+    color: inherit;
+    opacity: 0.5 !important;
+}
+
+.form-modal {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0,0,0,0.6);
+    z-index: 140;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.form-modal.active {
+    display: flex;
+}
+
+.form-modal-box {
+    background-color: var(--secondary);
+    width: 380px;
+    padding: 40px 30px;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    transition: border .3s ease;
+}
+
+.form-modal-box.success {
+    border: 1px solid #2ecc7142;
+}
+
+.form-modal-box.error {
+    border: 1px solid #e74c3c42;
+}
+
+.form-modal i {
+    font-size: 80px;
+    animation: popIn .4s ease;
+}
+
+.form-modal-box.success i {
+    color: #2ecc71;
+    filter: drop-shadow(0 0 20px #2ecc7166);
+}
+
+.form-modal-box.error i {
+    color: #e74c3c;
+    filter: drop-shadow(0 0 20px #e74c3c66);
+}
+
+.form-modal h2 {
+    font-size: 24px;
+    color: var(--text);
+    text-align: center;
+}
+
+.form-modal p {
+    font-size: 15px;
+    text-align: center;
+    opacity: 0.6;
+    line-height: 1.5;
+}
+
+.form-row {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.form-progress {
+    width: 100%;
+    height: 4px;
+    background-color: rgba(255,255,255,0.1);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.form-progress-bar {
+    height: 100%;
+    width: 0%;
+    background-color: #2ecc71;
+    border-radius: 4px;
+}
+
+.form-progress-bar.animating {
+    animation: progress 2s linear forwards;
+}
+
+@keyframes popIn {
+    0%   { transform: scale(0.5); opacity: 0; }
+    70%  { transform: scale(1.1); }
+    100% { transform: scale(1);   opacity: 1; }
+}
+
+@keyframes progress {
+    from { width: 0% }
+    to   { width: 100% }
+}
 
 input[type="text"],
 input[type="email"],
@@ -1299,6 +1437,10 @@ select {
     color: var(--text);
     font-family: "EdgeLiteM";
     transition: .15s ease-in-out border-bottom;
+}
+
+input[type="password"] {
+    font-family: Verdana, sans-serif;
 }
 
 input[type="text"]::placeholder,
@@ -1728,6 +1870,7 @@ footer {
         flex-direction: column;
         gap: 20px;
     }
+
 
     .modal-row {
         display: flex;

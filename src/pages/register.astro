@@ -3,6 +3,34 @@ import Layout from "../layouts/Layouts.astro";
 ---
 
 <Layout title="Registro">
+    <div class="form-modal" id="form-modal">
+        <div class="form-modal-box">
+            <div class="form-row">
+                <i
+                    id="modal-icon"
+                    class="fa-sharp-duotone fa-solid fa-badge-check"></i>
+            </div>
+            <div class="form-row">
+                <h2 id="modal-title">¡Registro completado!</h2>
+            </div>
+            <div class="form-row">
+                <p id="modal-text">
+                    Tu cuenta ha sido creada correctamente. Redirigiendo al
+                    inicio de sesión...
+                </p>
+            </div>
+            <div class="form-row" id="modal-progress-row">
+                <div class="form-progress">
+                    <div class="form-progress-bar" id="modal-progress"></div>
+                </div>
+            </div>
+            <div class="form-row" id="modal-btn-row">
+                <button class="acpbutton" id="modal-btn"
+                    >Intentar de nuevo</button
+                >
+            </div>
+        </div>
+    </div>
     <main
         style="margin: 15vh 0px; top: 0px; height: 100%; display: flex; justify-content: center;"
     >
@@ -13,26 +41,335 @@ import Layout from "../layouts/Layouts.astro";
                 <label for="user">Nombre de usuario:</label>
                 <input
                     type="text"
-                    name="user"
-                    id="user"
+                    name="username"
+                    id="username"
                     placeholder="marcoaldany002"
                 />
+                <div id="username-error" class="info-contain-error">
+                    <p>Por favor rellena los campos</p>
+                </div>
                 <label for="name">Nombre:</label>
                 <input type="text" name="name" id="name" />
+                <div id="name-error" class="info-contain-error">
+                    <p>Por favor rellena los campos</p>
+                </div>
                 <label for="lastname">Apellidos:</label>
                 <input type="text" name="lastname" id="lastname" />
-                <label for="mail">Dirrecion de Correo Electronico:</label>
-                <input type="email" name="mail" id="mail" placeholder="example@domain.com"/>
+                <div id="lastname-error" class="info-contain-error">
+                    <p>Por favor rellena los campos</p>
+                </div>
+                <label for="mail">Dirección de Correo Electrónico:</label>
+                <input
+                    type="email"
+                    name="mail"
+                    id="mail"
+                    placeholder="example@domain.com"
+                />
+                <div id="email-error" class="info-contain-error">
+                    <p>Ya esta registrado este mail</p>
+                </div>
                 <label for="password">Contraseña:</label>
                 <input type="password" name="password" id="password" />
+                <div
+                    class="info-contain-error password-presets"
+                    style="display: block !important;"
+                >
+                    <p id="password-mayus">Debe de contener alguna mayúscula</p>
+                    <p id="password-number">Debe de contener algún numero</p>
+                    <p id="password-sign">
+                        Debe de contener algún signo -+*¿?!
+                    </p>
+                    <p id="password-max6">
+                        Debe de contener mínimo 6 caracteres
+                    </p>
+                </div>
                 <label for="confirmpassword">Confirmar Contraseña:</label>
-                <input type="password" name="confirmpassword" id="confirmpassword" />
+                <input
+                    type="password"
+                    name="confirmpassword"
+                    id="confirmpassword"
+                />
+                <div class="info-contain-error" id="password-error">
+                    <p>La contraseñas no coinciden</p>
+                </div>
 
                 <input class="acpbutton" type="submit" value="Registrarme" />
                 <div class="setpswdre">
-                    <a href="../login" class="lwsv">Ya tengo cuenta, iniciar sesion</a>
+                    <a href="../login" class="lwsv"
+                        >Ya tengo cuenta, iniciar sesion</a
+                    >
                 </div>
             </div>
         </form>
     </main>
 </Layout>
+
+<script>
+    import { createClient } from "@supabase/supabase-js";
+
+    const supabase = createClient(
+        import.meta.env.PUBLIC_SUPABASE_URL,
+        import.meta.env.PUBLIC_SUPABASE_KEY,
+    );
+
+    // — Elementos formulario —
+    const form = document.getElementById("login") as HTMLFormElement;
+    const passwordInput = document.getElementById(
+        "password",
+    ) as HTMLInputElement;
+
+    const reqMayus = document.getElementById(
+        "password-mayus",
+    ) as HTMLParagraphElement;
+    const reqNumber = document.getElementById(
+        "password-number",
+    ) as HTMLParagraphElement;
+    const reqSign = document.getElementById(
+        "password-sign",
+    ) as HTMLParagraphElement;
+    const reqMax6 = document.getElementById(
+        "password-max6",
+    ) as HTMLParagraphElement;
+
+    const usernameError = document.getElementById(
+        "username-error",
+    ) as HTMLElement;
+    const nameError = document.getElementById("name-error") as HTMLElement;
+    const lastnameError = document.getElementById(
+        "lastname-error",
+    ) as HTMLElement;
+    const emailError = document.getElementById("email-error") as HTMLElement;
+    const passwordError = document.getElementById(
+        "password-error",
+    ) as HTMLElement;
+
+    // — Elementos modal —
+    const modal = document.getElementById("form-modal") as HTMLElement;
+    const modalBox = modal.querySelector(".form-modal-box") as HTMLElement;
+    const modalIcon = document.getElementById("modal-icon") as HTMLElement;
+    const modalTitle = document.getElementById("modal-title") as HTMLElement;
+    const modalText = document.getElementById("modal-text") as HTMLElement;
+    const modalProgress = document.getElementById(
+        "modal-progress",
+    ) as HTMLElement;
+    const modalProgressRow = document.getElementById(
+        "modal-progress-row",
+    ) as HTMLElement;
+    const modalBtnRow = document.getElementById("modal-btn-row") as HTMLElement;
+    const modalBtn = document.getElementById("modal-btn") as HTMLButtonElement;
+
+    // — Helper errores campo —
+    const showError = (el: HTMLElement, show: boolean) => {
+        el.style.display = show ? "block" : "none";
+    };
+
+    const hideAll = () => {
+        [
+            usernameError,
+            nameError,
+            lastnameError,
+            emailError,
+            passwordError,
+        ].forEach((el) => {
+            el.style.display = "none";
+        });
+    };
+
+    // — Helper modal —
+    const showModal = (
+        type: "success" | "error",
+        title: string,
+        text: string,
+    ) => {
+        modalBox.className = `form-modal-box ${type}`;
+        modalIcon.className =
+            type === "success"
+                ? "fa-sharp-duotone fa-solid fa-badge-check"
+                : "fa-sharp-duotone fa-solid fa-circle-xmark";
+        modalTitle.textContent = title;
+        modalText.textContent = text;
+        modal.classList.add("active");
+
+        if (type === "success") {
+            modalProgressRow.style.display = "flex";
+            modalBtnRow.style.display = "none";
+            modalProgress.className = "form-progress-bar animating";
+            setTimeout(() => (window.location.href = "/login"), 2000);
+        } else {
+            modalProgressRow.style.display = "none";
+            modalBtnRow.style.display = "flex";
+        }
+    };
+
+    // — Cerrar modal —
+    modalBtn.addEventListener("click", () => {
+        modal.classList.remove("active");
+        const btn = form.querySelector(
+            "input[type=submit]",
+        ) as HTMLInputElement;
+        btn.value = "Registrarme";
+        btn.disabled = false;
+    });
+
+    // — Validación contraseña en tiempo real —
+    passwordInput.addEventListener("input", () => {
+        const val = passwordInput.value;
+
+        const checks = [
+            { el: reqMayus, ok: /[A-Z]/.test(val) },
+            { el: reqNumber, ok: /[0-9]/.test(val) },
+            { el: reqSign, ok: /[-+*¿?!]/.test(val) },
+            { el: reqMax6, ok: val.length >= 6 },
+        ];
+
+        checks.forEach(({ el, ok }) => {
+            el.classList.toggle("req-ok", ok);
+            el.classList.toggle("req-fail", !ok);
+        });
+
+        const allOk = checks.every(({ ok }) => ok);
+        const container = document.querySelector(
+            ".info-password-contain",
+        ) as HTMLElement;
+        container.style.backgroundColor = allOk ? "#2ecc7117" : "#7f000017";
+        container.style.borderColor = allOk ? "#2ecc7142" : "#b2000042";
+    });
+
+    // — Submit —
+    form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        hideAll();
+
+        const username = (
+            document.getElementById("username") as HTMLInputElement
+        ).value.trim();
+        const name = (
+            document.getElementById("name") as HTMLInputElement
+        ).value.trim();
+        const lastname = (
+            document.getElementById("lastname") as HTMLInputElement
+        ).value.trim();
+        const mail = (
+            document.getElementById("mail") as HTMLInputElement
+        ).value.trim();
+        const password = passwordInput.value;
+        const confirmpass = (
+            document.getElementById("confirmpassword") as HTMLInputElement
+        ).value;
+
+        // — Validaciones por campo —
+        let hasError = false;
+
+        if (!username) {
+            showError(usernameError, true);
+            hasError = true;
+        }
+        if (!name) {
+            showError(nameError, true);
+            hasError = true;
+        }
+        if (!lastname) {
+            showError(lastnameError, true);
+            hasError = true;
+        }
+        if (!mail) {
+            showError(emailError, true);
+            hasError = true;
+        }
+
+        if (password !== confirmpass) {
+            showError(passwordError, true);
+            hasError = true;
+        }
+
+        if (
+            !/[A-Z]/.test(password) ||
+            !/[0-9]/.test(password) ||
+            !/[-+*¿?!]/.test(password) ||
+            password.length < 6
+        ) {
+            hasError = true;
+        }
+
+        if (hasError) return;
+
+        // — Botón cargando —
+        const btn = form.querySelector(
+            "input[type=submit]",
+        ) as HTMLInputElement;
+        btn.value = "Registrando...";
+        btn.disabled = true;
+
+        // — 1. Crear usuario en Supabase Auth —
+        console.log("Enviando:", {
+            email: mail,
+            password,
+            passwordLength: password.length,
+        });
+
+        const { data, error } = await supabase.auth.signUp({
+            email: mail,
+            password,
+        });
+
+        console.log("Error completo:", JSON.stringify(error));
+        console.log("Data completo:", JSON.stringify(data));
+
+        if (error || !data.user) {
+            btn.value = "Registrarme";
+            btn.disabled = false;
+
+            const errMsg = error?.message || "";
+
+            if (errMsg.toLowerCase().includes("already")) {
+                showError(emailError, true);
+                return;
+            }
+
+            if (errMsg.toLowerCase().includes("rate limit")) {
+                showModal(
+                    "error",
+                    "Demasiados intentos",
+                    "Has superado el límite de registros. Espera unos minutos e inténtalo de nuevo.",
+                );
+                return;
+            }
+
+            showModal(
+                "error",
+                "No se ha podido registrar",
+                "Ha ocurrido un error inesperado. Inténtalo más tarde.",
+            );
+            return;
+        }
+
+        // — 2. Guardar perfil en tabla usuarios —
+        const { error: profileError } = await supabase.from("usuarios").insert([
+            {
+                id: data.user.id,
+                username,
+                nombre: name,
+                apellidos: lastname,
+                rol: "cliente",
+            },
+        ]);
+
+        if (profileError) {
+            btn.value = "Registrarme";
+            btn.disabled = false;
+            showModal(
+                "error",
+                "Error al guardar el perfil",
+                "Tu cuenta fue creada pero no se pudo guardar el perfil. Contacta con soporte.",
+            );
+            return;
+        }
+
+        // — Éxito —
+        showModal(
+            "success",
+            "¡Registro completado!",
+            "Tu cuenta ha sido creada correctamente. Redirigiendo al inicio de sesión...",
+        );
+    });
+</script>
