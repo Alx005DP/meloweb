@@ -42,4 +42,30 @@ import Layout from "../layouts/Layouts.astro";
 			</div>
 		</form>
 	</main>
+
+	<div class="form-modal" id="form-modal">
+		<div class="form-modal-box">
+			<div class="form-row">
+				<i
+					id="modal-icon"
+					class="fa-sharp-duotone fa-solid fa-circle-xmark"></i>
+			</div>
+			<div class="form-row">
+				<h2 id="modal-title"></h2>
+			</div>
+			<div class="form-row">
+				<p id="modal-text"></p>
+			</div>
+			<div class="form-row" id="modal-progress-row" style="display:none">
+				<div class="form-progress">
+					<div class="form-progress-bar" id="modal-progress"></div>
+				</div>
+			</div>
+			<div class="form-row" id="modal-btn-row">
+				<button class="acpbutton" id="modal-btn"
+					>Intentar de nuevo</button
+				>
+			</div>
+		</div>
+	</div>
 </Layout>
