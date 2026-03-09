@@ -29,50 +29,168 @@ const { title = "Marco Aldany" } = Astro.props;
 			href="https://site-assets.fontawesome.com/releases/v7.2.0/css/fontawesome.css"
 		/>
 
-
-
+		<ViewTransitions />
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
 
-		<ViewTransitions />
 		<script>
-			document.addEventListener("astro:page-load", () => {
+			document.addEventListener("astro:page-load", async () => {
+				// — Scroll header —
 				const header = document.querySelector("header");
 				const threshold = 20;
-
 				function checkScroll() {
-					if (window.scrollY > threshold) {
+					if (window.scrollY > threshold)
 						header?.classList.add("scrolled");
-					} else {
-						header?.classList.remove("scrolled");
-					}
+					else header?.classList.remove("scrolled");
 				}
-
 				checkScroll();
 				window.addEventListener("scroll", checkScroll);
 
-				const menuCheckbox = document.getElementById("menumobile");
+				// — Menú mobile —
+				const menuCheckbox = document.getElementById(
+					"menumobile",
+				) as HTMLInputElement;
 				const menuMobile = document.querySelector(".menumobile");
 				const closeButton = document.querySelector(".closemenu");
-				const closeButton2 = document.querySelector(".closemenu");
 				const menuLinks = document.querySelectorAll(".menumobile a");
 
 				const toggleMenu = () => {
 					menuMobile?.classList.toggle("active");
-					closeButton2?.classList.toggle("activecross");
+					closeButton?.classList.toggle("activecross");
 				};
-
 				const closeMenu = () => {
 					if (menuCheckbox) menuCheckbox.checked = false;
 					menuMobile?.classList.remove("active");
-					closeButton2?.classList.remove("activecross");
+					closeButton?.classList.remove("activecross");
 				};
 
 				menuCheckbox?.addEventListener("change", toggleMenu);
 				closeButton?.addEventListener("click", closeMenu);
-				menuLinks.forEach((link) => {
-					link.addEventListener("click", closeMenu);
-				});
+				menuLinks.forEach((link) =>
+					link.addEventListener("click", closeMenu),
+				);
+
+				// — Sesión desde API —
+				const res = await fetch("/api/auth/session");
+				const { session } = await res.json();
+
+				const authButtons = document.getElementById("auth-buttons");
+				const mbAuthButtons =
+					document.getElementById("mb-auth-buttons");
+
+				if (session) {
+					// Redirigir si intenta ir a login o register
+					const path = window.location.pathname;
+					if (path.includes("/login") || path.includes("/register")) {
+						window.location.href = "/";
+					}
+
+					// — Icono y label según rol —
+					const rolConfig: Record<string, { icon: string }> = {
+						cliente: { icon: "fa-sharp-duotone fa-solid fa-user" },
+						empleado: { icon: "fa-solid fa-clipboard-user" },
+						admin: { icon: "fa-solid fa-gear" },
+						dueno: { icon: "fa-sharp-duotone fa-solid fa-crown" },
+					};
+
+					const rol = session.rol || "cliente";
+					const { icon } = rolConfig[rol] || rolConfig.cliente;
+
+					// — Links extra según rol —
+					const extraLinks =
+						rol === "empleado" || rol === "admin" || rol === "dueno"
+							? `<a href="/calendar">
+                    <i class="fa-sharp-duotone fa-solid fa-calendar-days"></i>
+                    Calendario
+               </a>`
+							: "";
+
+					const adminLinks =
+						rol === "admin" || rol === "dueno"
+							? `<a href="/admin">
+                    <i class="fa-solid fa-gear"></i>
+                    Panel Admin
+               </a>`
+							: "";
+
+					authButtons!.innerHTML = `
+            <li>
+                <div class="container-profile">
+                    <div class="info-profile">
+                        <img src="/user.png" alt="user" />
+                        <div class="row-info">
+                            <p>
+                                <i class="${icon}"></i>
+                                ${session.username}
+                            </p>
+                            <span>
+                                Ver mas <i class="fa-sharp-duotone fa-solid fa-chevron-down"></i>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="profile-dropdown">
+                        <a href="/profile">
+                            <i class="fa-sharp-duotone fa-solid fa-user"></i>
+                            Mi Perfil
+                        </a>
+                        <a href="/getdate">
+                            <i class="fa-sharp-duotone fa-solid fa-calendar-plus"></i>
+                            Reservar Cita
+                        </a>
+                        <a href="/profile#citas">
+                            <i class="fa-sharp-duotone fa-solid fa-calendar-days"></i>
+                            Mis Citas
+                        </a>
+                        ${extraLinks}
+                        ${adminLinks}
+                        <div class="dropdown-divider"></div>
+                        <button class="dropdown-logout" id="logout-btn">
+                            <i class="fa-sharp-duotone fa-solid fa-arrow-right-from-bracket"></i>
+                            Cerrar Sesión
+                        </button>
+                    </div>
+                </div>
+            </li>
+        `;
+
+					mbAuthButtons!.innerHTML = `
+            <li><a href="/profile">Mi Perfil</a></li>
+            <li><a href="/getdate">Reservar Cita</a></li>
+            ${
+				rol === "empleado" || rol === "admin" || rol === "dueno"
+					? `<li><a href="/calendar">Calendario</a></li>`
+					: ""
+			}
+            ${
+				rol === "admin" || rol === "dueno"
+					? `<li><a href="/admin">Panel Admin</a></li>`
+					: ""
+			}
+            <li><a href="#" id="mb-logout-btn">Cerrar Sesión</a></li>
+        `;
+				} else {
+					authButtons!.innerHTML = `
+            <li><a href="/login"><button>Iniciar Sesion</button></a></li>
+            <li><a href="/register"><button>Regístrate</button></a></li>
+        `;
+					mbAuthButtons!.innerHTML = `
+            <li><a href="/login">Iniciar Sesion</a></li>
+            <li><a href="/register">Registrate</a></li>
+        `;
+				}
+
+				// — Logout —
+				const handleLogout = async () => {
+					await fetch("/api/auth/logout", { method: "POST" });
+					window.location.href = "/";
+				};
+				document
+					.getElementById("logout-btn")
+					?.addEventListener("click", handleLogout);
+				document
+					.getElementById("mb-logout-btn")
+					?.addEventListener("click", handleLogout);
 			});
 		</script>
 	</head>
@@ -94,14 +212,15 @@ const { title = "Marco Aldany" } = Astro.props;
 					<li><a href="/#ubication">Ubicación</a></li>
 					<li><a href="./getdate">Reservar Cita</a></li>
 				</ul>
-				<ul>
+				<ul id="auth-buttons"></ul>
+				<!-- <ul >
 					<li>
 						<a href="./login"><button>Iniciar Sesion</button></a>
 					</li>
 					<li>
 						<a href="./register"><button>Regístrate</button></a>
 					</li>
-				</ul>
+				</ul> -->
 			</nav>
 		</header>
 
@@ -117,9 +236,8 @@ const { title = "Marco Aldany" } = Astro.props;
 				<!-- <li><a href="#galery">Galería</a></li> -->
 				<li><a href="/#ubication">Ubicación</a></li>
 				<li><a href="./getdate">Reservar Cita</a></li>
-				<li><a href="./login">Iniciar Sesion</a></li>
-				<li><a href="./register">Registrate</a></li>
 			</ul>
+			<ul id="mb-auth-buttons"></ul>
 		</nav>
 		<slot />
 		<footer>

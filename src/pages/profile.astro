@@ -1,0 +1,681 @@
+---
+import Layout from "../layouts/Layouts.astro";
+---
+
+<Layout title="Mi Perfil">
+    <main class="profile-main">
+
+        <!-- Sidebar -->
+        <aside class="profile-sidebar">
+            <div class="sidebar-avatar">
+                <div class="avatar-wrapper">
+                    <img src="/user.png" alt="avatar" id="profile-avatar" />
+                    <button class="avatar-edit" title="Cambiar foto">
+                        <i class="fa-sharp-duotone fa-solid fa-camera"></i>
+                    </button>
+                </div>
+                <h2 id="sidebar-username">Cargando...</h2>
+                <span id="sidebar-rol" class="rol-badge">—</span>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="#info" class="sidebar-link active" data-section="info">
+                    <i class="fa-sharp-duotone fa-solid fa-user"></i>
+                    Información
+                </a>
+                <a href="#citas" class="sidebar-link" data-section="citas">
+                    <i class="fa-sharp-duotone fa-solid fa-calendar-days"></i>
+                    Mis Citas
+                </a>
+                <a href="#security" class="sidebar-link" data-section="security">
+                    <i class="fa-sharp-duotone fa-solid fa-lock"></i>
+                    Seguridad
+                </a>
+                <button class="sidebar-link sidebar-logout" id="profile-logout">
+                    <i class="fa-sharp-duotone fa-solid fa-arrow-right-from-bracket"></i>
+                    Cerrar Sesión
+                </button>
+            </nav>
+        </aside>
+
+        <!-- Contenido -->
+        <div class="profile-content">
+
+            <!-- Sección: Información -->
+            <section class="profile-section active" id="section-info">
+                <div class="section-header">
+                    <h3>Información Personal</h3>
+                    <button class="btn-edit" id="btn-edit-info">
+                        <i class="fa-sharp-duotone fa-solid fa-pen"></i>
+                        Editar
+                    </button>
+                </div>
+
+                <!-- Modo ver -->
+                <div class="info-grid" id="view-info">
+                    <div class="info-card">
+                        <span class="info-label">
+                            <i class="fa-sharp-duotone fa-solid fa-user"></i>
+                            Nombre completo
+                        </span>
+                        <p id="view-nombre">—</p>
+                    </div>
+                    <div class="info-card">
+                        <span class="info-label">
+                            <i class="fa-sharp-duotone fa-solid fa-at"></i>
+                            Nombre de usuario
+                        </span>
+                        <p id="view-username">—</p>
+                    </div>
+                    <div class="info-card">
+                        <span class="info-label">
+                            <i class="fa-sharp-duotone fa-solid fa-envelope"></i>
+                            Email
+                        </span>
+                        <p id="view-email">—</p>
+                    </div>
+                    <div class="info-card">
+                        <span class="info-label">
+                            <i class="fa-sharp-duotone fa-solid fa-calendar"></i>
+                            Miembro desde
+                        </span>
+                        <p id="view-fecha">—</p>
+                    </div>
+                </div>
+
+                <!-- Modo editar -->
+                <form class="edit-form" id="edit-info" style="display:none">
+                    <div class="form-group">
+                        <label>Nombre</label>
+                        <input type="text" id="edit-nombre" />
+                    </div>
+                    <div class="form-group">
+                        <label>Apellidos</label>
+                        <input type="text" id="edit-apellidos" />
+                    </div>
+                    <div class="form-group">
+                        <label>Nombre de usuario</label>
+                        <input type="text" id="edit-username" />
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="edit-email" />
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn-cancel" id="btn-cancel-info">Cancelar</button>
+                        <button type="submit" class="btn-save">
+                            <i class="fa-sharp-duotone fa-solid fa-floppy-disk"></i>
+                            Guardar cambios
+                        </button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- Sección: Citas -->
+            <section class="profile-section" id="section-citas">
+                <div class="section-header">
+                    <h3>Mis Citas</h3>
+                    <a href="/getdate" class="btn-edit">
+                        <i class="fa-sharp-duotone fa-solid fa-calendar-plus"></i>
+                        Nueva Cita
+                    </a>
+                </div>
+
+                <div class="citas-tabs">
+                    <button class="citas-tab active" data-tab="proximas">Próximas</button>
+                    <button class="citas-tab" data-tab="historial">Historial</button>
+                </div>
+
+                <div id="tab-proximas" class="citas-list">
+                    <p class="citas-empty">
+                        <i class="fa-sharp-duotone fa-solid fa-calendar-xmark"></i>
+                        No tienes citas próximas
+                    </p>
+                </div>
+                <div id="tab-historial" class="citas-list" style="display:none">
+                    <p class="citas-empty">
+                        <i class="fa-sharp-duotone fa-solid fa-clock-rotate-left"></i>
+                        No tienes citas en el historial
+                    </p>
+                </div>
+            </section>
+
+            <!-- Sección: Seguridad -->
+            <section class="profile-section" id="section-security">
+                <div class="section-header">
+                    <h3>Seguridad</h3>
+                </div>
+
+                <form class="edit-form" id="form-password">
+                    <div class="form-group">
+                        <label>Contraseña actual</label>
+                        <input type="password" id="current-password" placeholder="••••••••" />
+                    </div>
+                    <div class="form-group">
+                        <label>Nueva contraseña</label>
+                        <input type="password" id="new-password" placeholder="••••••••" />
+                    </div>
+                    <div class="form-group">
+                        <label>Confirmar nueva contraseña</label>
+                        <input type="password" id="confirm-password" placeholder="••••••••" />
+                    </div>
+                    <p id="password-msg" class="form-msg-inline"></p>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-save">
+                            <i class="fa-sharp-duotone fa-solid fa-lock"></i>
+                            Cambiar contraseña
+                        </button>
+                    </div>
+                </form>
+            </section>
+
+        </div>
+    </main>
+</Layout>
+
+<script>
+    import { navigate } from "astro:transitions/client"
+
+    // — Cargar datos del perfil —
+    const res = await fetch("/api/auth/session")
+    const { session } = await res.json()
+
+    if (!session) {
+        navigate("/login")
+    }
+
+    // — Rellenar datos —
+    const rolLabels: Record<string, string> = {
+        cliente:  "Cliente",
+        empleado: "Empleado",
+        admin:    "Administrador",
+        dueno:    "Dueño"
+    }
+
+    const rolColors: Record<string, string> = {
+        cliente:  "#3498db",
+        empleado: "#2ecc71",
+        admin:    "#e67e22",
+        dueno:    "#f0ce08"
+    }
+
+    document.getElementById("sidebar-username")!.textContent = session.username
+    document.getElementById("view-username")!.textContent    = session.username
+    document.getElementById("view-email")!.textContent       = session.email
+    document.getElementById("view-nombre")!.textContent      = `${session.nombre} ${session.apellidos}`
+
+    const fechaFormateada = new Date(session.created_at).toLocaleDateString("es-ES", {
+        day:   "numeric",
+        month: "long",
+        year:  "numeric"
+    })
+    document.getElementById("view-fecha")!.textContent = fechaFormateada
+
+    const rolBadge = document.getElementById("sidebar-rol") as HTMLElement
+    rolBadge.textContent = rolLabels[session.rol] || session.rol
+    rolBadge.style.backgroundColor = (rolColors[session.rol] || "#888") + "22"
+    rolBadge.style.color           = rolColors[session.rol] || "#888"
+    rolBadge.style.borderColor     = (rolColors[session.rol] || "#888") + "55"
+
+    // Rellenar inputs del formulario editar
+    ;(document.getElementById("edit-nombre") as HTMLInputElement).value    = session.nombre    || ""
+    ;(document.getElementById("edit-apellidos") as HTMLInputElement).value = session.apellidos || ""
+    ;(document.getElementById("edit-username") as HTMLInputElement).value  = session.username  || ""
+    ;(document.getElementById("edit-email") as HTMLInputElement).value     = session.email     || ""
+
+    // — Navegación sidebar —
+    const sidebarLinks = document.querySelectorAll(".sidebar-link[data-section]")
+    const sections     = document.querySelectorAll(".profile-section")
+
+    sidebarLinks.forEach(link => {
+        link.addEventListener("click", (e) => {
+            e.preventDefault()
+            const target = (link as HTMLElement).dataset.section
+
+            sidebarLinks.forEach(l => l.classList.remove("active"))
+            sections.forEach(s => s.classList.remove("active"))
+
+            link.classList.add("active")
+            document.getElementById(`section-${target}`)?.classList.add("active")
+        })
+    })
+
+    // — Editar información —
+    const btnEdit   = document.getElementById("btn-edit-info")
+    const btnCancel = document.getElementById("btn-cancel-info")
+    const viewInfo  = document.getElementById("view-info")
+    const editInfo  = document.getElementById("edit-info")
+
+    btnEdit?.addEventListener("click", () => {
+        viewInfo!.style.display = "none"
+        editInfo!.style.display = "grid"
+        btnEdit!.style.display  = "none"
+    })
+
+    btnCancel?.addEventListener("click", () => {
+        viewInfo!.style.display = "grid"
+        editInfo!.style.display = "none"
+        btnEdit!.style.display  = "flex"
+    })
+
+    editInfo?.addEventListener("submit", async (e) => {
+        e.preventDefault()
+        const nombre    = (document.getElementById("edit-nombre") as HTMLInputElement).value.trim()
+        const apellidos = (document.getElementById("edit-apellidos") as HTMLInputElement).value.trim()
+        const username  = (document.getElementById("edit-username") as HTMLInputElement).value.trim()
+        const email     = (document.getElementById("edit-email") as HTMLInputElement).value.trim()
+
+        const res = await fetch("/api/auth/update", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ nombre, apellidos, username, email })
+        })
+
+        if (res.ok) {
+            document.getElementById("view-nombre")!.textContent   = `${nombre} ${apellidos}`
+            document.getElementById("view-username")!.textContent = username
+            document.getElementById("view-email")!.textContent    = email
+            document.getElementById("sidebar-username")!.textContent = username
+            viewInfo!.style.display = "grid"
+            editInfo!.style.display = "none"
+            btnEdit!.style.display  = "flex"
+        }
+    })
+
+    // — Tabs citas —
+    const citasTabs = document.querySelectorAll(".citas-tab")
+    citasTabs.forEach(tab => {
+        tab.addEventListener("click", () => {
+            citasTabs.forEach(t => t.classList.remove("active"))
+            tab.classList.add("active")
+            const target = (tab as HTMLElement).dataset.tab
+            document.getElementById("tab-proximas")!.style.display = target === "proximas" ? "flex" : "none"
+            document.getElementById("tab-historial")!.style.display = target === "historial" ? "flex" : "none"
+        })
+    })
+
+    // — Cambiar contraseña —
+    const formPassword = document.getElementById("form-password")
+    const passwordMsg  = document.getElementById("password-msg")
+
+    formPassword?.addEventListener("submit", async (e) => {
+        e.preventDefault()
+        const currentPassword = (document.getElementById("current-password") as HTMLInputElement).value
+        const newPassword     = (document.getElementById("new-password") as HTMLInputElement).value
+        const confirmPassword = (document.getElementById("confirm-password") as HTMLInputElement).value
+
+        if (newPassword !== confirmPassword) {
+            passwordMsg!.textContent  = "Las contraseñas no coinciden."
+            passwordMsg!.className    = "form-msg-inline error"
+            return
+        }
+        if (newPassword.length < 6) {
+            passwordMsg!.textContent  = "La contraseña debe tener al menos 6 caracteres."
+            passwordMsg!.className    = "form-msg-inline error"
+            return
+        }
+
+        const res = await fetch("/api/auth/change-password", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ currentPassword, newPassword })
+        })
+
+        if (res.ok) {
+            passwordMsg!.textContent = "Contraseña cambiada correctamente."
+            passwordMsg!.className   = "form-msg-inline success"
+            ;(document.getElementById("current-password") as HTMLInputElement).value = ""
+            ;(document.getElementById("new-password") as HTMLInputElement).value     = ""
+            ;(document.getElementById("confirm-password") as HTMLInputElement).value = ""
+        } else {
+            const data = await res.json()
+            passwordMsg!.textContent = data.message || "Error al cambiar la contraseña."
+            passwordMsg!.className   = "form-msg-inline error"
+        }
+    })
+
+    // — Logout —
+    document.getElementById("profile-logout")?.addEventListener("click", async () => {
+        await fetch("/api/auth/logout", { method: "POST" })
+        navigate("/")
+    })
+</script>
+
+<style>
+    .profile-main {
+        display: grid;
+        grid-template-columns: 260px 1fr;
+        gap: 30px;
+        max-width: 1100px;
+        margin: 12vh auto 60px;
+        padding: 0 20px;
+        min-height: 80vh;
+    }
+
+    /* — Sidebar — */
+    .profile-sidebar {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .sidebar-avatar {
+        background-color: var(--secondary);
+        border-radius: 16px;
+        padding: 30px 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        text-align: center;
+    }
+
+    .avatar-wrapper {
+        position: relative;
+        width: 80px;
+        height: 80px;
+    }
+
+    .avatar-wrapper img {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid var(--imp);
+    }
+
+    .avatar-edit {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 26px;
+        height: 26px;
+        background-color: var(--imp);
+        border: none;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        color: #000;
+    }
+
+    .sidebar-avatar h2 {
+        font-size: 18px;
+        margin: 0;
+        font-family: "EdgeLiteM";
+    }
+
+    .rol-badge {
+        font-size: 12px;
+        padding: 4px 12px;
+        border-radius: 20px;
+        border: 1px solid;
+        font-family: "EdgeLiteM";
+    }
+
+    .sidebar-nav {
+        background-color: var(--secondary);
+        border-radius: 16px;
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .sidebar-link {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 16px;
+        border-radius: 10px;
+        font-size: 14px;
+        font-family: "EdgeLiteM";
+        color: var(--text);
+        text-decoration: none;
+        background: none;
+        border: none;
+        cursor: pointer;
+        width: 100%;
+        text-align: left;
+        opacity: 0.6;
+        transition: all 0.15s ease;
+
+        i { font-size: 15px; }
+
+        &:hover {
+            background-color: rgba(255,255,255,0.05);
+            opacity: 1;
+        }
+
+        &.active {
+            background-color: rgba(255,255,255,0.07);
+            opacity: 1;
+            color: var(--hover);
+        }
+    }
+
+    .sidebar-logout {
+        margin-top: 8px;
+        color: #e74c3c !important;
+        opacity: 0.8 !important;
+        &:hover { background-color: rgba(231,76,60,0.08) !important; opacity: 1 !important; }
+    }
+
+    /* — Contenido — */
+    .profile-content {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .profile-section {
+        display: none;
+        flex-direction: column;
+        gap: 20px;
+
+        &.active { display: flex; }
+    }
+
+    .section-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        h3 {
+            font-size: 22px;
+            font-family: "EdgeLiteM";
+            margin: 0;
+        }
+    }
+
+    .btn-edit {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        background-color: var(--secondary);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 8px;
+        font-size: 13px;
+        font-family: "EdgeLiteM";
+        color: var(--text);
+        cursor: pointer;
+        text-decoration: none;
+        transition: background 0.15s ease;
+
+        &:hover { background-color: rgba(255,255,255,0.08); }
+    }
+
+    /* — Info grid — */
+    .info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+    }
+
+    .info-card {
+        background-color: var(--secondary);
+        border-radius: 12px;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .info-label {
+        font-size: 12px;
+        opacity: 0.5;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-family: "EdgeLiteM";
+        i { font-size: 12px; }
+    }
+
+    .info-card p {
+        font-size: 16px;
+        margin: 0;
+        font-family: "EdgeLiteM";
+    }
+
+    /* — Edit form — */
+    .edit-form {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        background-color: var(--secondary);
+        border-radius: 12px;
+        padding: 24px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+
+        label {
+            font-size: 12px;
+            opacity: 0.5;
+            font-family: "EdgeLiteM";
+        }
+
+        input {
+            background-color: var(--background);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 14px;
+            color: var(--text);
+            font-family: "EdgeLiteM";
+            outline: none;
+
+            &:focus { border-color: var(--imp); }
+        }
+    }
+
+    .form-actions {
+        grid-column: 1 / -1;
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+    }
+
+    .btn-save {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 20px;
+        background-color: var(--imp);
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-family: "EdgeLiteM";
+        color: #000;
+        cursor: pointer;
+        transition: background 0.15s ease;
+        &:hover { background-color: var(--hover); }
+    }
+
+    .btn-cancel {
+        padding: 10px 20px;
+        background: none;
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 8px;
+        font-size: 14px;
+        font-family: "EdgeLiteM";
+        color: var(--text);
+        cursor: pointer;
+        &:hover { background-color: rgba(255,255,255,0.05); }
+    }
+
+    /* — Citas — */
+    .citas-tabs {
+        display: flex;
+        gap: 4px;
+        background-color: var(--secondary);
+        border-radius: 10px;
+        padding: 4px;
+        width: fit-content;
+    }
+
+    .citas-tab {
+        padding: 8px 20px;
+        border: none;
+        border-radius: 8px;
+        background: none;
+        color: var(--text);
+        font-family: "EdgeLiteM";
+        font-size: 14px;
+        cursor: pointer;
+        opacity: 0.5;
+        transition: all 0.15s ease;
+
+        &.active {
+            background-color: var(--background);
+            opacity: 1;
+        }
+    }
+
+    .citas-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .citas-empty {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        padding: 60px;
+        background-color: var(--secondary);
+        border-radius: 12px;
+        opacity: 0.4;
+        font-family: "EdgeLiteM";
+        i { font-size: 20px; }
+    }
+
+    /* — Msg inline — */
+    .form-msg-inline {
+        grid-column: 1 / -1;
+        font-size: 13px;
+        padding: 8px 12px;
+        border-radius: 8px;
+        margin: 0;
+
+        &.error   { background-color: #e74c3c22; color: #e74c3c; }
+        &.success { background-color: #2ecc7122; color: #2ecc71; }
+    }
+
+    /* — Responsive — */
+    @media (max-width: 768px) {
+        .profile-main {
+            grid-template-columns: 1fr;
+            margin-top: 10vh;
+        }
+        .info-grid, .edit-form {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>

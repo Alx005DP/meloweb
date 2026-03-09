@@ -10,15 +10,22 @@
   },
   "dependencies": {
     "@astrojs/react": "^4.4.2",
-    "@supabase/supabase-js": "^2.98.0",
+    "@supabase/supabase-js": "^2.99.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "animejs": "^3.2.1",
     "astro": "^5.17.1",
     "astro-tunnel": "^0.1.9",
+    "bcryptjs": "^3.0.3",
     "date-fns": "^4.1.0",
+    "jsonwebtoken": "^9.0.3",
+    "mysql2": "^3.19.1",
     "react": "^19.2.4",
     "react-datepicker": "^9.1.0",
     "react-dom": "^19.2.4"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/jsonwebtoken": "^9.0.10"
   }
 }
