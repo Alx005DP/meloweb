@@ -78,15 +78,23 @@ export default function DayView({ currentDate = new Date(), events = [], onEvent
                                         <div
                                             className="day-event"
                                             key={i}
-                                            draggable
-                                            onDragStart={(ev) => handleDragStart(ev, e.index)}
+                                            draggable={e.status !== "pending"}  // ← solo draggable si no es pending
+                                            onDragStart={(ev) => {
+                                                if (e.status === "pending") return  // ← bloquear
+                                                handleDragStart(ev, e.index)
+                                            }}
                                             onClick={(ev) => { ev.stopPropagation(); onEventClick(e.index) }}
-                                            style={{ backgroundColor: e.color || "var(--hover)" }}
+                                            style={{
+                                                backgroundColor: e.color || "var(--hover)",
+                                                opacity: e.status === "pending" ? 0.75 : 1,
+                                                border: e.status === "pending" ? "1px dashed #888" : "none",
+                                                cursor: e.status === "pending" ? "pointer" : "grab"
+                                            }}
                                         >
+                                            {e.status === "pending" && <span className="event-pending-dot" />}
                                             <span className="event-title">{e.title}</span>
                                             <span className="event-time">
                                                 {new Date(e.start).toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" })}
-                                                {e.end && ` → ${new Date(e.end).toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" })}`}
                                             </span>
                                         </div>
                                     ))

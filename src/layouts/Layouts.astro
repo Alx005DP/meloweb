@@ -15,20 +15,6 @@ const { title = "Marco Aldany" } = Astro.props;
 		<meta charset="UTF-8" />
 		<link rel="icon" href="/marcoaldany.ico" />
 		<meta name="viewport" content="width=device-width" />
-
-		<link
-			rel="stylesheet"
-			href="https://site-assets.fontawesome.com/releases/v7.2.0/css/solid.css"
-		/>
-		<link
-			rel="stylesheet"
-			href="https://site-assets.fontawesome.com/releases/v7.2.0/css/sharp-duotone-solid.css"
-		/>
-		<link
-			rel="stylesheet"
-			href="https://site-assets.fontawesome.com/releases/v7.2.0/css/fontawesome.css"
-		/>
-
 		<ViewTransitions />
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
@@ -56,12 +42,10 @@ const { title = "Marco Aldany" } = Astro.props;
 
 				const toggleMenu = () => {
 					menuMobile?.classList.toggle("active");
-					closeButton?.classList.toggle("activecross");
 				};
 				const closeMenu = () => {
 					if (menuCheckbox) menuCheckbox.checked = false;
 					menuMobile?.classList.remove("active");
-					closeButton?.classList.remove("activecross");
 				};
 
 				menuCheckbox?.addEventListener("change", toggleMenu);
@@ -79,106 +63,152 @@ const { title = "Marco Aldany" } = Astro.props;
 					document.getElementById("mb-auth-buttons");
 
 				if (session) {
-					// Redirigir si intenta ir a login o register
 					const path = window.location.pathname;
 					if (path.includes("/login") || path.includes("/register")) {
 						window.location.href = "/";
 					}
 
-					// — Icono y label según rol —
 					const rolConfig: Record<string, { icon: string }> = {
-						cliente: { icon: "fa-sharp-duotone fa-solid fa-user" },
-						empleado: { icon: "fa-solid fa-clipboard-user" },
-						admin: { icon: "fa-solid fa-gear" },
-						dueno: { icon: "fa-sharp-duotone fa-solid fa-crown" },
+						cliente: {
+							icon: `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>`,
+						},
+						empleado: {
+							icon: `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><rect width="20" height="14" x="2" y="6" rx="2"/></svg>`,
+						},
+						admin: {
+							icon: `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>`,
+						},
+						dueno: {
+							icon: `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`,
+						},
 					};
 
 					const rol = session.rol || "cliente";
 					const { icon } = rolConfig[rol] || rolConfig.cliente;
 
-					// — Links extra según rol —
 					const extraLinks =
 						rol === "empleado" || rol === "admin" || rol === "dueno"
 							? `<a href="/calendar">
-                    <i class="fa-sharp-duotone fa-solid fa-calendar-days"></i>
-                    Calendario
-               </a>`
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+                                Calendario
+                           </a>`
 							: "";
 
 					const adminLinks =
 						rol === "admin" || rol === "dueno"
 							? `<a href="/admin">
-                    <i class="fa-solid fa-gear"></i>
-                    Panel Admin
-               </a>`
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+                                Panel Admin
+                           </a>`
 							: "";
 
+					// — Desktop auth buttons —
 					authButtons!.innerHTML = `
-            <li>
-                <div class="container-profile">
-                    <div class="info-profile">
-                        <img src="/user.png" alt="user" />
-                        <div class="row-info">
-                            <p>
-                                <i class="${icon}"></i>
-                                ${session.username}
-                            </p>
-                            <span>
-                                Ver mas <i class="fa-sharp-duotone fa-solid fa-chevron-down"></i>
-                            </span>
-                        </div>
-                    </div>
+                        <li>
+                            <div class="container-profile">
+                                <div class="info-profile">
+                                    <img src="/api/auth/avatar/${session.id}?t=${Date.now()}" alt="user" onerror="this.src='/user.png'"/>
+                                    <div class="row-info">
+                                        <p>${icon} ${session.username}</p>
+                                        <span>
+                                            Ver mas
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="chevron-icon"><path d="m6 9 6 6 6-6"/></svg>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="profile-dropdown">
+                                    <a href="/profile">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>
+                                        Mi Perfil
+                                    </a>
+                                    <a href="/getdate">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
+                                        Reservar Cita
+                                    </a>
+                                    <a href="/profile#section-citas">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+                                        Mis Citas
+                                    </a>
+                                    ${extraLinks}
+                                    ${adminLinks}
+                                    <div class="dropdown-divider"></div>
+                                    <button class="dropdown-logout" id="logout-btn">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+                                        Cerrar Sesión
+                                    </button>
+                                </div>
+                            </div>
+                        </li>
+                    `;
 
-                    <div class="profile-dropdown">
-                        <a href="/profile">
-                            <i class="fa-sharp-duotone fa-solid fa-user"></i>
-                            Mi Perfil
-                        </a>
-                        <a href="/getdate">
-                            <i class="fa-sharp-duotone fa-solid fa-calendar-plus"></i>
-                            Reservar Cita
-                        </a>
-                        <a href="/profile#citas">
-                            <i class="fa-sharp-duotone fa-solid fa-calendar-days"></i>
-                            Mis Citas
-                        </a>
-                        ${extraLinks}
-                        ${adminLinks}
-                        <div class="dropdown-divider"></div>
-                        <button class="dropdown-logout" id="logout-btn">
-                            <i class="fa-sharp-duotone fa-solid fa-arrow-right-from-bracket"></i>
-                            Cerrar Sesión
-                        </button>
-                    </div>
-                </div>
-            </li>
-        `;
-
+					// — Mobile: perfil igual que desktop —
 					mbAuthButtons!.innerHTML = `
-            <li><a href="/profile">Mi Perfil</a></li>
-            <li><a href="/getdate">Reservar Cita</a></li>
-            ${
-				rol === "empleado" || rol === "admin" || rol === "dueno"
-					? `<li><a href="/calendar">Calendario</a></li>`
-					: ""
-			}
-            ${
-				rol === "admin" || rol === "dueno"
-					? `<li><a href="/admin">Panel Admin</a></li>`
-					: ""
-			}
-            <li><a href="#" id="mb-logout-btn">Cerrar Sesión</a></li>
-        `;
+                        <li class="mb-profile-item">
+                            <div class="mb-profile-card">
+                                <div class="mb-profile-top">
+                                    <img src="/api/auth/avatar/${session.id}?t=${Date.now()}" alt="user" onerror="this.src='/user.png'" class="mb-avatar"/>
+                                    <div class="mb-profile-info">
+                                        <p class="mb-username">${icon} ${session.username}</p>
+                                        <span class="mb-role">Ver mas</span>
+                                    </div>
+                                </div>
+                                <div class="mb-profile-links">
+                                    <a href="/profile">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>
+                                        Mi Perfil
+                                    </a>
+                                    <a href="/getdate">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
+                                        Reservar Cita
+                                    </a>
+                                    <a href="/profile#section-citas">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+                                        Mis Citas
+                                    </a>
+                                    ${
+										rol === "empleado" ||
+										rol === "admin" ||
+										rol === "dueno"
+											? `<a href="/calendar">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+                                                Calendario
+                                           </a>`
+											: ""
+									}
+                                    ${
+										rol === "admin" || rol === "dueno"
+											? `<a href="/admin">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+                                                Panel Admin
+                                           </a>`
+											: ""
+									}
+                                    <div class="mb-divider"></div>
+                                    <button id="mb-logout-btn" class="mb-logout-btn">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+                                        Cerrar Sesión
+                                    </button>
+                                </div>
+                            </div>
+                        </li>
+                    `;
 				} else {
 					authButtons!.innerHTML = `
-            <li><a href="/login"><button>Iniciar Sesion</button></a></li>
-            <li><a href="/register"><button>Regístrate</button></a></li>
-        `;
+                        <li><a href="/login"><button>Iniciar Sesion</button></a></li>
+                        <li><a href="/register"><button>Regístrate</button></a></li>
+                    `;
 					mbAuthButtons!.innerHTML = `
-            <li><a href="/login">Iniciar Sesion</a></li>
-            <li><a href="/register">Registrate</a></li>
-        `;
+                        <li><a href="/login">Iniciar Sesion</a></li>
+                        <li><a href="/register">Registrate</a></li>
+                    `;
 				}
+
+				const mbProfileTop = document.querySelector(".mb-profile-top");
+				const mbProfileCard =
+					document.querySelector(".mb-profile-card");
+				mbProfileTop?.addEventListener("click", () => {
+					mbProfileCard?.classList.toggle("open");
+				});
 
 				// — Logout —
 				const handleLogout = async () => {
@@ -197,47 +227,63 @@ const { title = "Marco Aldany" } = Astro.props;
 	<body>
 		<header>
 			<img src="./image.png" alt="marcoaldany" class="mobile" />
-			<label id="menumobilelabel" for="menumobile"
-				><i class="fa-sharp-duotone fa-solid fa-bars"></i></label
-			>
+			<label id="menumobilelabel" for="menumobile">
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					width="24"
+					height="24"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					><line x1="3" x2="21" y1="6" y2="6"></line><line
+						x1="3"
+						x2="21"
+						y1="12"
+						y2="12"></line><line x1="3" x2="21" y1="18" y2="18"
+					></line></svg
+				>
+			</label>
 			<input type="checkbox" name="menumobile" id="menumobile" />
-
 			<nav>
 				<img src="./image.png" alt="marcoaldany" />
 				<ul>
 					<li><a href="/#hero">Inicio</a></li>
 					<li><a href="/#services">Servicios</a></li>
 					<li><a href="/#us">Nosotros</a></li>
-					<!-- <li><a href="#galery">Galería</a></li> -->
 					<li><a href="/#ubication">Ubicación</a></li>
 					<li><a href="./getdate">Reservar Cita</a></li>
 				</ul>
 				<ul id="auth-buttons"></ul>
-				<!-- <ul >
-					<li>
-						<a href="./login"><button>Iniciar Sesion</button></a>
-					</li>
-					<li>
-						<a href="./register"><button>Regístrate</button></a>
-					</li>
-				</ul> -->
 			</nav>
 		</header>
 
 		<nav class="menumobile">
-			<button class="closemenu"
-				><i class="fa-sharp-duotone fa-solid fa-arrow-right-from-line"
-				></i></button
-			>
-			<ul>
+			<button class="closemenu">
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					width="24"
+					height="24"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					><path d="M13 17l5-5-5-5"></path><path d="M6 17l5-5-5-5"
+					></path></svg
+				>
+			</button>
+			<ul id="mb-normal-buttons">
 				<li><a href="/#hero">Inicio</a></li>
 				<li><a href="/#services">Servicios</a></li>
 				<li><a href="/#us">Nosotros</a></li>
-				<!-- <li><a href="#galery">Galería</a></li> -->
 				<li><a href="/#ubication">Ubicación</a></li>
 				<li><a href="./getdate">Reservar Cita</a></li>
 			</ul>
-			<ul id="mb-auth-buttons"></ul>
+			<ul id="mb-auth-buttons" style="margin: 4px 0px;"></ul>
 		</nav>
 		<slot />
 		<footer>

@@ -34,7 +34,7 @@ import Layout from "../layouts/Layouts.astro";
     <main
         style="margin: 15vh 0px; top: 0px; height: 100%; display: flex; justify-content: center;"
     >
-        <form action="" id="login">
+        <form id="login">
             <div class="contenedor">
                 <h1>Regístrate</h1>
                 <hr />
@@ -105,162 +105,224 @@ import Layout from "../layouts/Layouts.astro";
 </Layout>
 
 <script>
-    import { navigate } from "astro:transitions/client"
+    import { navigate } from "astro:transitions/client";
 
-// — Elementos formulario —
-const form = document.getElementById("login") as HTMLFormElement
-const passwordInput = document.getElementById("password") as HTMLInputElement
+    const form = document.getElementById("login") as HTMLFormElement;
+    const passwordInput = document.getElementById(
+        "password",
+    ) as HTMLInputElement;
 
-const reqMayus  = document.getElementById("password-mayus") as HTMLParagraphElement
-const reqNumber = document.getElementById("password-number") as HTMLParagraphElement
-const reqSign   = document.getElementById("password-sign") as HTMLParagraphElement
-const reqMax6   = document.getElementById("password-max6") as HTMLParagraphElement
+    const reqMayus = document.getElementById(
+        "password-mayus",
+    ) as HTMLParagraphElement;
+    const reqNumber = document.getElementById(
+        "password-number",
+    ) as HTMLParagraphElement;
+    const reqSign = document.getElementById(
+        "password-sign",
+    ) as HTMLParagraphElement;
+    const reqMax6 = document.getElementById(
+        "password-max6",
+    ) as HTMLParagraphElement;
 
-const usernameError = document.getElementById("username-error") as HTMLElement
-const nameError     = document.getElementById("name-error") as HTMLElement
-const lastnameError = document.getElementById("lastname-error") as HTMLElement
-const emailError    = document.getElementById("email-error") as HTMLElement
-const passwordError = document.getElementById("password-error") as HTMLElement
+    const usernameError = document.getElementById(
+        "username-error",
+    ) as HTMLElement;
+    const nameError = document.getElementById("name-error") as HTMLElement;
+    const lastnameError = document.getElementById(
+        "lastname-error",
+    ) as HTMLElement;
+    const emailError = document.getElementById("email-error") as HTMLElement;
+    const passwordError = document.getElementById(
+        "password-error",
+    ) as HTMLElement;
 
-// — Elementos modal —
-const modal            = document.getElementById("form-modal") as HTMLElement
-const modalBox         = modal.querySelector(".form-modal-box") as HTMLElement
-const modalIcon        = document.getElementById("modal-icon") as HTMLElement
-const modalTitle       = document.getElementById("modal-title") as HTMLElement
-const modalText        = document.getElementById("modal-text") as HTMLElement
-const modalProgress    = document.getElementById("modal-progress") as HTMLElement
-const modalProgressRow = document.getElementById("modal-progress-row") as HTMLElement
-const modalBtnRow      = document.getElementById("modal-btn-row") as HTMLElement
-const modalBtn         = document.getElementById("modal-btn") as HTMLButtonElement
+    const modal = document.getElementById("form-modal") as HTMLElement;
+    const modalBox = modal.querySelector(".form-modal-box") as HTMLElement;
+    const modalIcon = document.getElementById("modal-icon") as HTMLElement;
+    const modalTitle = document.getElementById("modal-title") as HTMLElement;
+    const modalText = document.getElementById("modal-text") as HTMLElement;
+    const modalProgress = document.getElementById(
+        "modal-progress",
+    ) as HTMLElement;
+    const modalProgressRow = document.getElementById(
+        "modal-progress-row",
+    ) as HTMLElement;
+    const modalBtnRow = document.getElementById("modal-btn-row") as HTMLElement;
+    const modalBtn = document.getElementById("modal-btn") as HTMLButtonElement;
 
-// — Helper errores campo —
-const showError = (el: HTMLElement, show: boolean) => {
-    el.style.display = show ? "block" : "none"
-}
 
-const hideAll = () => {
-    [usernameError, nameError, lastnameError, emailError, passwordError].forEach(el => {
-        el.style.display = "none"
-    })
-}
+    const showError = (el: HTMLElement, show: boolean) => {
+        el.style.display = show ? "block" : "none";
+    };
 
-// — Helper modal —
-const showModal = (type: "success" | "error", title: string, text: string) => {
-    modalBox.className = `form-modal-box ${type}`
-    modalIcon.className = type === "success"
-        ? "fa-sharp-duotone fa-solid fa-badge-check"
-        : "fa-sharp-duotone fa-solid fa-circle-xmark"
-    modalTitle.textContent = title
-    modalText.textContent  = text
-    modal.classList.add("active")
+    const hideAll = () => {
+        [
+            usernameError,
+            nameError,
+            lastnameError,
+            emailError,
+            passwordError,
+        ].forEach((el) => {
+            el.style.display = "none";
+        });
+    };
 
-    if (type === "success") {
-        modalProgressRow.style.display = "flex"
-        modalBtnRow.style.display = "none"
-        modalProgress.className = "form-progress-bar animating"
-        setTimeout(() => navigate("/login"), 4000)
-    } else {
-        modalProgressRow.style.display = "none"
-        modalBtnRow.style.display = "flex"
-    }
-}
+    const showModal = (
+        type: "success" | "error",
+        title: string,
+        text: string,
+    ) => {
+        modalBox.className = `form-modal-box ${type}`;
+        modalIcon.className =
+            type === "success"
+                ? "fa-sharp-duotone fa-solid fa-badge-check"
+                : "fa-sharp-duotone fa-solid fa-circle-xmark";
+        modalTitle.textContent = title;
+        modalText.textContent = text;
+        modal.classList.add("active");
 
-// — Cerrar modal —
-modalBtn.addEventListener("click", () => {
-    modal.classList.remove("active")
-    const btn = form.querySelector("input[type=submit]") as HTMLInputElement
-    btn.value = "Registrarme"
-    btn.disabled = false
-})
-
-// — Validación contraseña en tiempo real —
-passwordInput.addEventListener("input", () => {
-    const val = passwordInput.value
-
-    const checks = [
-        { el: reqMayus,  ok: /[A-Z]/.test(val) },
-        { el: reqNumber, ok: /[0-9]/.test(val) },
-        { el: reqSign,   ok: /[-+*¿?!]/.test(val) },
-        { el: reqMax6,   ok: val.length >= 6 },
-    ]
-
-    checks.forEach(({ el, ok }) => {
-        el.classList.toggle("req-ok", ok)
-        el.classList.toggle("req-fail", !ok)
-    })
-
-    const allOk = checks.every(({ ok }) => ok)
-    const container = document.querySelector(".password-presets") as HTMLElement
-    container.style.backgroundColor = allOk ? "#2ecc7117" : "#7f000017"
-    container.style.borderColor     = allOk ? "#2ecc7142" : "#b2000042"
-})
-
-// — Submit —
-form.addEventListener("submit", async (e) => {
-    e.preventDefault()
-    hideAll()
-
-    const username    = (document.getElementById("username") as HTMLInputElement).value.trim()
-    const name        = (document.getElementById("name") as HTMLInputElement).value.trim()
-    const lastname    = (document.getElementById("lastname") as HTMLInputElement).value.trim()
-    const mail        = (document.getElementById("mail") as HTMLInputElement).value.trim()
-    const password    = passwordInput.value
-    const confirmpass = (document.getElementById("confirmpassword") as HTMLInputElement).value
-
-    // — Validaciones —
-    let hasError = false
-    if (!username) { showError(usernameError, true); hasError = true }
-    if (!name)     { showError(nameError, true);     hasError = true }
-    if (!lastname) { showError(lastnameError, true); hasError = true }
-    if (!mail)     { showError(emailError, true);    hasError = true }
-    if (password !== confirmpass) { showError(passwordError, true); hasError = true }
-    if (
-        !/[A-Z]/.test(password) ||
-        !/[0-9]/.test(password) ||
-        !/[-+*¿?!]/.test(password) ||
-        password.length < 6
-    ) { hasError = true }
-
-    if (hasError) return
-
-    const btn = form.querySelector("input[type=submit]") as HTMLInputElement
-    btn.value = "Registrando..."
-    btn.disabled = true
-
-    // — Llamada a la API —
-    const res = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            username,
-            nombre:    name,
-            apellidos: lastname,
-            email:     mail,
-            password
-        })
-    })
-
-    const data = await res.json()
-
-    if (!res.ok) {
-        btn.value = "Registrarme"
-        btn.disabled = false
-
-        if (data.error === "username_taken") {
-            usernameError.querySelector("p")!.textContent = "Este nombre de usuario ya está en uso."
-            showError(usernameError, true)
-            return
+        if (type === "success") {
+            modalProgressRow.style.display = "flex";
+            modalBtnRow.style.display = "none";
+            modalProgress.className = "form-progress-bar animating";
+            setTimeout(() => navigate("/login"), 4000);
+        } else {
+            modalProgressRow.style.display = "none";
+            modalBtnRow.style.display = "flex";
         }
-        if (data.error === "email_taken") {
-            emailError.querySelector("p")!.textContent = "Este email ya está registrado."
-            showError(emailError, true)
-            return
+    };
+
+    modalBtn.addEventListener("click", () => {
+        modal.classList.remove("active");
+        const btn = form.querySelector(
+            "input[type=submit]",
+        ) as HTMLInputElement;
+        btn.value = "Registrarme";
+        btn.disabled = false;
+    });
+
+    // — Validación contraseña —
+    passwordInput.addEventListener("input", () => {
+        const val = passwordInput.value;
+        const checks = [
+            { el: reqMayus, ok: /[A-Z]/.test(val) },
+            { el: reqNumber, ok: /[0-9]/.test(val) },
+            { el: reqSign, ok: /[-+*¿?!]/.test(val) },
+            { el: reqMax6, ok: val.length >= 6 },
+        ];
+        checks.forEach(({ el, ok }) => {
+            el.classList.toggle("req-ok", ok);
+            el.classList.toggle("req-fail", !ok);
+        });
+        const allOk = checks.every(({ ok }) => ok);
+        const container = document.querySelector(
+            ".password-presets",
+        ) as HTMLElement;
+        container.style.backgroundColor = allOk ? "#2ecc7117" : "#7f000017";
+        container.style.borderColor = allOk ? "#2ecc7142" : "#b2000042";
+    });
+
+    // — Submit registro —
+    form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        hideAll();
+
+        const username = (
+            document.getElementById("username") as HTMLInputElement
+        ).value.trim();
+        const name = (
+            document.getElementById("name") as HTMLInputElement
+        ).value.trim();
+        const lastname = (
+            document.getElementById("lastname") as HTMLInputElement
+        ).value.trim();
+        const mail = (
+            document.getElementById("mail") as HTMLInputElement
+        ).value.trim();
+        const password = passwordInput.value;
+        const confirmpass = (
+            document.getElementById("confirmpassword") as HTMLInputElement
+        ).value;
+
+        let hasError = false;
+        if (!username) {
+            showError(usernameError, true);
+            hasError = true;
+        }
+        if (!name) {
+            showError(nameError, true);
+            hasError = true;
+        }
+        if (!lastname) {
+            showError(lastnameError, true);
+            hasError = true;
+        }
+        if (!mail) {
+            showError(emailError, true);
+            hasError = true;
+        }
+        if (password !== confirmpass) {
+            showError(passwordError, true);
+            hasError = true;
+        }
+        if (
+            !/[A-Z]/.test(password) ||
+            !/[0-9]/.test(password) ||
+            !/[-+*¿?!]/.test(password) ||
+            password.length < 6
+        ) {
+            hasError = true;
+        }
+        if (hasError) return;
+
+        const btn = form.querySelector(
+            "input[type=submit]",
+        ) as HTMLInputElement;
+        btn.value = "Enviando código...";
+        btn.disabled = true;
+
+        const res = await fetch("/api/auth/register", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                username,
+                nombre: name,
+                apellidos: lastname,
+                email: mail,
+                password,
+            }),
+        });
+        const data = await res.json();
+
+        btn.value = "Registrarme";
+        btn.disabled = false;
+
+        if (!res.ok) {
+            if (data.error === "username_taken") {
+                usernameError.querySelector("p")!.textContent =
+                    "Este nombre de usuario ya está en uso.";
+                showError(usernameError, true);
+                return;
+            }
+            if (data.error === "email_taken") {
+                emailError.querySelector("p")!.textContent =
+                    "Este email ya está registrado.";
+                showError(emailError, true);
+                return;
+            }
+            showModal(
+                "error",
+                "No se ha podido registrar",
+                data.message || "Inténtalo más tarde.",
+            );
+            return;
         }
 
-        showModal("error", "No se ha podido registrar", "Ha ocurrido un error inesperado. Inténtalo más tarde.")
-        return
-    }
+        form.reset()
+        navigate(`/verify?email=${encodeURIComponent(mail)}`)
+        
+    });
 
-    showModal("success", "¡Registro completado!", "Tu cuenta ha sido creada correctamente. Redirigiendo al inicio de sesión...")
-})
+
 </script>

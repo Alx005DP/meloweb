@@ -16,7 +16,7 @@ export const GET: APIRoute = async ({ cookies }) => {
 
         // Consultar la BD para obtener datos siempre actualizados
         const [rows] = await db.execute(
-            "SELECT id, username, nombre, apellidos, email, rol FROM usuarios WHERE id = ?",
+            "SELECT id, username, nombre, apellidos, email, rol, telefono, created_at FROM usuarios WHERE id = ?",
             [payload.id]
         ) as any
 
@@ -33,7 +33,9 @@ export const GET: APIRoute = async ({ cookies }) => {
                 nombre:    usuario.nombre,
                 apellidos: usuario.apellidos,
                 email:     usuario.email,
-                rol:       usuario.rol
+                rol:       usuario.rol,
+                telefono: usuario.telefono || null,
+                created_at: usuario.created_at ? new Date(usuario.created_at).toISOString() : null
             }
         }), { status: 200 })
 

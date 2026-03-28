@@ -61,7 +61,20 @@ export default function MonthView({ currentDate = new Date(), events = [], onDay
                                                     className="day-dot"
                                                     key={j}
                                                     style={{ backgroundColor: e.color || "var(--hover)" }}
-                                                />
+                                                >
+                                                    {e.status === "pending" && (
+                                                        <span style={{
+                                                            position: "absolute",
+                                                            top: "-2px",
+                                                            right: "-2px",
+                                                            width: "5px",
+                                                            height: "5px",
+                                                            backgroundColor: "#e74c3c",
+                                                            borderRadius: "50%",
+                                                            display: "block"
+                                                        }} />
+                                                    )}
+                                                </span>
                                             ))}
                                             {dayEvents.length > 3 && (
                                                 <span className="day-dot-more">+{dayEvents.length - 3}</span>

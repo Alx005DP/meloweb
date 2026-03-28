@@ -19,13 +19,17 @@
     "bcryptjs": "^3.0.3",
     "date-fns": "^4.1.0",
     "jsonwebtoken": "^9.0.3",
+    "lucide": "^1.7.0",
+    "lucide-react": "^1.7.0",
     "mysql2": "^3.19.1",
+    "nodemailer": "^8.0.2",
     "react": "^19.2.4",
     "react-datepicker": "^9.1.0",
     "react-dom": "^19.2.4"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
-    "@types/jsonwebtoken": "^9.0.10"
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/nodemailer": "^7.0.11"
   }
 }

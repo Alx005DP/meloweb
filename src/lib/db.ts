@@ -1,11 +1,9 @@
 import mysql from "mysql2/promise"
 
 export const db = mysql.createPool({
-    host:     "localhost",
+    host:     "127.0.0.1",
     port:     3306,
-    user:     "root",       // usuario por defecto en XAMPP
-    password: "",           // contraseña vacía por defecto en XAMPP
+    user:     "root",
+    password: import.meta.env.DB_PASSWORD || "",
     database: "marcoaldany",
-    waitForConnections: true,
-    connectionLimit: 10,
 })

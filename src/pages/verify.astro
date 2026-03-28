@@ -1,0 +1,144 @@
+---
+import Layout from "../layouts/Layouts.astro";
+---
+
+<Layout title="Verificar cuenta">
+    <main style="margin: 15vh 0px; height: 100%; display: flex; justify-content: center;">
+        <div class="contenedor">
+            <div class="verify-header">
+                <div class="verify-icon">
+                    <i class="fa-sharp-duotone fa-solid fa-envelope-open-text"></i>
+                </div>
+                <h1>Verifica tu email</h1>
+                <p>Hemos enviado un código de 6 dígitos a tu correo. Introdúcelo aquí para activar tu cuenta.</p>
+                <span id="email-display" class="email-badge"></span>
+            </div>
+
+            <hr class="verify-hr"/>
+
+            <div class="verify-input-wrapper">
+                <input
+                    type="text"
+                    id="verify-code-input"
+                    placeholder="000000"
+                    maxlength="6"
+                    autocomplete="one-time-code"
+                />
+            </div>
+
+            <div id="verify-error-container" class="info-contain-error" style="display:none">
+                <p id="verify-error"></p>
+            </div>
+
+            <input class="acpbutton verify-submit" type="submit" id="verify-submit" value="Verificar cuenta" />
+
+            <div class="setpswdre">
+                <button class="lwsv" id="verify-resend">Reenviar código</button>
+                <a href="/register" class="lwsv">Volver al registro</a>
+            </div>
+        </div>
+    </main>
+</Layout>
+
+<script>
+    import { navigate } from "astro:transitions/client"
+
+    // — Obtener email de la URL —
+    const params = new URLSearchParams(window.location.search)
+    const email  = params.get("email")
+
+    if (!email) {
+        navigate("/register")
+    }
+
+    // Mostrar email en pantalla
+    const emailDisplay = document.getElementById("email-display") as HTMLElement
+    emailDisplay.textContent = email!
+
+    const verifyInput     = document.getElementById("verify-code-input") as HTMLInputElement
+    const verifyBtn       = document.getElementById("verify-submit") as HTMLInputElement
+    const verifyError     = document.getElementById("verify-error") as HTMLElement
+    const errorContainer  = document.getElementById("verify-error-container") as HTMLElement
+    const verifyResend    = document.getElementById("verify-resend") as HTMLButtonElement
+
+    // — Solo números —
+    verifyInput.addEventListener("input", () => {
+        verifyInput.value = verifyInput.value.replace(/\D/g, "").slice(0, 6)
+    })
+
+    verifyInput.focus()
+
+    // — Verificar —
+    verifyBtn.addEventListener("click", async () => {
+        const codigo = verifyInput.value.trim()
+        errorContainer.style.display = "none"
+
+        if (codigo.length !== 6) {
+            verifyError.textContent      = "El código debe tener 6 dígitos."
+            errorContainer.style.display = "block"
+            return
+        }
+
+        verifyBtn.value    = "Verificando..."
+        verifyBtn.disabled = true
+
+        const res  = await fetch("/api/auth/verify", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, codigo })
+        })
+        const data = await res.json()
+
+        verifyBtn.value    = "Verificar cuenta"
+        verifyBtn.disabled = false
+
+        if (!res.ok) {
+            verifyError.textContent      = data.message || "Código incorrecto."
+            errorContainer.style.display = "block"
+
+            if (data.error === "expired") {
+                // Código expirado → volver al registro
+                setTimeout(() => navigate("/register"), 3000)
+            }
+            return
+        }
+
+        // Éxito → redirigir a login
+        navigate("/login?verified=true")
+    })
+
+    // — Reenviar código —
+    let resendCooldown = false
+    verifyResend.addEventListener("click", async () => {
+        if (resendCooldown) return
+
+        verifyResend.textContent = "Enviando..."
+        verifyResend.disabled    = true
+        resendCooldown           = true
+
+        const res = await fetch("/api/auth/resend", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email })
+        })
+
+        if (res.ok) {
+            verifyResend.textContent = "✓ Código reenviado"
+        } else {
+            verifyResend.textContent = "Error al reenviar"
+        }
+
+        // Cooldown 30 segundos
+        let seconds = 30
+        const interval = setInterval(() => {
+            seconds--
+            verifyResend.textContent = `Reenviar en ${seconds}s`
+            if (seconds <= 0) {
+                clearInterval(interval)
+                verifyResend.textContent = "Reenviar código"
+                verifyResend.disabled    = false
+                resendCooldown           = false
+            }
+        }, 1000)
+    })
+</script>

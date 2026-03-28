@@ -128,21 +128,28 @@ export default function WeekView({ currentDate = new Date(), events = [], onEven
 
                             {/* Eventos */}
                             {getEventsForDay(date).map((event, j) => (
+                                // En WeekView — dentro del map de eventos:
                                 <div
                                     className="week-event-abs"
                                     key={j}
-                                    draggable
-                                    onDragStart={(ev) => handleDragStart(ev, event.index)}
+                                    draggable={event.status !== "pending"}  // ← solo draggable si no es pending
+                                    onDragStart={(ev) => {
+                                        if (event.status === "pending") return  // ← bloquear
+                                        handleDragStart(ev, event.index)
+                                    }}
                                     onClick={(e) => { e.stopPropagation(); onEventClick(event.index) }}
                                     style={{
                                         ...getEventStyle(event),
-                                        backgroundColor: event.color || "var(--hover)"
+                                        backgroundColor: event.color || "var(--hover)",
+                                        opacity: event.status === "pending" ? 0.75 : 1,
+                                        border: event.status === "pending" ? "1px dashed #888" : "none",
+                                        cursor: event.status === "pending" ? "pointer" : "grab"  // ← cursor diferente
                                     }}
                                 >
+                                    {event.status === "pending" && <span className="event-pending-dot" />}
                                     <span className="event-title">{event.title}</span>
                                     <span className="event-time">
                                         {new Date(event.start).toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" })}
-                                        {event.end && ` → ${new Date(event.end).toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" })}`}
                                     </span>
                                 </div>
                             ))}

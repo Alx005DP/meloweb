@@ -7,36 +7,511 @@ import Calendar from "../components/Calendar.jsx";
     <main
         style="margin: 15vh 0px; top: 0px; height: 100%; display: flex; justify-content: center;"
     >
-        <form action="" id="getdate">
+        <form id="getdate">
             <h1>Coge tu reserva</h1>
             <hr />
+
+            <!-- Banner login si no está logueado -->
+            <div class="login-banner" id="login-banner" style="display:none">
+                <i class="fa-sharp-duotone fa-solid fa-circle-info"></i>
+                <p>
+                    <a href="/login">Inicia sesión</a> o <a href="/register"
+                        >regístrate</a
+                    > para guardar tus datos automáticamente y llevar el historial
+                    de tus citas.
+                </p>
+            </div>
+
             <div class="contenedor">
+                <!-- Nombre -->
                 <div class="item2">
                     <label for="name">Nombre:</label>
-                    <input type="text" name="name" id="name" placeholder="Tu nombre"/>
+                    <input
+                        type="text"
+                        name="name"
+                        id="name"
+                        placeholder="Tu nombre"
+                    />
+                    <div id="name-for-other" style="display:none">
+                        <div class="checkbox-row">
+                            <input
+                                type="checkbox"
+                                id="for-other"
+                                name="for-other"
+                            />
+                            <label for="for-other"
+                                >La cita es para otra persona</label
+                            >
+                        </div>
+                        <input
+                            type="text"
+                            id="other-name"
+                            placeholder="Nombre de la otra persona"
+                            style="display:none; margin-top: 8px;"
+                        />
+                    </div>
                 </div>
 
+                <!-- Teléfono -->
                 <div class="item2">
-                    <label for="tel">Telefono de Contacto:</label>
-                    <input type="tel" name="tel" id="tel" placeholder="+34 600 000 000">
+                    <label for="tel">Teléfono de Contacto:</label>
+                    <input
+                        type="tel"
+                        name="tel"
+                        id="tel"
+                        placeholder="+34 600 000 000"
+                    />
                 </div>
 
+                <div
+                    class="item2"
+                    id="email-verify-container"
+                    style="display:none"
+                >
+                    <label for="email-verify">
+                        Email de contacto:
+                        <span style="opacity:0.5; font-size:12px;">
+                            (recibirás un código de verificación)
+                        </span>
+                    </label>
+                    <div class="email-verify-row">
+                        <input
+                            type="email"
+                            id="email-verify"
+                            placeholder="example@domain.com"
+                        />
+                        <button
+                            type="button"
+                            class="acsbutton"
+                            id="btn-send-code"
+                        >
+                            <i class="fa-sharp-duotone fa-solid fa-paper-plane"
+                            ></i>
+                            Enviar código
+                        </button>
+                    </div>
+                    <div
+                        id="code-container"
+                        style="display:none; margin-top:10px;"
+                    >
+                        <input
+                            type="text"
+                            id="verify-code"
+                            placeholder="Código de 6 dígitos"
+                            maxlength="6"
+                            autocomplete="one-time-code"
+                        />
+                        <p id="code-msg" class="code-msg"></p>
+                    </div>
+                </div>
+
+                <!-- Servicio -->
                 <div class="item2">
-                    <label for="service">Tipo de Servicio</label>
+                    <label for="service">Tipo de Servicio:</label>
                     <select name="service" id="service">
-                        <option value="corte">Corte</option>
-                        <option value="coloracion">Coloración</option>
-                        <option value="tratamiento">Tratamiento</option>
-                        <option value="peinado">Peinado</option>
+                        <option value="Corte">Corte</option>
+                        <option value="Coloración">Coloración</option>
+                        <option value="Tratamiento">Tratamiento</option>
+                        <option value="Peinado">Peinado</option>
                     </select>
-                    
                 </div>
+
+                <!-- Fecha -->
                 <div class="item2">
-                    <label for="">Seleccionar Fecha</label>
-                    <Calendar client:load />
+                    <label>Seleccionar Fecha y Hora:</label>
+                    <!-- Desktop: componente Calendar -->
+                    <div id="calendar-desktop">
+                        <Calendar client:load />
+                    </div>
+                    <!-- Mobile: input nativo -->
+                    <input
+                        type="datetime-local"
+                        id="selected-date-mobile"
+                        style="display:none"
+                        min=""
+                    />
+                    <input type="hidden" id="selected-date-hidden" />
                 </div>
             </div>
-            <input style="width: 90%; margin: 20px 0px" type="submit" class="acpbutton" value="Enviar">
+
+            <div
+                id="form-error"
+                class="info-contain-error"
+                style="display:none; margin: 10px 10px; width: 90%;"
+            >
+                <p id="form-error-text"></p>
+            </div>
+
+            <input
+                style="width: 90%; margin: 20px 0px"
+                type="submit"
+                class="acpbutton"
+                value="Reservar Cita"
+            />
         </form>
     </main>
+
+    <!-- Modal -->
+    <div class="form-modal" id="form-modal">
+        <div class="form-modal-box">
+            <div class="form-row">
+                <i
+                    id="modal-icon"
+                    class="fa-sharp-duotone fa-solid fa-badge-check"></i>
+            </div>
+            <div class="form-row">
+                <h2 id="modal-title"></h2>
+            </div>
+            <div class="form-row">
+                <p id="modal-text"></p>
+            </div>
+            <div class="form-row" id="modal-progress-row" style="display:none">
+                <div class="form-progress">
+                    <div class="form-progress-bar" id="modal-progress"></div>
+                </div>
+            </div>
+            <div class="form-row" id="modal-btn-row">
+                <button class="acpbutton" id="modal-btn">Aceptar</button>
+            </div>
+        </div>
+    </div>
 </Layout>
+
+<script>
+    import { navigate } from "astro:transitions/client";
+
+    document.addEventListener("astro:page-load", async () => {
+        const form = document.getElementById("getdate") as HTMLFormElement;
+        const loginBanner = document.getElementById(
+            "login-banner",
+        ) as HTMLElement;
+        const nameInput = document.getElementById("name") as HTMLInputElement;
+        const telInput = document.getElementById("tel") as HTMLInputElement;
+        const nameForOther = document.getElementById(
+            "name-for-other",
+        ) as HTMLElement;
+        const forOther = document.getElementById(
+            "for-other",
+        ) as HTMLInputElement;
+        const otherName = document.getElementById(
+            "other-name",
+        ) as HTMLInputElement;
+        const formError = document.getElementById("form-error") as HTMLElement;
+        const formErrorText = document.getElementById(
+            "form-error-text",
+        ) as HTMLElement;
+        const emailContainer = document.getElementById(
+            "email-verify-container",
+        ) as HTMLElement;
+        const emailVerify = document.getElementById(
+            "email-verify",
+        ) as HTMLInputElement;
+        const btnSendCode = document.getElementById(
+            "btn-send-code",
+        ) as HTMLButtonElement;
+        const codeContainer = document.getElementById(
+            "code-container",
+        ) as HTMLElement;
+        const verifyCode = document.getElementById(
+            "verify-code",
+        ) as HTMLInputElement;
+        const codeMsg = document.getElementById("code-msg") as HTMLElement;
+
+        const modal = document.getElementById("form-modal") as HTMLElement;
+        const modalBox = modal.querySelector(".form-modal-box") as HTMLElement;
+        const modalIcon = document.getElementById("modal-icon") as HTMLElement;
+        const modalTitle = document.getElementById(
+            "modal-title",
+        ) as HTMLElement;
+        const modalText = document.getElementById("modal-text") as HTMLElement;
+        const modalProgress = document.getElementById(
+            "modal-progress",
+        ) as HTMLElement;
+        const modalProgressRow = document.getElementById(
+            "modal-progress-row",
+        ) as HTMLElement;
+        const modalBtnRow = document.getElementById(
+            "modal-btn-row",
+        ) as HTMLElement;
+        const modalBtn = document.getElementById(
+            "modal-btn",
+        ) as HTMLButtonElement;
+
+        let session: any = null;
+        let emailVerificado = false;
+        let emailPendiente = "";
+
+        const showModal = (
+            type: "success" | "error",
+            title: string,
+            text: string,
+            redirect?: string,
+        ) => {
+            modalBox.className = `form-modal-box ${type}`;
+            modalIcon.className =
+                type === "success"
+                    ? "fa-sharp-duotone fa-solid fa-badge-check"
+                    : "fa-sharp-duotone fa-solid fa-circle-xmark";
+            modalTitle.textContent = title;
+            modalText.textContent = text;
+            modal.classList.add("active");
+
+            if (type === "success") {
+                modalProgressRow.style.display = "flex";
+                modalBtnRow.style.display = "none";
+                modalProgress.className = "form-progress-bar animating";
+                setTimeout(() => navigate(redirect || "/"), 2000);
+            } else {
+                modalProgressRow.style.display = "none";
+                modalBtnRow.style.display = "flex";
+            }
+        };
+
+        // — Detectar mobile y mostrar input correcto —
+        const isMobile = window.innerWidth <= 1440;
+        const calendarDesktop = document.getElementById(
+            "calendar-desktop",
+        ) as HTMLElement;
+        const calendarMobile = document.getElementById(
+            "selected-date-mobile",
+        ) as HTMLInputElement;
+        const hiddenInput = document.getElementById(
+            "selected-date-hidden",
+        ) as HTMLInputElement;
+
+        if (isMobile) {
+            calendarDesktop.style.display = "none";
+            calendarMobile.style.display = "block";
+
+            // Valor mínimo: ahora redondeado a 15min
+            const now = new Date();
+            const minutes = now.getMinutes();
+            const rounded = Math.ceil(minutes / 15) * 15;
+            now.setMinutes(rounded, 0, 0);
+            const pad = (n: number) => String(n).padStart(2, "0");
+            calendarMobile.min = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}`;
+
+            // Valor por defecto: ahora
+            calendarMobile.value = calendarMobile.min;
+
+            // Sincronizar con el hidden input
+            hiddenInput.value = new Date(calendarMobile.value).toISOString();
+            calendarMobile.addEventListener("change", () => {
+                hiddenInput.value = calendarMobile.value
+                    ? new Date(calendarMobile.value).toISOString()
+                    : "";
+            });
+        } else {
+            calendarMobile.style.display = "none";
+            calendarDesktop.style.display = "block";
+        }
+
+        modalBtn.addEventListener("click", () =>
+            modal.classList.remove("active"),
+        );
+
+        // — Cargar sesión —
+        const res = await fetch("/api/auth/session");
+        const data = await res.json();
+        session = data.session;
+
+        if (session) {
+            nameInput.value = `${session.nombre} ${session.apellidos}`;
+            if (session.telefono) telInput.value = session.telefono;
+            nameForOther.style.display = "block";
+            nameInput.readOnly = true;
+            telInput.readOnly = session.telefono ? true : false;
+        } else {
+            loginBanner.style.display = "flex";
+            emailContainer.style.display = "block";
+        }
+
+        // — Checkbox para otra persona —
+        forOther?.addEventListener("change", () => {
+            if (forOther.checked) {
+                otherName.style.display = "block";
+                otherName.focus();
+            } else {
+                otherName.style.display = "none";
+                otherName.value = "";
+            }
+        });
+
+        // — Enviar código de verificación —
+        btnSendCode?.addEventListener("click", async () => {
+            const email = emailVerify.value.trim();
+
+            if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                codeMsg.textContent = "Introduce un email válido.";
+                codeMsg.className = "code-msg error";
+                return;
+            }
+
+            btnSendCode.textContent = "Enviando...";
+            btnSendCode.disabled = true;
+
+            const res = await fetch("/api/citas/send-verify", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email }),
+            });
+            const data = await res.json();
+
+            btnSendCode.textContent = "Reenviar";
+            btnSendCode.disabled = false;
+
+            if (!res.ok) {
+                codeMsg.textContent =
+                    data.message || "Error al enviar el código.";
+                codeMsg.className = "code-msg error";
+                return;
+            }
+
+            emailPendiente = email;
+            codeContainer.style.display = "block";
+            codeMsg.textContent =
+                "✓ Código enviado. Revisa tu bandeja de entrada.";
+            codeMsg.className = "code-msg success";
+            verifyCode.focus();
+        });
+
+        // — Verificar código al escribir 6 dígitos —
+        verifyCode?.addEventListener("input", async () => {
+            verifyCode.value = verifyCode.value.replace(/\D/g, "").slice(0, 6);
+
+            if (verifyCode.value.length === 6) {
+                const res = await fetch("/api/citas/verify-code", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        email: emailPendiente,
+                        codigo: verifyCode.value,
+                    }),
+                });
+                const data = await res.json();
+
+                if (res.ok) {
+                    emailVerificado = true;
+                    codeMsg.textContent = "✓ Email verificado correctamente.";
+                    codeMsg.className = "code-msg success";
+                    verifyCode.disabled = true;
+                    btnSendCode.disabled = true;
+                } else {
+                    emailVerificado = false;
+                    codeMsg.textContent = data.message || "Código incorrecto.";
+                    codeMsg.className = "code-msg error";
+                }
+            }
+        });
+
+        // — Submit —
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            formError.style.display = "none";
+
+            const nombre =
+                forOther?.checked && otherName.value.trim()
+                    ? otherName.value.trim()
+                    : nameInput.value.trim();
+            const tel = telInput.value.trim();
+            const service = (
+                document.getElementById("service") as HTMLSelectElement
+            ).value;
+            const start = (
+                document.getElementById(
+                    "selected-date-hidden",
+                ) as HTMLInputElement
+            ).value;
+
+            // — Validaciones —
+            if (!nombre) {
+                formErrorText.textContent = "Por favor introduce un nombre.";
+                formError.style.display = "block";
+                return;
+            }
+            if (!tel) {
+                formErrorText.textContent =
+                    "Por favor introduce un teléfono de contacto.";
+                formError.style.display = "block";
+                return;
+            }
+            if (!start) {
+                formErrorText.textContent =
+                    "Por favor selecciona una fecha y hora.";
+                formError.style.display = "block";
+                return;
+            }
+            if (!session && !emailVerificado) {
+                formErrorText.textContent =
+                    "Por favor verifica tu email antes de reservar.";
+                formError.style.display = "block";
+                return;
+            }
+
+            const btn = form.querySelector(
+                "input[type=submit]",
+            ) as HTMLInputElement;
+            btn.value = "Enviando...";
+            btn.disabled = true;
+
+            const res = await fetch("/api/citas/create", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    nombre,
+                    phone: tel,
+                    service,
+                    start,
+                    user_id: session?.id || null,
+                    email: session ? null : emailPendiente,
+                }),
+            });
+
+            const result = await res.json();
+            btn.value = "Reservar Cita";
+            btn.disabled = false;
+
+            if (!res.ok) {
+                if (result.error === "limit_reached") {
+                    showModal(
+                        "error",
+                        "Límite de citas alcanzado",
+                        "Ya tienes 3 citas pendientes. Cancela alguna antes de hacer una nueva reserva.",
+                    );
+                    return;
+                }
+                if (result.error === "daily_limit") {
+                    showModal(
+                        "error",
+                        "Límite diario alcanzado",
+                        session
+                            ? "Has alcanzado el límite de 5 citas por día. Podrás reservar más mañana."
+                            : "Has alcanzado el límite de 3 citas por día. Inicia sesión para tener un límite mayor.",
+                    );
+                    return;
+                }
+                if (result.error === "slot_taken") {
+                    showModal(
+                        "error",
+                        "Horario no disponible",
+                        "Ya hay una cita reservada para esa fecha y hora. Por favor elige otro horario.",
+                    );
+                    return;
+                }
+                showModal(
+                    "error",
+                    "Error al reservar",
+                    result.message || "Inténtalo más tarde.",
+                );
+                return;
+            }
+
+            showModal(
+                "success",
+                "¡Cita reservada!",
+                "Tu cita ha sido registrada correctamente. Nos pondremos en contacto contigo para confirmarla.",
+                session ? "/profile#section-citas" : "/",
+            );
+        });
+    });
+</script>

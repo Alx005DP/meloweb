@@ -31,6 +31,13 @@ export const POST: APIRoute = async ({ request, cookies }) => {
             }), { status: 401 })
         }
 
+        if (!usuario.verified) {
+            return new Response(JSON.stringify({
+                error: "not_verified",
+                message: "Debes verificar tu email antes de iniciar sesión."
+            }), { status: 401 })
+        }
+
         // Crear JWT
         const token = jwt.sign(
             {
@@ -59,15 +66,16 @@ export const POST: APIRoute = async ({ request, cookies }) => {
                 nombre:    usuario.nombre,
                 apellidos: usuario.apellidos,
                 email:     usuario.email,
-                rol:       usuario.rol
+                rol:       usuario.rol,
+                telefono:  usuario.telefono
             }
         }), { status: 200 })
 
-    } catch (err) {
-        console.error(err)
-        return new Response(JSON.stringify({
-            error: "server_error",
-            message: "Error interno del servidor."
-        }), { status: 500 })
-    }
+} catch (err: any) {
+    console.error("LOGIN ERROR:", err.message, err.code)
+    return new Response(JSON.stringify({
+        error: "server_error",
+        message: err.message  // ← temporal para ver qué falla
+    }), { status: 500 })
+}
 }

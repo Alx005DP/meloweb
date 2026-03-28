@@ -73,6 +73,8 @@ import Layout from "../layouts/Layouts.astro";
 <script>
 import { navigate } from "astro:transitions/client"
 
+
+
 // — Elementos —
 const form             = document.getElementById("login") as HTMLFormElement
 const modal            = document.getElementById("form-modal") as HTMLElement
@@ -104,6 +106,18 @@ const showModal = (type: "success" | "error", title: string, text: string, redir
         modalProgressRow.style.display = "none"
         modalBtnRow.style.display = "flex"
     }
+}
+
+const params = new URLSearchParams(window.location.search)
+if (params.get("verified") === "true") {
+    modalBox.className = "form-modal-box success"
+    modalIcon.className = "fa-sharp-duotone fa-solid fa-badge-check"
+    modalTitle.textContent = "¡Cuenta verificada!"
+    modalText.textContent  = "Tu cuenta ha sido verificada correctamente. Ya puedes iniciar sesión."
+    modalProgressRow.style.display = "none"
+    modalBtnRow.style.display = "flex"
+    modalBtn.textContent = "Iniciar sesión"
+    modal.classList.add("active")
 }
 
 modalBtn.addEventListener("click", () => {
