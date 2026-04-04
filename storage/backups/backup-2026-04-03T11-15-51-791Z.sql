@@ -29,7 +29,7 @@ INSERT INTO `admin_db_activity` (`id`, `action_key`, `status`, `title`, `detail`
 -- Tabla: citas
 DROP TABLE IF EXISTS `citas`;
 CREATE TABLE `citas` (
-  `id` varchar(36) NOT NULL DEFAULT uuid(),
+  `id` varchar(36) NOT NULL DEFAULT (UUID()),
   `title` varchar(255) NOT NULL,
   `phone` varchar(20) DEFAULT NULL,
   `service` varchar(100) DEFAULT NULL,
@@ -56,7 +56,7 @@ INSERT INTO `citas` (`id`, `title`, `phone`, `service`, `start`, `color`, `notes
 -- Tabla: qr_codes
 DROP TABLE IF EXISTS `qr_codes`;
 CREATE TABLE `qr_codes` (
-  `id` varchar(36) NOT NULL DEFAULT uuid(),
+  `id` varchar(36) NOT NULL DEFAULT (UUID()),
   `tipo` enum('url','descuento','mensaje') NOT NULL,
   `titulo_interno` varchar(255) DEFAULT NULL,
   `titulo` varchar(255) DEFAULT NULL,
@@ -80,7 +80,7 @@ INSERT INTO `qr_codes` (`id`, `tipo`, `titulo_interno`, `titulo`, `valor`, `desc
 -- Tabla: qr_usos
 DROP TABLE IF EXISTS `qr_usos`;
 CREATE TABLE `qr_usos` (
-  `id` varchar(36) NOT NULL DEFAULT uuid(),
+  `id` varchar(36) NOT NULL DEFAULT (UUID()),
   `qr_id` varchar(36) NOT NULL,
   `user_id` varchar(36) DEFAULT NULL,
   `ip` varchar(45) DEFAULT NULL,
@@ -127,7 +127,7 @@ INSERT INTO `user_security_flags` (`user_id`, `must_change_password`, `created_a
 -- Tabla: usuarios
 DROP TABLE IF EXISTS `usuarios`;
 CREATE TABLE `usuarios` (
-  `id` varchar(36) NOT NULL DEFAULT uuid(),
+  `id` varchar(36) NOT NULL DEFAULT (UUID()),
   `username` varchar(50) NOT NULL,
   `nombre` varchar(100) DEFAULT NULL,
   `apellidos` varchar(100) DEFAULT NULL,

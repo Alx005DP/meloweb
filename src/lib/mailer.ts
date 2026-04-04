@@ -1,10 +1,16 @@
 import nodemailer from "nodemailer"
 
+const env = {
+    GMAIL_USER: process.env.GMAIL_USER || import.meta.env.GMAIL_USER,
+    GMAIL_PASS: process.env.GMAIL_PASS || import.meta.env.GMAIL_PASS,
+    PUBLIC_SITE_URL: process.env.PUBLIC_SITE_URL || import.meta.env.PUBLIC_SITE_URL,
+}
+
 export const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
-        user: import.meta.env.GMAIL_USER,
-        pass: import.meta.env.GMAIL_PASS,
+        user: env.GMAIL_USER,
+        pass: env.GMAIL_PASS,
     }
 })
 
@@ -43,11 +49,11 @@ export const sendAdminCreatedUserEmail = async (
         : "Tu cuenta de gestión ya está preparada para acceder al panel y a las herramientas administrativas."
 
     const nextAccess = isEmployee
-        ? `${import.meta.env.PUBLIC_SITE_URL || "http://localhost:4321"}/calendar`
-        : `${import.meta.env.PUBLIC_SITE_URL || "http://localhost:4321"}/admin`
+        ? `${env.PUBLIC_SITE_URL || "http://localhost:4321"}/calendar`
+        : `${env.PUBLIC_SITE_URL || "http://localhost:4321"}/admin`
 
     await transporter.sendMail({
-        from: `"Marco Aldany" <${import.meta.env.GMAIL_USER}>`,
+        from: `"Marco Aldany" <${env.GMAIL_USER}>`,
         to: email,
         subject: isEmployee
             ? "Tu cuenta de empleado está lista - Marco Aldany"
