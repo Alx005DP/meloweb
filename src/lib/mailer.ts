@@ -15,11 +15,13 @@ console.log("[mailer] env", {
 })
 
 export const transporter = nodemailer.createTransport({
-    service: "gmail",
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true,
     auth: {
         user: env.GMAIL_USER,
         pass: env.GMAIL_PASS,
-    }
+    },
 })
 
 export const sendVerificationEmail = async (email: string, codigo: string, nombre: string) => {
