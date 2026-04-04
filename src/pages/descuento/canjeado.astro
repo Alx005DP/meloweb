@@ -1,0 +1,136 @@
+---
+import Layout from "../../layouts/Layouts.astro"
+
+const status = Astro.url.searchParams.get("status") || "invalid"
+const title = Astro.url.searchParams.get("title") || "Descuento"
+const value = Astro.url.searchParams.get("value") || ""
+const customer = Astro.url.searchParams.get("customer") || "Cliente"
+
+const statusMap: Record<string, { chip: string; title: string; text: string; tone: string }> = {
+    success: {
+        chip: "Canjeado",
+        title: "Descuento aplicado correctamente",
+        text: `${customer} ha canjeado ${title}${value ? ` (${value})` : ""}. Este descuento ya no volvera a aparecer en su perfil.`,
+        tone: "success",
+    },
+    already: {
+        chip: "Ya usado",
+        title: "Este descuento ya fue canjeado",
+        text: "El QR ya no es valido porque el descuento se habia usado antes.",
+        tone: "error",
+    },
+    expired: {
+        chip: "No disponible",
+        title: "No se puede canjear este descuento",
+        text: "El descuento esta caducado o ya no esta activo.",
+        tone: "error",
+    },
+    forbidden: {
+        chip: "Sin permiso",
+        title: "Necesitas acceso de empleado",
+        text: "Solo empleados, administradores o duenos pueden canjear descuentos.",
+        tone: "error",
+    },
+    missing: {
+        chip: "No encontrado",
+        title: "No hemos encontrado este descuento",
+        text: "Puede que el cliente ya no lo tenga disponible o que el QR no sea valido.",
+        tone: "error",
+    },
+    invalid: {
+        chip: "QR invalido",
+        title: "No hemos podido validar este QR",
+        text: "Genera un nuevo QR de uso desde el perfil del cliente e intentalo otra vez.",
+        tone: "error",
+    },
+}
+
+const current = statusMap[status] || statusMap.invalid
+---
+
+<Layout title="Canje de descuento">
+    <main class="discount-page">
+        <section class="discount-card">
+            <span class={`discount-chip ${current.tone}`}>{current.chip}</span>
+            <h1>{current.title}</h1>
+            <p class="discount-value">{value}</p>
+            <p>{current.text}</p>
+            <a href="/" class="acpbutton discount-link">Volver al inicio</a>
+        </section>
+    </main>
+</Layout>
+
+<style>
+    .discount-page {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 140px 20px 60px;
+        background:
+            radial-gradient(circle at top, rgba(184, 158, 12, 0.18), transparent 32%),
+            linear-gradient(180deg, #161616 0%, #0f0f0f 100%);
+    }
+
+    .discount-card {
+        width: min(100%, 640px);
+        padding: 36px 28px;
+        border-radius: 24px;
+        border: 1px solid rgba(184, 158, 12, 0.24);
+        background: rgba(25, 25, 25, 0.96);
+        box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+        text-align: center;
+        color: #f5f1dc;
+    }
+
+    .discount-chip {
+        display: inline-block;
+        margin-bottom: 18px;
+        padding: 8px 14px;
+        border-radius: 999px;
+        background: rgba(184, 158, 12, 0.18);
+        color: #e8d36b;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+    }
+
+    .discount-chip.success {
+        background: rgba(46, 204, 113, 0.16);
+        color: #78e3a5;
+    }
+
+    .discount-chip.error {
+        background: rgba(231, 76, 60, 0.16);
+        color: #f3a69c;
+    }
+
+    .discount-card h1 {
+        margin: 0 0 12px;
+        color: #fff7d1;
+    }
+
+    .discount-card p {
+        margin: 0 auto;
+        max-width: 48ch;
+        line-height: 1.6;
+    }
+
+    .discount-value {
+        margin: 18px 0;
+        font-size: clamp(2rem, 6vw, 3.5rem);
+        font-weight: 800;
+        color: #e8d36b;
+        min-height: 1.2em;
+    }
+
+    .discount-link {
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 24px;
+        min-width: 180px;
+        text-decoration: none;
+    }
+</style>

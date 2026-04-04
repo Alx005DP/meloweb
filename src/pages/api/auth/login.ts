@@ -2,6 +2,7 @@ import type { APIRoute } from "astro"
 import { db } from "../../../lib/db"
 import bcrypt from "bcryptjs"
 import jwt from "jsonwebtoken"
+import { getMustChangePassword } from "../../../lib/user-security"
 
 const JWT_SECRET = import.meta.env.JWT_SECRET || "supersecreto_cambiar_en_produccion"
 
@@ -58,8 +59,11 @@ export const POST: APIRoute = async ({ request, cookies }) => {
             path:     "/"
         })
 
+        const mustChangePassword = await getMustChangePassword(usuario.id)
+
         return new Response(JSON.stringify({
             success: true,
+            mustChangePassword,
             usuario: {
                 id:        usuario.id,
                 username:  usuario.username,

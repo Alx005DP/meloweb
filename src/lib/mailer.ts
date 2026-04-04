@@ -27,6 +27,74 @@ export const sendVerificationEmail = async (email: string, codigo: string, nombr
     })
 }
 
+export const sendAdminCreatedUserEmail = async (
+    email: string,
+    data: {
+        nombre: string
+        username: string
+        rol: "empleado" | "admin" | "dueno"
+        temporaryPassword: string
+    }
+) => {
+    const isEmployee = data.rol === "empleado"
+    const roleLabel = data.rol === "dueno" ? "dueño" : data.rol
+    const roleMessage = isEmployee
+        ? "Tu cuenta de empleado ya está preparada para acceder a las herramientas internas."
+        : "Tu cuenta de gestión ya está preparada para acceder al panel y a las herramientas administrativas."
+
+    const nextAccess = isEmployee
+        ? `${import.meta.env.PUBLIC_SITE_URL || "http://localhost:4321"}/calendar`
+        : `${import.meta.env.PUBLIC_SITE_URL || "http://localhost:4321"}/admin`
+
+    await transporter.sendMail({
+        from: `"Marco Aldany" <${import.meta.env.GMAIL_USER}>`,
+        to: email,
+        subject: isEmployee
+            ? "Tu cuenta de empleado está lista - Marco Aldany"
+            : "Tu cuenta de administración está lista - Marco Aldany",
+        html: baseEmail(`
+            <h3 style="margin-top: 0;">Hola ${data.nombre}</h3>
+            <p style="opacity: 0.7; line-height: 1.6;">
+                ${roleMessage}
+            </p>
+
+            <div style="background: #202020; border-radius: 10px; padding: 20px; margin: 24px 0;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <tr>
+                        <td style="padding: 8px 0; opacity: 0.5; font-size: 13px;">Usuario</td>
+                        <td style="padding: 8px 0; font-weight: bold;">${data.username}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px 0; opacity: 0.5; font-size: 13px;">Rol</td>
+                        <td style="padding: 8px 0; text-transform: capitalize;">${roleLabel}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px 0; opacity: 0.5; font-size: 13px;">Email</td>
+                        <td style="padding: 8px 0;">${email}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px 0; opacity: 0.5; font-size: 13px;">Contraseña temporal</td>
+                        <td style="padding: 8px 0; font-weight: bold; color: #f0ce08;">${data.temporaryPassword}</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div style="background: #b89e0c11; border-left: 3px solid #b89e0c; border-radius: 4px; padding: 12px 16px; margin-top: 8px;">
+                <p style="margin: 0; font-size: 13px; opacity: 0.85;">
+                    Debes iniciar sesión con esta contraseña temporal y cambiarla inmediatamente al entrar.
+                </p>
+            </div>
+
+            <div style="text-align: center; margin-top: 24px;">
+                <a href="${nextAccess}"
+                   style="display: inline-block; background: #b89e0c; color: #000; padding: 14px 32px; border-radius: 10px; text-decoration: none; font-weight: bold; font-size: 15px;">
+                    Acceder ahora
+                </a>
+            </div>
+        `)
+    })
+}
+
 // — Tipos de estado —
 const statusLabels: Record<string, { label: string, color: string, icon: string }> = {
     pending:   { label: "Pendiente de confirmación", color: "#f39c12", icon: "⏳" },
@@ -49,6 +117,37 @@ const baseEmail = (contenido: string) => `
         </div>
     </div>
 `
+
+export const sendPasswordResetEmail = async (
+    email: string,
+    data: {
+        nombre: string
+        resetUrl: string
+    }
+) => {
+    await transporter.sendMail({
+        from: `"Marco Aldany" <${import.meta.env.GMAIL_USER}>`,
+        to: email,
+        subject: "Restablece tu password - Marco Aldany",
+        html: baseEmail(`
+            <h3 style="margin-top: 0;">Hola ${data.nombre}</h3>
+            <p style="opacity: 0.7; line-height: 1.6;">
+                Hemos recibido una solicitud para restablecer tu password.
+            </p>
+            <div style="text-align: center; margin: 24px 0;">
+                <a
+                    href="${data.resetUrl}"
+                    style="display: inline-block; background: #b89e0c; color: #000; padding: 14px 32px; border-radius: 10px; text-decoration: none; font-weight: bold; font-size: 15px;"
+                >
+                    Cambiar password
+                </a>
+            </div>
+            <p style="opacity: 0.5; font-size: 13px;">
+                Este enlace expira en 30 minutos. Si no has pedido este cambio, ignora este email.
+            </p>
+        `),
+    })
+}
 
 // — Email: cita creada —
 export const sendCitaCreada = async (

@@ -1,36 +1,10 @@
 ---
 import Layout from "../layouts/Layouts.astro";
+import AppModal from "../components/AppModal.jsx";
 ---
 
 <Layout title="Registro">
-    <div class="form-modal" id="form-modal">
-        <div class="form-modal-box">
-            <div class="form-row">
-                <i
-                    id="modal-icon"
-                    class="fa-sharp-duotone fa-solid fa-badge-check"></i>
-            </div>
-            <div class="form-row">
-                <h2 id="modal-title">¡Registro completado!</h2>
-            </div>
-            <div class="form-row">
-                <p id="modal-text">
-                    Tu cuenta ha sido creada correctamente. Redirigiendo al
-                    inicio de sesión...
-                </p>
-            </div>
-            <div class="form-row" id="modal-progress-row">
-                <div class="form-progress">
-                    <div class="form-progress-bar" id="modal-progress"></div>
-                </div>
-            </div>
-            <div class="form-row" id="modal-btn-row">
-                <button class="acpbutton" id="modal-btn"
-                    >Intentar de nuevo</button
-                >
-            </div>
-        </div>
-    </div>
+    <AppModal client:load modalId="register-feedback" />
     <main
         style="margin: 15vh 0px; top: 0px; height: 100%; display: flex; justify-content: center;"
     >
@@ -77,10 +51,10 @@ import Layout from "../layouts/Layouts.astro";
                     <p id="password-mayus">Debe de contener alguna mayúscula</p>
                     <p id="password-number">Debe de contener algún numero</p>
                     <p id="password-sign">
-                        Debe de contener algún signo -+*¿?!
+                        Debe de contener algún signo -+*‚¿?!
                     </p>
                     <p id="password-max6">
-                        Debe de contener mínimo 6 caracteres
+                        Debe de contener minino 6 caracteres
                     </p>
                 </div>
                 <label for="confirmpassword">Confirmar Contraseña:</label>
@@ -95,7 +69,7 @@ import Layout from "../layouts/Layouts.astro";
 
                 <input class="acpbutton" type="submit" value="Registrarme" />
                 <div class="setpswdre">
-                    <a href="../login" class="lwsv"
+                    <a href="/login" class="lwsv"
                         >Ya tengo cuenta, iniciar sesion</a
                     >
                 </div>
@@ -107,65 +81,17 @@ import Layout from "../layouts/Layouts.astro";
 <script>
     import { navigate } from "astro:transitions/client";
 
-    const form = document.getElementById("login") as HTMLFormElement;
-    const passwordInput = document.getElementById(
-        "password",
-    ) as HTMLInputElement;
-
-    const reqMayus = document.getElementById(
-        "password-mayus",
-    ) as HTMLParagraphElement;
-    const reqNumber = document.getElementById(
-        "password-number",
-    ) as HTMLParagraphElement;
-    const reqSign = document.getElementById(
-        "password-sign",
-    ) as HTMLParagraphElement;
-    const reqMax6 = document.getElementById(
-        "password-max6",
-    ) as HTMLParagraphElement;
-
-    const usernameError = document.getElementById(
-        "username-error",
-    ) as HTMLElement;
-    const nameError = document.getElementById("name-error") as HTMLElement;
-    const lastnameError = document.getElementById(
-        "lastname-error",
-    ) as HTMLElement;
-    const emailError = document.getElementById("email-error") as HTMLElement;
-    const passwordError = document.getElementById(
-        "password-error",
-    ) as HTMLElement;
-
-    const modal = document.getElementById("form-modal") as HTMLElement;
-    const modalBox = modal.querySelector(".form-modal-box") as HTMLElement;
-    const modalIcon = document.getElementById("modal-icon") as HTMLElement;
-    const modalTitle = document.getElementById("modal-title") as HTMLElement;
-    const modalText = document.getElementById("modal-text") as HTMLElement;
-    const modalProgress = document.getElementById(
-        "modal-progress",
-    ) as HTMLElement;
-    const modalProgressRow = document.getElementById(
-        "modal-progress-row",
-    ) as HTMLElement;
-    const modalBtnRow = document.getElementById("modal-btn-row") as HTMLElement;
-    const modalBtn = document.getElementById("modal-btn") as HTMLButtonElement;
-
+    const openModal = (config: Record<string, unknown>) => {
+        window.dispatchEvent(new CustomEvent("app-modal:open", {
+            detail: {
+                id: "register-feedback",
+                config,
+            },
+        }));
+    };
 
     const showError = (el: HTMLElement, show: boolean) => {
         el.style.display = show ? "block" : "none";
-    };
-
-    const hideAll = () => {
-        [
-            usernameError,
-            nameError,
-            lastnameError,
-            emailError,
-            passwordError,
-        ].forEach((el) => {
-            el.style.display = "none";
-        });
     };
 
     const showModal = (
@@ -173,156 +99,220 @@ import Layout from "../layouts/Layouts.astro";
         title: string,
         text: string,
     ) => {
-        modalBox.className = `form-modal-box ${type}`;
-        modalIcon.className =
-            type === "success"
-                ? "fa-sharp-duotone fa-solid fa-badge-check"
-                : "fa-sharp-duotone fa-solid fa-circle-xmark";
-        modalTitle.textContent = title;
-        modalText.textContent = text;
-        modal.classList.add("active");
+        openModal({
+            kind: "message",
+            type,
+            title,
+            text,
+            buttonText: type === "success" ? "Aceptar" : "Intentar de nuevo",
+            showButton: type !== "success",
+            showProgress: type === "success",
+            closeOnBackdrop: false,
+            showCloseButton: false,
+        });
 
         if (type === "success") {
-            modalProgressRow.style.display = "flex";
-            modalBtnRow.style.display = "none";
-            modalProgress.className = "form-progress-bar animating";
             setTimeout(() => navigate("/login"), 4000);
-        } else {
-            modalProgressRow.style.display = "none";
-            modalBtnRow.style.display = "flex";
         }
     };
 
-    modalBtn.addEventListener("click", () => {
-        modal.classList.remove("active");
-        const btn = form.querySelector(
-            "input[type=submit]",
-        ) as HTMLInputElement;
-        btn.value = "Registrarme";
-        btn.disabled = false;
-    });
+    const setupRegisterPage = () => {
+        const form = document.getElementById("login") as HTMLFormElement | null;
+        if (!form || form.dataset.initialized === "true") return;
 
-    // — Validación contraseña —
-    passwordInput.addEventListener("input", () => {
-        const val = passwordInput.value;
-        const checks = [
-            { el: reqMayus, ok: /[A-Z]/.test(val) },
-            { el: reqNumber, ok: /[0-9]/.test(val) },
-            { el: reqSign, ok: /[-+*¿?!]/.test(val) },
-            { el: reqMax6, ok: val.length >= 6 },
-        ];
-        checks.forEach(({ el, ok }) => {
-            el.classList.toggle("req-ok", ok);
-            el.classList.toggle("req-fail", !ok);
-        });
-        const allOk = checks.every(({ ok }) => ok);
-        const container = document.querySelector(
-            ".password-presets",
+        form.dataset.initialized = "true";
+
+        const params = new URLSearchParams(window.location.search);
+        const redirectParam = params.get("redirect");
+        const safeRedirect = redirectParam && redirectParam.startsWith("/")
+            ? redirectParam
+            : null;
+
+        const passwordInput = document.getElementById(
+            "password",
+        ) as HTMLInputElement;
+
+        const reqMayus = document.getElementById(
+            "password-mayus",
+        ) as HTMLParagraphElement;
+        const reqNumber = document.getElementById(
+            "password-number",
+        ) as HTMLParagraphElement;
+        const reqSign = document.getElementById(
+            "password-sign",
+        ) as HTMLParagraphElement;
+        const reqMax6 = document.getElementById(
+            "password-max6",
+        ) as HTMLParagraphElement;
+
+        const usernameError = document.getElementById(
+            "username-error",
         ) as HTMLElement;
-        container.style.backgroundColor = allOk ? "#2ecc7117" : "#7f000017";
-        container.style.borderColor = allOk ? "#2ecc7142" : "#b2000042";
-    });
+        const nameError = document.getElementById("name-error") as HTMLElement;
+        const lastnameError = document.getElementById(
+            "lastname-error",
+        ) as HTMLElement;
+        const emailError = document.getElementById("email-error") as HTMLElement;
+        const passwordError = document.getElementById(
+            "password-error",
+        ) as HTMLElement;
+        const loginLink = document.querySelector('a[href="/login"]') as HTMLAnchorElement | null;
 
-    // — Submit registro —
-    form.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        hideAll();
+        if (loginLink && safeRedirect) {
+            loginLink.href = `/login?redirect=${encodeURIComponent(safeRedirect)}`;
+        }
 
-        const username = (
-            document.getElementById("username") as HTMLInputElement
-        ).value.trim();
-        const name = (
-            document.getElementById("name") as HTMLInputElement
-        ).value.trim();
-        const lastname = (
-            document.getElementById("lastname") as HTMLInputElement
-        ).value.trim();
-        const mail = (
-            document.getElementById("mail") as HTMLInputElement
-        ).value.trim();
-        const password = passwordInput.value;
-        const confirmpass = (
-            document.getElementById("confirmpassword") as HTMLInputElement
-        ).value;
+        const hideAll = () => {
+            [
+                usernameError,
+                nameError,
+                lastnameError,
+                emailError,
+                passwordError,
+            ].forEach((el) => {
+                el.style.display = "none";
+            });
+        };
 
-        let hasError = false;
-        if (!username) {
-            showError(usernameError, true);
-            hasError = true;
-        }
-        if (!name) {
-            showError(nameError, true);
-            hasError = true;
-        }
-        if (!lastname) {
-            showError(lastnameError, true);
-            hasError = true;
-        }
-        if (!mail) {
-            showError(emailError, true);
-            hasError = true;
-        }
-        if (password !== confirmpass) {
-            showError(passwordError, true);
-            hasError = true;
-        }
-        if (
-            !/[A-Z]/.test(password) ||
-            !/[0-9]/.test(password) ||
-            !/[-+*¿?!]/.test(password) ||
-            password.length < 6
-        ) {
-            hasError = true;
-        }
-        if (hasError) return;
+        window.addEventListener("app-modal:closed", ((event: Event) => {
+            const detail = (event as CustomEvent).detail;
+            if (detail?.id !== "register-feedback") return;
 
-        const btn = form.querySelector(
-            "input[type=submit]",
-        ) as HTMLInputElement;
-        btn.value = "Enviando código...";
-        btn.disabled = true;
+            const btn = form.querySelector(
+                "input[type=submit]",
+            ) as HTMLInputElement | null;
+            if (!btn) return;
 
-        const res = await fetch("/api/auth/register", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                username,
-                nombre: name,
-                apellidos: lastname,
-                email: mail,
-                password,
-            }),
+            btn.value = "Registrarme";
+            btn.disabled = false;
+        }) as EventListener);
+
+        passwordInput.addEventListener("input", () => {
+            const val = passwordInput.value;
+            const checks = [
+                { el: reqMayus, ok: /[A-Z]/.test(val) },
+                { el: reqNumber, ok: /[0-9]/.test(val) },
+                { el: reqSign, ok: /[-+*‚¿?!]/.test(val) },
+                { el: reqMax6, ok: val.length >= 6 },
+            ];
+            checks.forEach(({ el, ok }) => {
+                el.classList.toggle("req-ok", ok);
+                el.classList.toggle("req-fail", !ok);
+            });
+            const allOk = checks.every(({ ok }) => ok);
+            const container = document.querySelector(
+                ".password-presets",
+            ) as HTMLElement;
+            container.style.backgroundColor = allOk ? "#2ecc7117" : "#7f000017";
+            container.style.borderColor = allOk ? "#2ecc7142" : "#b2000042";
         });
-        const data = await res.json();
 
-        btn.value = "Registrarme";
-        btn.disabled = false;
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            hideAll();
 
-        if (!res.ok) {
-            if (data.error === "username_taken") {
-                usernameError.querySelector("p")!.textContent =
-                    "Este nombre de usuario ya está en uso.";
+            const username = (
+                document.getElementById("username") as HTMLInputElement
+            ).value.trim();
+            const name = (
+                document.getElementById("name") as HTMLInputElement
+            ).value.trim();
+            const lastname = (
+                document.getElementById("lastname") as HTMLInputElement
+            ).value.trim();
+            const mail = (
+                document.getElementById("mail") as HTMLInputElement
+            ).value.trim();
+            const password = passwordInput.value;
+            const confirmpass = (
+                document.getElementById("confirmpassword") as HTMLInputElement
+            ).value;
+
+            let hasError = false;
+            if (!username) {
                 showError(usernameError, true);
-                return;
+                hasError = true;
             }
-            if (data.error === "email_taken") {
-                emailError.querySelector("p")!.textContent =
-                    "Este email ya está registrado.";
+            if (!name) {
+                showError(nameError, true);
+                hasError = true;
+            }
+            if (!lastname) {
+                showError(lastnameError, true);
+                hasError = true;
+            }
+            if (!mail) {
                 showError(emailError, true);
+                hasError = true;
+            }
+            if (password !== confirmpass) {
+                showError(passwordError, true);
+                hasError = true;
+            }
+            if (
+                !/[A-Z]/.test(password) ||
+                !/[0-9]/.test(password) ||
+                !/[-+*‚¿?!]/.test(password) ||
+                password.length < 6
+            ) {
+                hasError = true;
+            }
+            if (hasError) return;
+
+            const btn = form.querySelector(
+                "input[type=submit]",
+            ) as HTMLInputElement;
+            btn.value = "Enviando código...";
+            btn.disabled = true;
+
+            const res = await fetch("/api/auth/register", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    username,
+                    nombre: name,
+                    apellidos: lastname,
+                    email: mail,
+                    password,
+                }),
+            });
+            const data = await res.json();
+
+            btn.value = "Registrarme";
+            btn.disabled = false;
+
+            if (!res.ok) {
+                if (data.error === "username_taken") {
+                    usernameError.querySelector("p")!.textContent =
+                        "Este nombre de usuario ya esta en uso.";
+                    showError(usernameError, true);
+                    return;
+                }
+                if (data.error === "email_taken") {
+                    emailError.querySelector("p")!.textContent =
+                        "Este email ya esta registrado.";
+                    showError(emailError, true);
+                    return;
+                }
+                showModal(
+                    "error",
+                    "No se ha podido registrar",
+                    data.message || "Inténtalo mas tarde.",
+                );
                 return;
             }
-            showModal(
-                "error",
-                "No se ha podido registrar",
-                data.message || "Inténtalo más tarde.",
-            );
-            return;
-        }
 
-        form.reset()
-        navigate(`/verify?email=${encodeURIComponent(mail)}`)
-        
-    });
+            form.reset();
 
+            const verifyUrl = new URL("/verify", window.location.origin);
+            verifyUrl.searchParams.set("email", mail);
+            if (safeRedirect) {
+                verifyUrl.searchParams.set("redirect", safeRedirect);
+            }
+            navigate(`${verifyUrl.pathname}${verifyUrl.search}`);
+        });
+    };
 
+    setupRegisterPage();
+    document.addEventListener("astro:page-load", setupRegisterPage);
 </script>

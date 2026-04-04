@@ -1,12 +1,13 @@
 ---
 import Layout from "../layouts/Layouts.astro";
+import AppModal from "../components/AppModal.jsx";
 ---
 
 <Layout title="Acceder">
 	<main
 		style="margin: 15vh 0px; top: 0px; height: 100%; display: flex; justify-content: center;"
 	>
-		<form action="" id="login">
+		<form id="login">
 			<div class="contenedor">
 				<h1>Acceder</h1>
 				<hr />
@@ -34,8 +35,8 @@ import Layout from "../layouts/Layouts.astro";
 
 				<input class="acpbutton" type="submit" value="Acceder" />
 				<div class="setpswdre">
-					<a href="#" class="lwsv">He olvidado la contraseña</a>
-					<a href="../register" class="lwsv"
+					<a href="/forgot-password" class="lwsv">He olvidado la contraseña</a>
+					<a href="/register" class="lwsv"
 						>No tengo cuenta, registrarme</a
 					>
 				</div>
@@ -43,145 +44,142 @@ import Layout from "../layouts/Layouts.astro";
 		</form>
 	</main>
 
-	<div class="form-modal" id="form-modal">
-		<div class="form-modal-box">
-			<div class="form-row">
-				<i
-					id="modal-icon"
-					class="fa-sharp-duotone fa-solid fa-circle-xmark"></i>
-			</div>
-			<div class="form-row">
-				<h2 id="modal-title"></h2>
-			</div>
-			<div class="form-row">
-				<p id="modal-text"></p>
-			</div>
-			<div class="form-row" id="modal-progress-row" style="display:none">
-				<div class="form-progress">
-					<div class="form-progress-bar" id="modal-progress"></div>
-				</div>
-			</div>
-			<div class="form-row" id="modal-btn-row">
-				<button class="acpbutton" id="modal-btn"
-					>Intentar de nuevo</button
-				>
-			</div>
-		</div>
-	</div>
+	<AppModal client:load modalId="login-feedback" />
 </Layout>
 
 <script>
 import { navigate } from "astro:transitions/client"
 
+const openModal = (config: Record<string, unknown>) => {
+	window.dispatchEvent(new CustomEvent("app-modal:open", {
+		detail: {
+			id: "login-feedback",
+			config,
+		},
+	}))
+}
 
-
-// — Elementos —
-const form             = document.getElementById("login") as HTMLFormElement
-const modal            = document.getElementById("form-modal") as HTMLElement
-const modalBox         = modal.querySelector(".form-modal-box") as HTMLElement
-const modalIcon        = document.getElementById("modal-icon") as HTMLElement
-const modalTitle       = document.getElementById("modal-title") as HTMLElement
-const modalText        = document.getElementById("modal-text") as HTMLElement
-const modalProgress    = document.getElementById("modal-progress") as HTMLElement
-const modalProgressRow = document.getElementById("modal-progress-row") as HTMLElement
-const modalBtnRow      = document.getElementById("modal-btn-row") as HTMLElement
-const modalBtn         = document.getElementById("modal-btn") as HTMLButtonElement
-
-// — Modal —
 const showModal = (type: "success" | "error", title: string, text: string, redirect?: string) => {
-    modalBox.className = `form-modal-box ${type}`
-    modalIcon.className = type === "success"
-        ? "fa-sharp-duotone fa-solid fa-badge-check"
-        : "fa-sharp-duotone fa-solid fa-circle-xmark"
-    modalTitle.textContent = title
-    modalText.textContent  = text
-    modal.classList.add("active")
+	openModal({
+		kind: "message",
+		type,
+		title,
+		text,
+		buttonText: type === "success" ? "Aceptar" : "Intentar de nuevo",
+		showButton: type !== "success",
+		showProgress: type === "success",
+		closeOnBackdrop: false,
+		showCloseButton: false,
+	})
 
-    if (type === "success") {
-        modalProgressRow.style.display = "flex"
-        modalBtnRow.style.display = "none"
-        modalProgress.className = "form-progress-bar animating"
-        setTimeout(() => navigate(redirect || "/"), 2000)
-    } else {
-        modalProgressRow.style.display = "none"
-        modalBtnRow.style.display = "flex"
-    }
+	if (type === "success") {
+		setTimeout(() => navigate(redirect || "/"), 2000)
+	}
 }
 
-const params = new URLSearchParams(window.location.search)
-if (params.get("verified") === "true") {
-    modalBox.className = "form-modal-box success"
-    modalIcon.className = "fa-sharp-duotone fa-solid fa-badge-check"
-    modalTitle.textContent = "¡Cuenta verificada!"
-    modalText.textContent  = "Tu cuenta ha sido verificada correctamente. Ya puedes iniciar sesión."
-    modalProgressRow.style.display = "none"
-    modalBtnRow.style.display = "flex"
-    modalBtn.textContent = "Iniciar sesión"
-    modal.classList.add("active")
+const setupLoginPage = () => {
+	const form = document.getElementById("login") as HTMLFormElement | null
+	if (!form || form.dataset.initialized === "true") return
+
+	form.dataset.initialized = "true"
+
+	const params = new URLSearchParams(window.location.search)
+	const redirectParam = params.get("redirect")
+	const safeRedirect = redirectParam && redirectParam.startsWith("/") ? redirectParam : null
+	const registerLink = document.querySelector('a[href="/register"]') as HTMLAnchorElement | null
+
+	if (registerLink && safeRedirect) {
+		registerLink.href = `/register?redirect=${encodeURIComponent(safeRedirect)}`
+	}
+
+	if (params.get("verified") === "true") {
+		openModal({
+			kind: "message",
+			type: "success",
+			title: "¡Cuenta verificada!",
+			text: "Tu cuenta ha sido verificada correctamente. Ya puedes iniciar sesión.",
+			buttonText: "Iniciar sesión",
+			showButton: true,
+			showProgress: false,
+			closeOnBackdrop: false,
+			showCloseButton: false,
+		})
+	}
+
+	window.addEventListener("app-modal:closed", ((event: Event) => {
+		const detail = (event as CustomEvent).detail
+		if (detail?.id !== "login-feedback") return
+
+		const btn = form.querySelector("input[type=submit]") as HTMLInputElement | null
+		if (!btn) return
+
+		btn.value = "Acceder"
+		btn.disabled = false
+	}) as EventListener)
+
+	form.addEventListener("submit", async (e) => {
+		e.preventDefault()
+
+		const mail = (document.getElementById("mail") as HTMLInputElement).value.trim()
+		const password = (document.getElementById("password") as HTMLInputElement).value
+		const keepSession = (document.getElementById("keepsesion") as HTMLInputElement).checked
+
+		if (!mail || !password) {
+			showModal("error", "Campos vacíos", "Por favor rellena todos los campos.")
+			return
+		}
+
+		const btn = form.querySelector("input[type=submit]") as HTMLInputElement
+		btn.value = "Accediendo..."
+		btn.disabled = true
+
+		const res = await fetch("/api/auth/login", {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ email: mail, password, keepSession })
+		})
+
+		const data = await res.json()
+
+		if (!res.ok) {
+			btn.value = "Acceder"
+			btn.disabled = false
+
+			if (data.error === "invalid_credentials") {
+				showModal("error", "Credenciales incorrectas", "El email o la contraseña no son correctos.")
+				return
+			}
+			if (data.error === "rate_limit") {
+				showModal("error", "Demasiados intentos", "Espera unos minutos e inténtalo de nuevo.")
+				return
+			}
+
+			showModal("error", "Error al acceder", "Ha ocurrido un error inesperado. Inténtalo más tarde.")
+			return
+		}
+
+		const redirectMap: Record<string, string> = {
+			cliente: "/",
+			empleado: "/",
+			admin: "/admin",
+			dueno: "/"
+		}
+
+		const nextUrl = data.mustChangePassword
+			? "/?force_password_change=true"
+			: safeRedirect || redirectMap[data.usuario.rol] || "/"
+
+		showModal(
+			"success",
+			"¡Bienvenido de nuevo!",
+			data.mustChangePassword
+				? "Has iniciado sesión con una contraseña temporal. Debes cambiarla ahora."
+				: "Has iniciado sesión correctamente. Redirigiendo...",
+			nextUrl
+		)
+	})
 }
 
-modalBtn.addEventListener("click", () => {
-    modal.classList.remove("active")
-    const btn = form.querySelector("input[type=submit]") as HTMLInputElement
-    btn.value = "Acceder"
-    btn.disabled = false
-})
-
-// — Submit —
-form.addEventListener("submit", async (e) => {
-    e.preventDefault()
-
-    const mail      = (document.getElementById("mail") as HTMLInputElement).value.trim()
-    const password  = (document.getElementById("password") as HTMLInputElement).value
-    const keepSession = (document.getElementById("keepsesion") as HTMLInputElement).checked
-
-    if (!mail || !password) {
-        showModal("error", "Campos vacíos", "Por favor rellena todos los campos.")
-        return
-    }
-
-    const btn = form.querySelector("input[type=submit]") as HTMLInputElement
-    btn.value = "Accediendo..."
-    btn.disabled = true
-
-    // — Llamada a la API —
-    const res = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: mail, password, keepSession })
-    })
-
-    const data = await res.json()
-
-    if (!res.ok) {
-        btn.value = "Acceder"
-        btn.disabled = false
-
-        if (data.error === "invalid_credentials") {
-            showModal("error", "Credenciales incorrectas", "El email o la contraseña no son correctos.")
-            return
-        }
-        if (data.error === "rate_limit") {
-            showModal("error", "Demasiados intentos", "Espera unos minutos e inténtalo de nuevo.")
-            return
-        }
-
-        showModal("error", "Error al acceder", "Ha ocurrido un error inesperado. Inténtalo más tarde.")
-        return
-    }
-
-    // Redirigir según rol
-    const redirectMap: Record<string, string> = {
-        cliente:  "/",
-        empleado: "/calendar",
-        admin:    "/admin",
-        dueno:    "/admin"
-    }
-
-    showModal("success",
-        "¡Bienvenido de nuevo!",
-        "Has iniciado sesión correctamente. Redirigiendo...",
-        redirectMap[data.usuario.rol] || "/"
-    )
-})
+setupLoginPage()
+document.addEventListener("astro:page-load", setupLoginPage)
 </script>

@@ -1,12 +1,12 @@
 ---
 import Layout from "../layouts/Layouts.astro";
+import AppModal from "../components/AppModal.jsx";
 ---
 
 <Layout title="Mi Perfil">
     <main
         style="margin: 15vh 0px; top: 0px; height: 100%; display: flex; justify-content: center;"
     >
-        <!-- Imagen y nombre -->
         <section class="my-profile-image">
             <div class="avatar-wrapper" id="btn-avatar">
                 <img id="profile-avatar" src="/user.png" alt="user" />
@@ -28,18 +28,16 @@ import Layout from "../layouts/Layouts.astro";
             </div>
             <p id="profile-saludo">Cargando...</p>
             <span id="profile-rol" class="rol-badge" style="margin-top: 8px;"
-                >—</span
+                >â€”</span
             >
         </section>
 
-        <!-- Información personal -->
         <section class="my-profile-info">
             <div class="my-profile-title">
                 <h2>Mi información personal</h2>
                 <hr />
             </div>
 
-            <!-- Modo ver -->
             <div id="view-mode">
                 <div class="my-profile-grid">
                     <div class="my-profile-item">
@@ -78,7 +76,6 @@ import Layout from "../layouts/Layouts.astro";
                 </div>
             </div>
 
-            <!-- Modo editar -->
             <div id="edit-mode" style="display:none">
                 <div class="my-profile-grid">
                     <div class="my-profile-item">
@@ -125,7 +122,6 @@ import Layout from "../layouts/Layouts.astro";
                 </div>
             </div>
 
-            <!-- Modo cambiar contraseña -->
             <div id="password-mode" style="display:none">
                 <div class="my-profile-grid">
                     <div class="my-profile-item">
@@ -133,7 +129,7 @@ import Layout from "../layouts/Layouts.astro";
                         <input
                             type="password"
                             id="current-password"
-                            placeholder="••••••••"
+                            placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
                         />
                     </div>
                     <div class="my-profile-item">
@@ -141,7 +137,7 @@ import Layout from "../layouts/Layouts.astro";
                         <input
                             type="password"
                             id="new-password"
-                            placeholder="••••••••"
+                            placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
                         />
                     </div>
                     <div class="my-profile-item">
@@ -149,7 +145,7 @@ import Layout from "../layouts/Layouts.astro";
                         <input
                             type="password"
                             id="confirm-password"
-                            placeholder="••••••••"
+                            placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
                         />
                     </div>
                 </div>
@@ -169,8 +165,17 @@ import Layout from "../layouts/Layouts.astro";
             </div>
         </section>
 
-        <!-- Citas -->
-        <section class="my-profile-nextdates">
+        <section id="my-profile-discounts" class="my-profile-discounts">
+            <div class="my-profile-title">
+                <h2>Mis descuentos</h2>
+                <hr />
+            </div>
+            <div id="profile-discounts-list" class="my-profile-discounts-list">
+                <p class="my-profile-not">No tienes descuentos activos</p>
+            </div>
+        </section>
+
+        <section id="my-profile-nextdates" class="my-profile-nextdates">
             <nav>
                 <button id="btn-proximas" class="active-tab"
                     >Próximas Citas</button
@@ -188,6 +193,8 @@ import Layout from "../layouts/Layouts.astro";
                 <p class="my-profile-not">No tienes citas en el historial</p>
             </div>
         </section>
+
+        <AppModal client:load modalId="discount-use-modal" />
     </main>
 </Layout>
 
@@ -195,7 +202,6 @@ import Layout from "../layouts/Layouts.astro";
     import { navigate } from "astro:transitions/client";
 
     document.addEventListener("astro:page-load", async () => {
-        // — Cargar sesión —
         const res = await fetch("/api/auth/session");
         const { session } = await res.json();
         if (!session) {
@@ -210,16 +216,13 @@ import Layout from "../layouts/Layouts.astro";
             dueno: "Dueño",
         };
         const rolColors: Record<string, string> = {
-            cliente: "#3498db",
-            empleado: "#2ecc71",
-            admin: "#e67e22",
-            dueno: "#f0ce08",
+            cliente: "#db1b18",
+            empleado: "#18db25",
+            admin: "#1873db",
+            dueno: "#c7d923",
         };
 
-        // — Rellenar datos —
-        const avatar = document.getElementById(
-            "profile-avatar",
-        ) as HTMLImageElement;
+        const avatar = document.getElementById("profile-avatar") as HTMLImageElement;
         avatar.src = `/api/auth/avatar/${session.id}?t=${Date.now()}`;
         avatar.onerror = () => {
             avatar.src = "/user.png";
@@ -251,7 +254,7 @@ import Layout from "../layouts/Layouts.astro";
         (document.getElementById("view-email") as HTMLInputElement).value =
             session.email || "";
         (document.getElementById("view-telefono") as HTMLInputElement).value =
-            session.telefono || "No añadido";
+            session.telefono || "--";
         (document.getElementById("view-fecha") as HTMLInputElement).value =
             fechaFormateada;
         (document.getElementById("edit-nombre") as HTMLInputElement).value =
@@ -265,7 +268,218 @@ import Layout from "../layouts/Layouts.astro";
         (document.getElementById("edit-telefono") as HTMLInputElement).value =
             session.telefono || "";
 
-        // — Avatar upload —
+        const discountsContainer = document.getElementById(
+            "profile-discounts-list",
+        ) as HTMLElement;
+
+        const emitModalOpen = (config: Record<string, unknown>) => {
+            window.dispatchEvent(new CustomEvent("app-modal:open", {
+                detail: {
+                    id: "discount-use-modal",
+                    config,
+                },
+            }));
+        };
+
+        let currentDiscounts: any[] = [];
+        let activeDiscountId: string | null = null;
+        let discountPollingInterval: number | null = null;
+
+        const formatDiscountDate = (value: string | null) => {
+            if (!value) return "Sin caducidad";
+            const date = new Date(value);
+            if (Number.isNaN(date.getTime())) return "Sin caducidad";
+            return date.toLocaleDateString("es-ES", {
+                day: "numeric",
+                month: "long",
+                year: "numeric",
+            });
+        };
+
+        const closeDiscountModal = () => {
+            activeDiscountId = null;
+
+            if (discountPollingInterval) {
+                window.clearInterval(discountPollingInterval);
+                discountPollingInterval = null;
+            }
+
+            window.dispatchEvent(new CustomEvent("app-modal:close", {
+                detail: { id: "discount-use-modal" },
+            }));
+        };
+
+        const loadDiscounts = async () => {
+            const discountsRes = await fetch("/api/profile/descuentos");
+            const discountsData = await discountsRes.json();
+
+            if (!discountsRes.ok) {
+                throw new Error("discounts_error");
+            }
+
+            return discountsData.discounts || [];
+        };
+
+        const startDiscountPolling = () => {
+            if (discountPollingInterval) {
+                window.clearInterval(discountPollingInterval);
+            }
+
+            discountPollingInterval = window.setInterval(async () => {
+                if (!activeDiscountId) return;
+
+                try {
+                    const updatedDiscounts = await loadDiscounts();
+                    const stillExists = updatedDiscounts.some(
+                        (discount: any) => discount.id === activeDiscountId,
+                    );
+
+                    if (!stillExists) {
+                        renderDiscounts(updatedDiscounts);
+                        closeDiscountModal();
+                    }
+                } catch {}
+            }, 2000);
+        };
+
+        const openDiscountModal = async (discountId: string) => {
+            const discount = currentDiscounts.find((item) => item.id === discountId);
+            if (!discount) return;
+
+            activeDiscountId = discountId;
+
+            emitModalOpen({
+                kind: "message",
+                type: "success",
+                title: discount.public_title,
+                text: "Generando QR seguro para el canje...",
+                buttonText: "Cerrar",
+                showButton: true,
+                showProgress: false,
+                closeOnBackdrop: true,
+                showCloseButton: true,
+            });
+
+            try {
+                const tokenRes = await fetch(
+                    `/api/profile/descuentos/use-token?id=${encodeURIComponent(discountId)}`,
+                );
+                const tokenData = await tokenRes.json();
+
+                if (!tokenRes.ok || !tokenData.token) {
+                    throw new Error("token_error");
+                }
+
+                emitModalOpen({
+                    kind: "qr",
+                    type: "success",
+                    title: discount.public_title,
+                    text: discount.value_label ||
+                        (discount.tipo_descuento === "porcentaje"
+                            ? `${discount.descuento}%`
+                            : `${discount.descuento}€`),
+                    note: "Enseña este QR al empleado para que lo escanee. Cuando lo canjee se cerrara¡ solo.",
+                    badgeText: "Listo para canjear",
+                    qrData: `${window.location.origin}/api/descuentos/canjear?token=${encodeURIComponent(tokenData.token)}`,
+                    closeOnBackdrop: true,
+                    showCloseButton: true,
+                });
+                startDiscountPolling();
+            } catch {
+                emitModalOpen({
+                    kind: "message",
+                    type: "error",
+                    title: "No hemos podido generar el QR",
+                    text: "Inténtalo otra vez en unos segundos.",
+                    buttonText: "Cerrar",
+                    showButton: true,
+                    showProgress: false,
+                    closeOnBackdrop: true,
+                    showCloseButton: true,
+                });
+            }
+        };
+
+        const renderDiscounts = (discounts: any[]) => {
+            currentDiscounts = discounts;
+
+            if (!discounts.length) {
+                discountsContainer.innerHTML =
+                    '<p class="my-profile-not">No tienes descuentos activos</p>';
+                return;
+            }
+
+            discountsContainer.innerHTML = discounts
+                .map((discount) => {
+                    const statusClass = discount.status === "vigente"
+                        ? "success"
+                        : discount.status === "caducado"
+                            ? "expired"
+                            : "inactive";
+
+                    const discountValue = discount.tipo_descuento === "porcentaje"
+                        ? `${discount.descuento}%`
+                        : `${discount.descuento}€`;
+
+                    return `
+                        <article class="profile-discount-card">
+                            <div class="profile-discount-top">
+                                <div>
+                                    <span class="profile-discount-chip ${statusClass}">${discount.status_label}</span>
+                                    <h3>${discount.public_title}</h3>
+                                </div>
+                            </div>
+                            <div class="profile-discount-grid">
+                                <div>
+                                    <span>Validez</span>
+                                    <strong>${formatDiscountDate(discount.expires_at)}</strong>
+                                </div>
+                                <div>
+                                    <span>Valor del descuento</span>
+                                    <strong>${discount.value_label || discountValue}</strong>
+                                </div>
+                                <div>
+                                    <span>Estado</span>
+                                    <strong>${discount.status_detail}</strong>
+                                </div>
+                            </div>
+                            ${
+                                discount.status === "vigente"
+                                    ? `<div class="profile-discount-actions"><button type="button" class="acpbutton profile-discount-button js-use-discount" data-id="${discount.id}">Usar descuento</button></div>`
+                                    : ""
+                            }
+                        </article>
+                    `;
+                })
+                .join("");
+
+            discountsContainer.querySelectorAll(".js-use-discount").forEach((button) => {
+                button.addEventListener("click", () => {
+                    const discountId = (button as HTMLElement).dataset.id;
+                    if (!discountId) return;
+                    openDiscountModal(discountId);
+                });
+            });
+        };
+
+        try {
+            renderDiscounts(await loadDiscounts());
+        } catch {
+            discountsContainer.innerHTML =
+                '<p class="my-profile-not">No hemos podido cargar tus descuentos</p>';
+        }
+
+        window.addEventListener("app-modal:closed", ((event: Event) => {
+            const detail = (event as CustomEvent).detail;
+            if (detail?.id !== "discount-use-modal") return;
+
+            activeDiscountId = null;
+            if (discountPollingInterval) {
+                window.clearInterval(discountPollingInterval);
+                discountPollingInterval = null;
+            }
+        }) as EventListener);
+
         document.getElementById("btn-avatar")?.addEventListener("click", () => {
             const input = document.createElement("input");
             input.type = "file";
@@ -280,16 +494,18 @@ import Layout from "../layouts/Layouts.astro";
                     method: "POST",
                     body: formData,
                 });
-                if (res.ok)
+                if (res.ok) {
                     avatar.src = `/api/auth/avatar/${session.id}?t=${Date.now()}`;
-                else alert("Error al subir la imagen.");
+                } else {
+                    alert("Error al subir la imagen.");
+                }
             });
         });
 
-        // — Editar información —
         const viewMode = document.getElementById("view-mode")!;
         const editMode = document.getElementById("edit-mode")!;
         const passwordMode = document.getElementById("password-mode")!;
+        const passwordMsg = document.getElementById("password-msg") as HTMLElement;
         const editMsg = document.getElementById("edit-msg") as HTMLElement;
 
         document.getElementById("btn-edit")?.addEventListener("click", () => {
@@ -298,171 +514,137 @@ import Layout from "../layouts/Layouts.astro";
             passwordMode.style.display = "none";
         });
 
-        document
-            .getElementById("btn-cancel-edit")
-            ?.addEventListener("click", () => {
+        document.getElementById("btn-cancel-edit")?.addEventListener("click", () => {
+            viewMode.style.display = "block";
+            editMode.style.display = "none";
+            editMsg.style.display = "none";
+        });
+
+        document.getElementById("btn-save-edit")?.addEventListener("click", async () => {
+            const nombre = (
+                document.getElementById("edit-nombre") as HTMLInputElement
+            ).value.trim();
+            const apellidos = (
+                document.getElementById("edit-apellidos") as HTMLInputElement
+            ).value.trim();
+            const username = (
+                document.getElementById("edit-username") as HTMLInputElement
+            ).value.trim();
+            const email = (
+                document.getElementById("edit-email") as HTMLInputElement
+            ).value.trim();
+            const telefono = (
+                document.getElementById("edit-telefono") as HTMLInputElement
+            ).value.trim();
+
+            const res = await fetch("/api/auth/update", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    nombre,
+                    apellidos,
+                    username,
+                    email,
+                    telefono,
+                }),
+            });
+            const data = await res.json();
+
+            if (res.ok) {
+                (document.getElementById("view-nombre") as HTMLInputElement).value =
+                    `${nombre} ${apellidos}`;
+                (document.getElementById("view-username") as HTMLInputElement).value =
+                    username;
+                (document.getElementById("view-email") as HTMLInputElement).value =
+                    email;
+                (document.getElementById("view-telefono") as HTMLInputElement).value =
+                    telefono || "-";
+                document.getElementById("profile-saludo")!.textContent =
+                    `Hola, ${nombre} ${apellidos}`;
                 viewMode.style.display = "block";
                 editMode.style.display = "none";
-                editMsg.style.display = "none";
+            } else {
+                editMsg.textContent = data.message || "Error al guardar.";
+                editMsg.style.display = "block";
+                editMsg.style.color = "#e74c3c";
+            }
+        });
+
+        document.getElementById("btn-change-password")?.addEventListener("click", () => {
+            viewMode.style.display = "none";
+            passwordMode.style.display = "block";
+            editMode.style.display = "none";
+        });
+
+        document.getElementById("btn-cancel-password")?.addEventListener("click", () => {
+            viewMode.style.display = "block";
+            passwordMode.style.display = "none";
+        });
+
+        document.getElementById("btn-save-password")?.addEventListener("click", async () => {
+            const currentPassword = (
+                document.getElementById("current-password") as HTMLInputElement
+            ).value;
+            const newPassword = (
+                document.getElementById("new-password") as HTMLInputElement
+            ).value;
+            const confirmPassword = (
+                document.getElementById("confirm-password") as HTMLInputElement
+            ).value;
+            const passwordMsg = document.getElementById("password-msg") as HTMLElement;
+
+            if (newPassword !== confirmPassword) {
+                passwordMsg.textContent = "Las contraseñas no coinciden.";
+                passwordMsg.style.color = "#e74c3c";
+                passwordMsg.style.display = "block";
+                return;
+            }
+            if (newPassword.length < 6) {
+                passwordMsg.textContent =
+                    "La contraseña debe tener al menos 6 caracteres.";
+                passwordMsg.style.color = "#e74c3c";
+                passwordMsg.style.display = "block";
+                return;
+            }
+
+            const res = await fetch("/api/auth/change-password", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ currentPassword, newPassword }),
             });
 
-        document
-            .getElementById("btn-save-edit")
-            ?.addEventListener("click", async () => {
-                const nombre = (
-                    document.getElementById("edit-nombre") as HTMLInputElement
-                ).value.trim();
-                const apellidos = (
-                    document.getElementById(
-                        "edit-apellidos",
-                    ) as HTMLInputElement
-                ).value.trim();
-                const username = (
-                    document.getElementById("edit-username") as HTMLInputElement
-                ).value.trim();
-                const email = (
-                    document.getElementById("edit-email") as HTMLInputElement
-                ).value.trim();
-                const telefono = (
-                    document.getElementById("edit-telefono") as HTMLInputElement
-                ).value.trim();
-
-                const res = await fetch("/api/auth/update", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        nombre,
-                        apellidos,
-                        username,
-                        email,
-                        telefono,
-                    }),
-                });
-                const data = await res.json();
-
-                if (res.ok) {
-                    (
-                        document.getElementById(
-                            "view-nombre",
-                        ) as HTMLInputElement
-                    ).value = `${nombre} ${apellidos}`;
-                    (
-                        document.getElementById(
-                            "view-username",
-                        ) as HTMLInputElement
-                    ).value = username;
-                    (
-                        document.getElementById(
-                            "view-email",
-                        ) as HTMLInputElement
-                    ).value = email;
-                    (
-                        document.getElementById(
-                            "view-telefono",
-                        ) as HTMLInputElement
-                    ).value = telefono || "No añadido";
-                    document.getElementById("profile-saludo")!.textContent =
-                        `Hola, ${nombre} ${apellidos}`;
+            if (res.ok) {
+                passwordMsg.textContent = "Contraseña cambiada correctamente.";
+                passwordMsg.style.color = "#2ecc71";
+                passwordMsg.style.display = "block";
+                (document.getElementById("current-password") as HTMLInputElement).value = "";
+                (document.getElementById("new-password") as HTMLInputElement).value = "";
+                (document.getElementById("confirm-password") as HTMLInputElement).value = "";
+                setTimeout(() => {
                     viewMode.style.display = "block";
-                    editMode.style.display = "none";
-                } else {
-                    editMsg.textContent = data.message || "Error al guardar.";
-                    editMsg.style.display = "block";
-                    editMsg.style.color = "#e74c3c";
-                }
-            });
+                    passwordMode.style.display = "none";
+                    passwordMsg.style.display = "none";
+                }, 2000);
+            } else {
+                const data = await res.json();
+                passwordMsg.textContent =
+                    data.message || "Error al cambiar la contraseña.";
+                passwordMsg.style.color = "#e74c3c";
+                passwordMsg.style.display = "block";
+            }
+        });
 
-        // — Cambiar contraseña —
-        document
-            .getElementById("btn-change-password")
-            ?.addEventListener("click", () => {
-                viewMode.style.display = "none";
-                passwordMode.style.display = "block";
-                editMode.style.display = "none";
-            });
+        const profileParams = new URLSearchParams(window.location.search);
+        if (profileParams.get("force_password_change") === "true") {
+            viewMode.style.display = "none";
+            editMode.style.display = "none";
+            passwordMode.style.display = "block";
+            passwordMsg.textContent =
+                "Debes cambiar tu contraseña temporal antes de continuar.";
+            passwordMsg.style.color = "#f0ce08";
+            passwordMsg.style.display = "block";
+        }
 
-        document
-            .getElementById("btn-cancel-password")
-            ?.addEventListener("click", () => {
-                viewMode.style.display = "block";
-                passwordMode.style.display = "none";
-            });
-
-        document
-            .getElementById("btn-save-password")
-            ?.addEventListener("click", async () => {
-                const currentPassword = (
-                    document.getElementById(
-                        "current-password",
-                    ) as HTMLInputElement
-                ).value;
-                const newPassword = (
-                    document.getElementById("new-password") as HTMLInputElement
-                ).value;
-                const confirmPassword = (
-                    document.getElementById(
-                        "confirm-password",
-                    ) as HTMLInputElement
-                ).value;
-                const passwordMsg = document.getElementById(
-                    "password-msg",
-                ) as HTMLElement;
-
-                if (newPassword !== confirmPassword) {
-                    passwordMsg.textContent = "Las contraseñas no coinciden.";
-                    passwordMsg.style.color = "#e74c3c";
-                    passwordMsg.style.display = "block";
-                    return;
-                }
-                if (newPassword.length < 6) {
-                    passwordMsg.textContent =
-                        "La contraseña debe tener al menos 6 caracteres.";
-                    passwordMsg.style.color = "#e74c3c";
-                    passwordMsg.style.display = "block";
-                    return;
-                }
-
-                const res = await fetch("/api/auth/change-password", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ currentPassword, newPassword }),
-                });
-
-                if (res.ok) {
-                    passwordMsg.textContent =
-                        "✓ Contraseña cambiada correctamente.";
-                    passwordMsg.style.color = "#2ecc71";
-                    passwordMsg.style.display = "block";
-                    (
-                        document.getElementById(
-                            "current-password",
-                        ) as HTMLInputElement
-                    ).value = "";
-                    (
-                        document.getElementById(
-                            "new-password",
-                        ) as HTMLInputElement
-                    ).value = "";
-                    (
-                        document.getElementById(
-                            "confirm-password",
-                        ) as HTMLInputElement
-                    ).value = "";
-                    setTimeout(() => {
-                        viewMode.style.display = "block";
-                        passwordMode.style.display = "none";
-                        passwordMsg.style.display = "none";
-                    }, 2000);
-                } else {
-                    const data = await res.json();
-                    passwordMsg.textContent =
-                        data.message || "Error al cambiar la contraseña.";
-                    passwordMsg.style.color = "#e74c3c";
-                    passwordMsg.style.display = "block";
-                }
-            });
-
-        // — Tabs citas —
         const btnProximas = document.getElementById("btn-proximas")!;
         const btnHistorial = document.getElementById("btn-historial")!;
         const tabProximas = document.getElementById("tab-proximas")!;
@@ -482,7 +664,6 @@ import Layout from "../layouts/Layouts.astro";
             btnProximas.classList.remove("active-tab");
         });
 
-        // — Cargar citas —
         const citasRes = await fetch("/api/citas/miscitas");
         const { proximas, historial } = await citasRes.json();
 
@@ -508,18 +689,21 @@ import Layout from "../layouts/Layouts.astro";
 
             return `
                 <div class="cita-card">
-                    <div class="cita-card-left">
-                        <div class="cita-fecha">
-                            <span class="cita-dia">${new Date(cita.start).getDate()}</span>
-                            <span class="cita-mes">${new Date(cita.start).toLocaleDateString("es-ES", { month: "short" })}</span>
+                    <div class="cita-card-info">
+                        <div class="cita-card-left">
+                            <div class="cita-fecha">
+                                <span class="cita-dia">${new Date(cita.start).getDate()}</span>
+                                <span class="cita-mes">${new Date(cita.start).toLocaleDateString("es-ES", { month: "short" })}</span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="cita-card-body">
-                        <div class="cita-card-top">
-                            <p class="cita-service">${cita.service}</p>
-                            <span class="cita-status" style="background:${color}22; color:${color}; border-color:${color}55">${label}</span>
+                    
+                        <div class="cita-card-body">
+                            <div class="cita-card-top">
+                                <p class="cita-service">${cita.service}</p>
+                                <span class="cita-status" style="background:${color}22; color:${color}; border-color:${color}55">${label}</span>
+                            </div>
+                            <p class="cita-hora">${fecha} a las ${hora}</p>
                         </div>
-                        <p class="cita-hora">${fecha} a las ${hora}</p>
                     </div>
                     ${
                         cita.status === "pending" || cita.status === "confirmed"
@@ -537,10 +721,9 @@ import Layout from "../layouts/Layouts.astro";
             tabHistorial.innerHTML = historial.map(renderCita).join("");
         }
 
-        // — Cancelar cita —
         document.querySelectorAll(".cita-cancel-btn").forEach((btn) => {
             btn.addEventListener("click", async () => {
-                if (!confirm("¿Seguro que quieres cancelar esta cita?")) return;
+                if (!confirm("Â¿Seguro que quieres cancelar esta cita?")) return;
                 const id = (btn as HTMLElement).dataset.id;
                 const res = await fetch("/api/citas/cancel", {
                     method: "POST",
@@ -549,9 +732,7 @@ import Layout from "../layouts/Layouts.astro";
                 });
                 if (res.ok) {
                     const card = btn.closest(".cita-card") as HTMLElement;
-                    const statusEl = card.querySelector(
-                        ".cita-status",
-                    ) as HTMLElement;
+                    const statusEl = card.querySelector(".cita-status") as HTMLElement;
                     statusEl.textContent = "Cancelada";
                     statusEl.style.cssText =
                         "background:#e74c3c22; color:#e74c3c; border-color:#e74c3c55";

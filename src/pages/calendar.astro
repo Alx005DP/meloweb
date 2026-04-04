@@ -1,9 +1,10 @@
 ---
 import "./css/main.css";
 import Layout from "../layouts/Layouts.astro";
-import AlxCalendar from "../components/AlxCalendar.jsx"
+import AlxCalendar from "../components/AlxCalendar.jsx";
 ---
-    <!-- <main>
+
+<!-- <main>
         <nav class="nvcalendar">
             <ul>
                 <li><a href=""><i class="fa-sharp-duotone fa-solid fa-house"></i></a></li>
@@ -15,19 +16,27 @@ import AlxCalendar from "../components/AlxCalendar.jsx"
     </main>
  -->
 <Layout title="Calendario">
-
     <main>
-         <AlxCalendar client:load/>
+        <AlxCalendar client:load />
     </main>
-   
 </Layout>
 
-    <style is:inline> 
-    main  {
-
+<style is:inline>
+    main {
         display: block;
         margin: 100px 0px;
         top: 3vh;
     }
-</style> 
+</style>
 
+<script is:inline>
+    const evtSource = new EventSource("/api/auth/sse");
+    evtSource.onmessage = (event) => {
+
+        const msg = JSON.parse(event.data);
+
+        if (msg.type === "redirect") {
+            window.location.href = msg.to;
+        }
+    };
+</script>

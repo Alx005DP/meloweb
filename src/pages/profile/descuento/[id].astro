@@ -1,0 +1,211 @@
+---
+import Layout from "../../../layouts/Layouts.astro"
+import jwt from "jsonwebtoken"
+import { db } from "../../../lib/db"
+import {
+    ensureDiscountRedemptionsTable,
+    getDiscountPublicTitle,
+} from "../../../lib/discounts"
+
+const JWT_SECRET = import.meta.env.JWT_SECRET || "supersecreto_cambiar_en_produccion"
+
+const qrId = Astro.params.id
+const token = Astro.cookies.get("auth_token")?.value
+
+let pageError = ""
+let discount: any = null
+let redeemToken = ""
+
+if (!token || !qrId) {
+    pageError = "No hemos podido cargar este descuento."
+} else {
+    try {
+        const payload = jwt.verify(token, JWT_SECRET) as any
+        await ensureDiscountRedemptionsTable()
+
+        const [rows] = await db.execute(
+            `SELECT q.id, q.titulo, q.valor, q.descuento, q.tipo_descuento, q.expires_at, q.activo,
+                    u.id AS uso_id, c.id AS canje_id
+             FROM qr_usos u
+             INNER JOIN qr_codes q ON q.id = u.qr_id
+             LEFT JOIN qr_descuento_canjeos c
+                ON c.qr_id = u.qr_id AND c.user_id = u.user_id
+             WHERE u.user_id = ? AND q.id = ? AND q.tipo = 'descuento'
+             LIMIT 1`,
+            [payload.id, qrId],
+        ) as any
+
+        if (!rows.length) {
+            pageError = "Este descuento no esta disponible en tu cuenta."
+        } else {
+            const currentDiscount = rows[0]
+            const isExpired = currentDiscount.expires_at
+                ? new Date(currentDiscount.expires_at) < new Date()
+                : false
+
+            if (!currentDiscount.activo || isExpired || currentDiscount.canje_id) {
+                pageError = "Este descuento ya no se puede usar."
+            } else {
+                discount = {
+                    ...currentDiscount,
+                    public_title: getDiscountPublicTitle(currentDiscount),
+                    value_label: currentDiscount.tipo_descuento === "porcentaje"
+                        ? `${currentDiscount.descuento}%`
+                        : `${currentDiscount.descuento}€`,
+                }
+
+                redeemToken = jwt.sign(
+                    {
+                        type: "discount_redeem",
+                        qrId: currentDiscount.id,
+                        userId: payload.id,
+                        usoId: currentDiscount.uso_id,
+                    },
+                    JWT_SECRET,
+                    { expiresIn: "10m" },
+                )
+            }
+        }
+    } catch {
+        pageError = "No hemos podido cargar este descuento."
+    }
+}
+---
+
+<Layout title="Usar descuento">
+    <main class="discount-use-page">
+        <section class="discount-use-card">
+            {pageError ? (
+                <>
+                    <span class="discount-use-chip error">No disponible</span>
+                    <h1>No se puede generar el QR</h1>
+                    <p>{pageError}</p>
+                    <a href="/profile" class="acpbutton discount-use-link">Volver al perfil</a>
+                </>
+            ) : (
+                <>
+                    <span class="discount-use-chip">Listo para canjear</span>
+                    <h1>{discount.public_title}</h1>
+                    <p class="discount-use-value">{discount.value_label}</p>
+                    <p>
+                        Ensena este QR al empleado para que lo escanee. Cuando lo canjee,
+                        desaparecera automaticamente de tu perfil.
+                    </p>
+                    <div class="discount-use-qr-frame">
+                        <div id="discount-use-qr"></div>
+                    </div>
+                    <p class="discount-use-note">Este QR caduca en 10 minutos por seguridad.</p>
+                </>
+            )}
+        </section>
+    </main>
+</Layout>
+
+<style>
+    .discount-use-page {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 140px 20px 60px;
+        background:
+            radial-gradient(circle at top, rgba(184, 158, 12, 0.18), transparent 32%),
+            linear-gradient(180deg, #161616 0%, #0f0f0f 100%);
+    }
+
+    .discount-use-card {
+        width: min(100%, 680px);
+        padding: 36px 28px;
+        border-radius: 24px;
+        border: 1px solid rgba(184, 158, 12, 0.24);
+        background: rgba(25, 25, 25, 0.96);
+        box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+        text-align: center;
+        color: #f5f1dc;
+    }
+
+    .discount-use-chip {
+        display: inline-block;
+        margin-bottom: 18px;
+        padding: 8px 14px;
+        border-radius: 999px;
+        background: rgba(184, 158, 12, 0.18);
+        color: #e8d36b;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+    }
+
+    .discount-use-chip.error {
+        background: rgba(231, 76, 60, 0.16);
+        color: #f3a69c;
+    }
+
+    .discount-use-card h1 {
+        margin: 0 0 12px;
+        color: #fff7d1;
+    }
+
+    .discount-use-card p {
+        margin: 0 auto;
+        max-width: 48ch;
+        line-height: 1.6;
+    }
+
+    .discount-use-value {
+        margin: 18px 0;
+        font-size: clamp(2.4rem, 7vw, 4.2rem);
+        font-weight: 800;
+        color: #e8d36b;
+    }
+
+    .discount-use-qr-frame {
+        width: fit-content;
+        margin: 28px auto 18px;
+        padding: 18px;
+        border-radius: 22px;
+        background: #f8f1d5;
+    }
+
+    .discount-use-note {
+        opacity: 0.7;
+        font-size: 13px;
+    }
+
+    .discount-use-link {
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 24px;
+        min-width: 180px;
+        text-decoration: none;
+    }
+</style>
+
+<script define:vars={{ redeemToken }}>
+    import QRCodeStyling from "qr-code-styling"
+
+    document.addEventListener("astro:page-load", () => {
+        const qrElement = document.getElementById("discount-use-qr")
+        if (!qrElement || !redeemToken) return
+
+        const qr = new QRCodeStyling({
+            width: 280,
+            height: 280,
+            type: "svg",
+            data: `${window.location.origin}/api/descuentos/canjear?token=${encodeURIComponent(redeemToken)}`,
+            dotsOptions: { color: "#111111", type: "rounded" },
+            cornersSquareOptions: { color: "#b89e0c", type: "extra-rounded" },
+            backgroundOptions: { color: "#f8f1d5" },
+            image: "/marcoaldany.ico",
+            imageOptions: {
+                crossOrigin: "anonymous",
+                margin: 8,
+                imageSize: 0.26,
+            },
+        })
+
+        qr.append(qrElement)
+    })
+</script>

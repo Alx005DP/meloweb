@@ -1,0 +1,1411 @@
+---
+import Layout from "../../layouts/Layouts.astro";
+import AppModal from "../../components/AppModal.jsx";
+---
+
+<Layout title="Panel de Admin">
+    <main
+        class="admin-panel-grid"
+    >
+        <section class="admin-users admin-template">
+            <h2>Gestión de Usuarios</h2>
+            <nav class="admin-user-settings">
+                <input
+                    type="text"
+                    id="admin-user-search"
+                    placeholder="Buscar usuario"
+                />
+                <button
+                    class="acpbutton-small acbtaccept"
+                    id="admin-user-create-open"
+                    type="button"
+                    title="Añadir usuario"
+                    aria-label="Añadir usuario"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg>
+                </button>
+                <button
+                    class="acpbutton-small acbtaccept"
+                    id="admin-user-refresh"
+                    type="button"
+                    title="Recargar usuarios"
+                    aria-label="Recargar usuarios"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><polyline points="21 3 21 9 15 9"></polyline></svg>
+                </button>
+            </nav>
+            <div class="admin-search-and-allusers" id="admin-users-list">
+                <div class="admin-user">
+                    <img src="/user.png" alt="imguser" />
+                    <p>Cargando usuarios...</p>
+                </div>
+            </div>
+        </section>
+        <section class="admin-db admin-template">
+            <h2>Gestión de Base de datos</h2>
+        </section>
+        </section>
+        <section class="admin-server admin-template">
+            <h2>Gestión del servidor</h2>
+        </section>
+    </main>
+
+    <div class="form-modal" id="admin-create-user-modal">
+        <div class="form-modal-box success" class="admin-modal-box admin-modal-box-sm">
+            <h2 class="admin-no-margin">Añadir usuario</h2>
+            <p class="admin-subtitle">
+                Se generara una contraseña temporal y se enviara por email. El usuario tendrá que cambiarla al iniciar sesión.
+            </p>
+
+            <form id="admin-create-user-form" class="admin-form-grid">
+                <input type="email" id="create-email" placeholder="Email" class="admin-col-full" />
+                <select id="create-role">
+                    <option value="empleado">Empleado</option>
+                    <option value="admin">Admin</option>
+                    <option value="dueno">Dueño</option>
+                </select>
+                <input type="text" id="create-username" placeholder="Nombre de usuario" />
+                <input type="text" id="create-name" placeholder="Nombre" />
+                <input type="text" id="create-lastname" placeholder="Apellidos" />
+                <input type="tel" id="create-phone" placeholder="Teléfono" class="admin-col-full" />
+                <p id="create-user-msg" class="admin-message admin-col-full"></p>
+                <div class="admin-actions-row admin-col-full">
+                    <button type="button" class="acsbutton" id="admin-create-user-cancel">Cancelar</button>
+                    <button type="submit" class="acpbutton" id="admin-create-user-submit">Crear usuario</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="form-modal" id="admin-user-detail-modal">
+        <div class="form-modal-box success" class="admin-modal-box admin-modal-box-md">
+            <h2 class="admin-no-margin">Información del usuario</h2>
+            <p id="admin-user-detail-subtitle" class="admin-subtitle">
+                Consulta y edita los datos del usuario.
+            </p>
+
+            <form id="admin-user-detail-form" class="admin-form-grid">
+                <input type="hidden" id="detail-user-id" />
+                <input type="text" id="detail-username" placeholder="Nombre de usuario" disabled />
+                <select id="detail-role" disabled>
+                    <option value="empleado">Empleado</option>
+                    <option value="admin">Admin</option>
+                    <option value="dueno">Dueño</option>
+                    <option value="cliente">Cliente</option>
+                </select>
+                <input type="text" id="detail-name" placeholder="Nombre" disabled />
+                <input type="text" id="detail-lastname" placeholder="Apellidos" disabled />
+                <input type="email" id="detail-email" placeholder="Email" class="admin-col-full" disabled />
+                <input type="tel" id="detail-phone" placeholder="Teléfono" disabled />
+                <input type="text" id="detail-created-at" placeholder="Creado" disabled />
+                <p id="detail-user-msg" class="admin-message admin-col-full"></p>
+                <div class="admin-actions-row admin-col-full">
+                    <button type="button" class="acsbutton" id="admin-user-detail-close">Cerrar</button>
+                    <button type="button" class="acsbutton" id="admin-user-detail-edit">Editar</button>
+                    <button type="submit" class="acpbutton" id="admin-user-detail-save" style="display:none;">Guardar cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="form-modal" id="admin-db-table-modal">
+        <div class="form-modal-box success" class="admin-modal-box admin-modal-box-xl">
+            <h2 id="admin-db-table-title" class="admin-no-margin">Tabla</h2>
+            <p id="admin-db-table-subtitle" class="admin-subtitle">Consulta los registros y edita la fila que necesites.</p>
+            <div id="admin-db-table-content" class="admin-scroll-grid"></div>
+            <div class="admin-actions-row">
+                <button type="button" class="acsbutton" id="admin-db-table-close">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-modal" id="admin-db-row-modal">
+        <div class="form-modal-box success" class="admin-modal-box admin-modal-box-lg">
+            <h2 id="admin-db-row-title" class="admin-no-margin">Editar fila</h2>
+            <p id="admin-db-row-subtitle" class="admin-subtitle">Modifica los campos permitidos y guarda los cambios.</p>
+            <form id="admin-db-row-form" class="admin-form-stack">
+                <div id="admin-db-row-fields" class="admin-fields-grid"></div>
+                <p id="admin-db-row-msg" class="admin-message"></p>
+                <div class="admin-actions-row">
+                    <button type="button" class="acsbutton" id="admin-db-row-cancel">Cancelar</button>
+                    <button type="submit" class="acpbutton" id="admin-db-row-save">Guardar cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <AppModal client:load modalId="admin-user-feedback" />
+</Layout>
+
+<script>
+    const openFeedbackModal = (type: "success" | "error", title: string, text: string) => {
+        window.dispatchEvent(new CustomEvent("app-modal:open", {
+            detail: {
+                id: "admin-user-feedback",
+                config: {
+                    kind: "message",
+                    type,
+                    title,
+                    text,
+                    buttonText: "Aceptar",
+                    showButton: true,
+                    showProgress: false,
+                    closeOnBackdrop: true,
+                    showCloseButton: false,
+                },
+            },
+        }))
+    }
+
+    const createUserCard = (user: {
+        id: string
+        username: string
+        nombre: string | null
+        apellidos: string | null
+        email: string
+        rol: string
+        hasAvatar: boolean
+    }) => {
+        const card = document.createElement("div")
+        card.className = "admin-user"
+        card.dataset.userId = String(user.id)
+
+        const fullName = [user.nombre, user.apellidos].filter(Boolean).join(" ").trim()
+        const label = fullName
+            ? `${user.username} | ${fullName} | ${user.rol}`
+            : `${user.username} | ${user.email} | ${user.rol}`
+
+        card.innerHTML = `
+            <img src="${user.hasAvatar ? `/api/auth/avatar/${user.id}` : "/user.png"}" alt="${user.username}" onerror="this.src='/user.png'" />
+            <p>${label}</p>
+        `
+
+        return card
+    }
+
+    const createInfoCard = (text: string) => {
+        const card = document.createElement("div")
+        card.className = "admin-user"
+        card.innerHTML = `<img src="/user.png" alt="info" /><p>${text}</p>`
+        return card
+    }
+
+    const setupAdminUsers = () => {
+        const searchInput = document.getElementById("admin-user-search") as HTMLInputElement | null
+        const createButton = document.getElementById("admin-user-create-open") as HTMLButtonElement | null
+        const refreshButton = document.getElementById("admin-user-refresh") as HTMLButtonElement | null
+        const list = document.getElementById("admin-users-list") as HTMLDivElement | null
+        const modal = document.getElementById("admin-create-user-modal") as HTMLDivElement | null
+        const form = document.getElementById("admin-create-user-form") as HTMLFormElement | null
+        const cancelButton = document.getElementById("admin-create-user-cancel") as HTMLButtonElement | null
+        const submitButton = document.getElementById("admin-create-user-submit") as HTMLButtonElement | null
+        const msg = document.getElementById("create-user-msg") as HTMLParagraphElement | null
+        const detailModal = document.getElementById("admin-user-detail-modal") as HTMLDivElement | null
+        const detailForm = document.getElementById("admin-user-detail-form") as HTMLFormElement | null
+        const detailClose = document.getElementById("admin-user-detail-close") as HTMLButtonElement | null
+        const detailEdit = document.getElementById("admin-user-detail-edit") as HTMLButtonElement | null
+        const detailSave = document.getElementById("admin-user-detail-save") as HTMLButtonElement | null
+        const detailMsg = document.getElementById("detail-user-msg") as HTMLParagraphElement | null
+        const detailUserId = document.getElementById("detail-user-id") as HTMLInputElement | null
+        const detailUsername = document.getElementById("detail-username") as HTMLInputElement | null
+        const detailRole = document.getElementById("detail-role") as HTMLSelectElement | null
+        const detailName = document.getElementById("detail-name") as HTMLInputElement | null
+        const detailLastname = document.getElementById("detail-lastname") as HTMLInputElement | null
+        const detailEmail = document.getElementById("detail-email") as HTMLInputElement | null
+        const detailPhone = document.getElementById("detail-phone") as HTMLInputElement | null
+        const detailCreatedAt = document.getElementById("detail-created-at") as HTMLInputElement | null
+
+        if (!searchInput || !createButton || !refreshButton || !list || !modal || !form || !cancelButton || !submitButton || !msg || !detailModal || !detailForm || !detailClose || !detailEdit || !detailSave || !detailMsg || !detailUserId || !detailUsername || !detailRole || !detailName || !detailLastname || !detailEmail || !detailPhone || !detailCreatedAt || list.dataset.initialized === "true") return
+        list.dataset.initialized = "true"
+
+        let controller: AbortController | null = null
+        let debounceId: number | null = null
+        let detailEditMode = false
+
+        const setFormMessage = (text = "", color = "#e74c3c") => {
+            msg.textContent = text
+            msg.style.display = text ? "block" : "none"
+            msg.style.color = color
+        }
+
+        const setDetailMessage = (text = "", color = "#e74c3c") => {
+            detailMsg.textContent = text
+            detailMsg.style.display = text ? "block" : "none"
+            detailMsg.style.color = color
+        }
+
+        const openCreateModal = () => {
+            setFormMessage("")
+            form.reset()
+            modal.classList.add("active")
+        }
+
+        const closeCreateModal = () => {
+            modal.classList.remove("active")
+            setFormMessage("")
+            form.reset()
+            submitButton.disabled = false
+            submitButton.textContent = "Crear usuario"
+        }
+
+        const setDetailEditMode = (enabled: boolean) => {
+            detailEditMode = enabled
+            ;[
+                detailUsername,
+                detailRole,
+                detailName,
+                detailLastname,
+                detailEmail,
+                detailPhone,
+            ].forEach((field) => {
+                field.disabled = !enabled
+            })
+            detailEdit.style.display = enabled ? "none" : "inline-flex"
+            detailSave.style.display = enabled ? "inline-flex" : "none"
+        }
+
+        const closeDetailModal = () => {
+            detailModal.classList.remove("active")
+            setDetailMessage("")
+            detailForm.reset()
+            detailSave.disabled = false
+            detailSave.textContent = "Guardar cambios"
+            setDetailEditMode(false)
+        }
+
+        const formatCreatedAt = (value: string | null) => {
+            if (!value) return "-"
+            const date = new Date(value)
+            if (Number.isNaN(date.getTime())) return value
+            return date.toLocaleString("es-ES")
+        }
+
+        const loadUserDetail = async (userId: string) => {
+            setDetailMessage("")
+            setDetailEditMode(false)
+            detailSave.disabled = false
+            detailSave.textContent = "Guardar cambios"
+            detailModal.classList.add("active")
+
+            detailUsername.value = ""
+            detailName.value = ""
+            detailLastname.value = ""
+            detailEmail.value = ""
+            detailPhone.value = ""
+            detailCreatedAt.value = ""
+
+            try {
+                const res = await fetch(`/api/admin/users/${encodeURIComponent(userId)}`)
+                const data = await res.json()
+
+                if (!res.ok) {
+                    setDetailMessage(data.message || "No se pudo cargar el usuario.")
+                    return
+                }
+
+                const user = data.user
+                detailUserId.value = user.id
+                detailUsername.value = user.username || ""
+                detailRole.value = user.rol || "cliente"
+                detailName.value = user.nombre || ""
+                detailLastname.value = user.apellidos || ""
+                detailEmail.value = user.email || ""
+                detailPhone.value = user.telefono || ""
+                detailCreatedAt.value = formatCreatedAt(user.created_at || null)
+            } catch {
+                setDetailMessage("No se pudo cargar el usuario.")
+            }
+        }
+
+        const renderUsers = (users: Array<{
+            id: string
+            username: string
+            nombre: string | null
+            apellidos: string | null
+            email: string
+            rol: string
+            hasAvatar: boolean
+        }>) => {
+            list.innerHTML = ""
+
+            if (!users.length) {
+                list.appendChild(createInfoCard("No se han encontrado usuarios."))
+                return
+            }
+
+            users.forEach((user) => {
+                const card = createUserCard(user)
+                card.style.cursor = "pointer"
+                card.addEventListener("click", () => {
+                    loadUserDetail(user.id)
+                })
+                list.appendChild(card)
+            })
+        }
+
+        const loadUsers = async (query = "") => {
+            if (controller) controller.abort()
+            controller = new AbortController()
+
+            list.innerHTML = ""
+            list.appendChild(createInfoCard("Cargando usuarios..."))
+
+            try {
+                const url = new URL("/api/admin/users", window.location.origin)
+                if (query.trim()) {
+                    url.searchParams.set("q", query.trim())
+                }
+
+                const res = await fetch(url.pathname + url.search, {
+                    signal: controller.signal,
+                })
+
+                const data = await res.json()
+
+                if (!res.ok) {
+                    if (res.status === 401 || res.status === 403) {
+                        list.innerHTML = ""
+                        list.appendChild(createInfoCard("No tienes permisos para ver usuarios."))
+                        return
+                    }
+
+                    throw new Error(data?.error || "load_users_failed")
+                }
+
+                renderUsers(data.users || [])
+            } catch (error) {
+                if ((error as Error).name === "AbortError") return
+
+                list.innerHTML = ""
+                list.appendChild(createInfoCard("No se pudieron cargar los usuarios."))
+            }
+        }
+
+        searchInput.addEventListener("input", () => {
+            if (debounceId) window.clearTimeout(debounceId)
+            debounceId = window.setTimeout(() => {
+                loadUsers(searchInput.value)
+            }, 250)
+        })
+
+        refreshButton.addEventListener("click", () => {
+            loadUsers(searchInput.value)
+        })
+
+        createButton.addEventListener("click", openCreateModal)
+        cancelButton.addEventListener("click", closeCreateModal)
+        detailClose.addEventListener("click", closeDetailModal)
+        detailEdit.addEventListener("click", () => {
+            setDetailMessage("")
+            setDetailEditMode(true)
+        })
+
+        modal.addEventListener("click", (event) => {
+            if (event.target === modal) {
+                closeCreateModal()
+            }
+        })
+
+        detailModal.addEventListener("click", (event) => {
+            if (event.target === detailModal) {
+                closeDetailModal()
+            }
+        })
+
+        form.addEventListener("submit", async (event) => {
+            event.preventDefault()
+            setFormMessage("")
+
+            const payload = {
+                email: (document.getElementById("create-email") as HTMLInputElement).value.trim(),
+                rol: (document.getElementById("create-role") as HTMLSelectElement).value,
+                username: (document.getElementById("create-username") as HTMLInputElement).value.trim(),
+                nombre: (document.getElementById("create-name") as HTMLInputElement).value.trim(),
+                apellidos: (document.getElementById("create-lastname") as HTMLInputElement).value.trim(),
+                telefono: (document.getElementById("create-phone") as HTMLInputElement).value.trim(),
+            }
+
+            if (!payload.email || !payload.username || !payload.nombre || !payload.apellidos) {
+                setFormMessage("Completa todos los campos obligatorios.")
+                return
+            }
+
+            submitButton.disabled = true
+            submitButton.textContent = "Creando..."
+
+            try {
+                const res = await fetch("/api/admin/create-user", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload),
+                })
+
+                const data = await res.json()
+
+                if (!res.ok) {
+                    setFormMessage(data.message || "No se pudo crear el usuario.")
+                    submitButton.disabled = false
+                    submitButton.textContent = "Crear usuario"
+                    return
+                }
+
+                closeCreateModal()
+                openFeedbackModal(
+                    "success",
+                    "Usuario creado",
+                    "La cuenta se ha creado correctamente y el email con la contraseña temporal ya ha sido enviado."
+                )
+                loadUsers(searchInput.value)
+            } catch {
+                setFormMessage("No se pudo crear el usuario.")
+                submitButton.disabled = false
+                submitButton.textContent = "Crear usuario"
+            }
+        })
+
+        detailForm.addEventListener("submit", async (event) => {
+            event.preventDefault()
+            setDetailMessage("")
+
+            const payload = {
+                username: detailUsername.value.trim(),
+                rol: detailRole.value,
+                nombre: detailName.value.trim(),
+                apellidos: detailLastname.value.trim(),
+                email: detailEmail.value.trim(),
+                telefono: detailPhone.value.trim(),
+            }
+
+            if (!detailUserId.value || !payload.username || !payload.nombre || !payload.apellidos || !payload.email) {
+                setDetailMessage("Completa todos los campos obligatorios.")
+                return
+            }
+
+            detailSave.disabled = true
+            detailSave.textContent = "Guardando..."
+
+            try {
+                const res = await fetch(`/api/admin/users/${encodeURIComponent(detailUserId.value)}`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload),
+                })
+                const data = await res.json()
+
+                if (!res.ok) {
+                    setDetailMessage(data.message || "No se pudo guardar el usuario.")
+                    detailSave.disabled = false
+                    detailSave.textContent = "Guardar cambios"
+                    return
+                }
+
+                setDetailEditMode(false)
+                detailSave.disabled = false
+                detailSave.textContent = "Guardar cambios"
+                setDetailMessage("Usuario actualizado correctamente.", "#2ecc71")
+                detailCreatedAt.value = formatCreatedAt(data.user?.created_at || null)
+                loadUsers(searchInput.value)
+            } catch {
+                setDetailMessage("No se pudo guardar el usuario.")
+                detailSave.disabled = false
+                detailSave.textContent = "Guardar cambios"
+            }
+        })
+
+        loadUsers()
+    }
+
+    const renderDatabaseTemplate = () => `
+        <h2>Gestión de Base de datos</h2>
+        <div class="admin-section-stack">
+            <div class="admin-stats-grid">
+                <div class="admin-card admin-card-8">
+                    <p class="admin-overline">Usuarios</p>
+                    <h3 id="db-stat-users" class="admin-stat-value-md">-</h3>
+                    <span class="admin-meta">Registros totales</span>
+                </div>
+                <div class="admin-card admin-card-8">
+                    <p class="admin-overline">Citas</p>
+                    <h3 id="db-stat-citas-month" class="admin-stat-value-md">-</h3>
+                    <span class="admin-meta">Este mes</span>
+                </div>
+                <div class="admin-card admin-card-8">
+                    <p class="admin-overline">QR activos</p>
+                    <h3 id="db-stat-qr-active" class="admin-stat-value-md">-</h3>
+                    <span class="admin-meta">Campañas activas</span>
+                </div>
+                <div class="admin-card admin-card-8">
+                    <p class="admin-overline">Ultimo backup</p>
+                    <h3 id="db-stat-backup-date" style="margin:0; font-size:20px;">Sin backup</h3>
+                    <span id="db-stat-backup-time" class="admin-meta">Todavia no hay copias manuales</span>
+                </div>
+            </div>
+
+            <div class="admin-split-grid">
+                <div class="admin-card admin-card-8">
+                    <div class="admin-header-row">
+                        <div>
+                            <h3 class="admin-title-md">Tablas principales</h3>
+                            <p class="admin-caption">Pulsa una tabla para ver sus datos y editar filas</p>
+                        </div>
+                    </div>
+
+                    <div class="admin-grid-10">
+                        <div style="display:grid; grid-template-columns:1.4fr .8fr .8fr .8fr; gap:10px; padding:12px; border-radius:8px; background:var(--secondary); font-size:13px; opacity:.7;">
+                            <strong>Tabla</strong>
+                            <strong>Estado</strong>
+                            <strong>Filas</strong>
+                            <strong>Tamaño</strong>
+                        </div>
+                        <div id="admin-db-tables" class="admin-grid-10">
+                            <div style="display:grid; grid-template-columns:1.4fr .8fr .8fr .8fr; gap:10px; padding:12px; border-radius:8px; background:var(--secondary);">
+                                <span>Cargando...</span>
+                                <span>-</span>
+                                <span>-</span>
+                                <span>-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="admin-card admin-card-8">
+                    <h3 class="admin-title-block">Acciones rapidas</h3>
+                    <p class="admin-copy">Herramientas reales de mantenimiento y exportacion</p>
+
+                    <div class="admin-grid-10">
+                        <button class="acpbutton" type="button" id="admin-db-backup">Crear backup manual</button>
+                        <button class="acsbutton" type="button" id="admin-db-export-users">Exportar usuarios</button>
+                        <button class="acsbutton" type="button" id="admin-db-export-citas">Exportar citas</button>
+                        <button class="acsbutton" type="button" id="admin-db-cleanup">Limpiar logs antiguos</button>
+                        <button class="acsbutton" type="button" id="admin-db-reindex">Reindexar tablas</button>
+                    </div>
+
+                    <div style="margin-top:16px; padding:14px; border-radius:8px; background:var(--secondary);">
+                        <p style="margin:0 0 6px; font-size:13px; opacity:.6;">Ultima operacion</p>
+                        <strong id="admin-db-operation-title" style="display:block; margin-bottom:4px;">Pendiente de actividad</strong>
+                        <span id="admin-db-operation-detail" class="admin-muted">Las acciones que hagas aqui quedaran registradas.</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="admin-card admin-card-8">
+                <div class="admin-header-row">
+                    <div>
+                        <h3 class="admin-title-md">Actividad reciente</h3>
+                        <p class="admin-caption">Historial de mantenimiento y exportaciones del panel</p>
+                    </div>
+                    <button class="acsbutton" type="button" id="admin-db-history-open">Ver historial</button>
+                </div>
+
+                <div id="admin-db-activity" class="admin-grid-10">
+                    <div class="admin-surface-row">
+                        <strong class="admin-block">Cargando actividad...</strong>
+                        <span class="admin-muted">Espera un momento</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `
+
+    const renderServerTemplate = () => `
+        <h2>Gestión del servidor</h2>
+        <div class="admin-section-stack">
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:12px;">
+                <div class="admin-card admin-card-10">
+                    <p class="admin-overline">CPU</p>
+                    <h3 id="server-cpu-value" class="admin-stat-value-lg">-</h3>
+                    <span id="server-cpu-meta" class="admin-meta">Cargando...</span>
+                </div>
+                <div class="admin-card admin-card-10">
+                    <p class="admin-overline">Memoria RAM</p>
+                    <h3 id="server-memory-value" class="admin-stat-value-lg">-</h3>
+                    <span id="server-memory-meta" class="admin-meta">Cargando...</span>
+                </div>
+                <div class="admin-card admin-card-10">
+                    <p class="admin-overline">Disco</p>
+                    <h3 id="server-disk-value" class="admin-stat-value-lg">-</h3>
+                    <span id="server-disk-meta" class="admin-meta">Cargando...</span>
+                </div>
+                <div class="admin-card admin-card-10">
+                    <p class="admin-overline">Uptime</p>
+                    <h3 id="server-uptime-value" class="admin-stat-value-lg">-</h3>
+                    <span class="admin-meta">reinicio más reciente</span>
+                </div>
+            </div>
+
+            <div class="admin-server-grid">
+                <div style="background:var(--background2); border-radius:10px; padding:16px; display:grid; gap:14px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; gap:12px;">
+                        <div>
+                            <h3 class="admin-title-md">Carga en tiempo real</h3>
+                            <p class="admin-caption">Vista general de CPU, RAM y red</p>
+                        </div>
+                        <span class="admin-muted">Ultimos 30 min</span>
+                    </div>
+
+                    <div style="display:grid; gap:12px;">
+                        <div class="admin-stack-6">
+                            <div class="admin-between-text">
+                                <strong>CPU</strong>
+                                <span id="server-cpu-bar-label" class="admin-dim">-</span>
+                            </div>
+                            <div class="admin-progress-track">
+                                <div id="server-cpu-bar" style="width:0%; height:100%; background:linear-gradient(90deg, #d4af37, #f0ce08);"></div>
+                            </div>
+                        </div>
+                        <div class="admin-stack-6">
+                            <div class="admin-between-text">
+                                <strong>Memoria</strong>
+                                <span id="server-memory-bar-label" class="admin-dim">-</span>
+                            </div>
+                            <div class="admin-progress-track">
+                                <div id="server-memory-bar" style="width:0%; height:100%; background:linear-gradient(90deg, #2ecc71, #7bed9f);"></div>
+                            </div>
+                        </div>
+                        <div class="admin-stack-6">
+                            <div class="admin-between-text">
+                                <strong>Disco</strong>
+                                <span id="server-disk-bar-label" class="admin-dim">-</span>
+                            </div>
+                            <div class="admin-progress-track">
+                                <div id="server-disk-bar" style="width:0%; height:100%; background:linear-gradient(90deg, #3498db, #74b9ff);"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="admin-panel-surface">
+                        <div class="admin-header-row-end">
+                            <strong>Tráfico de red</strong>
+                            <span class="admin-fine-meta">entrada / salida</span>
+                        </div>
+                        <div id="server-history-chart" style="display:flex; align-items:flex-end; gap:8px; height:140px;">
+                            <div class="admin-flex-col-sample">
+                                <div style="height:58px; border-radius:8px 8px 0 0; background:linear-gradient(180deg, rgba(52,152,219,.95), rgba(52,152,219,.35));"></div>
+                                <div class="admin-sample-label">00h</div>
+                            </div>
+                            <div class="admin-flex-col-sample">
+                                <div style="height:96px; border-radius:8px 8px 0 0; background:linear-gradient(180deg, rgba(212,175,55,.95), rgba(212,175,55,.35));"></div>
+                                <div class="admin-sample-label">06h</div>
+                            </div>
+                            <div class="admin-flex-col-sample">
+                                <div style="height:84px; border-radius:8px 8px 0 0; background:linear-gradient(180deg, rgba(46,204,113,.95), rgba(46,204,113,.35));"></div>
+                                <div class="admin-sample-label">12h</div>
+                            </div>
+                            <div class="admin-flex-col-sample">
+                                <div style="height:118px; border-radius:8px 8px 0 0; background:linear-gradient(180deg, rgba(52,152,219,.95), rgba(52,152,219,.35));"></div>
+                                <div class="admin-sample-label">18h</div>
+                            </div>
+                            <div class="admin-flex-col-sample">
+                                <div style="height:72px; border-radius:8px 8px 0 0; background:linear-gradient(180deg, rgba(212,175,55,.95), rgba(212,175,55,.35));"></div>
+                                <div class="admin-sample-label">24h</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="admin-stack-16">
+                    <div class="admin-card admin-card-10">
+                        <h3 class="admin-title-block">Servicios clave</h3>
+                        <p class="admin-copy">Lo importante para saber si la app está sana</p>
+                        <div id="server-alerts" class="admin-grid-10">
+                            <div class="admin-service-row">
+                                <span>Node / Astro SSR</span>
+                                <strong id="server-service-node" class="admin-ok">Online</strong>
+                            </div>
+                            <div class="admin-service-row">
+                                <span>MySQL</span>
+                                <strong id="server-service-mysql" class="admin-ok">Cargando</strong>
+                            </div>
+                            <div class="admin-service-row">
+                                <span>Latencia BD</span>
+                                <strong id="server-service-db-latency" class="admin-warn">-</strong>
+                            </div>
+                            <div class="admin-service-row">
+                                <span>Backups</span>
+                                <strong id="server-service-backup" class="admin-ok">Cargando</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="admin-card admin-card-10">
+                        <h3 class="admin-title-block">Alertas utiles</h3>
+                        <p class="admin-copy">Lo que merece la pena vigilar</p>
+                        <div id="server-events" class="admin-grid-10">
+                            <div class="admin-surface-row">
+                                <strong class="admin-block">Uso de RAM alto</strong>
+                                <span class="admin-muted">Avisar si supera el 80% durante 10 minutos.</span>
+                            </div>
+                            <div class="admin-surface-row">
+                                <strong class="admin-block">Disco cercano al límite</strong>
+                                <span class="admin-muted">Avisar si queda menos del 20% libre.</span>
+                            </div>
+                            <div class="admin-surface-row">
+                                <strong class="admin-block">Errores 500</strong>
+                                <span class="admin-muted">Controlar picos de errores y reinicios del proceso.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="admin-card admin-card-10">
+                        <h3 class="admin-title-spaced">Ultimos eventos</h3>
+                        <div class="admin-grid-10">
+                            <div class="admin-surface-row">
+                                <strong class="admin-block">03:12 | Backup completado</strong>
+                                <span class="admin-muted">Duracion 01:24 | sin incidencias</span>
+                            </div>
+                            <div class="admin-surface-row">
+                                <strong class="admin-block">02:41 | Pico de CPU controlado</strong>
+                                <span class="admin-muted">Subida puntual por exportacion de datos</span>
+                            </div>
+                            <div class="admin-surface-row">
+                                <strong class="admin-block">Ayer | Reinicio programado</strong>
+                                <span class="admin-muted">Actualizacion de dependencias del servidor</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `
+
+    const setupAdminDatabase = () => {
+        const section = document.querySelector(".admin-db.admin-template") as HTMLElement | null
+        if (!section || section.dataset.initialized === "true") return
+
+        section.innerHTML = renderDatabaseTemplate()
+        section.dataset.initialized = "true"
+
+        const usersStat = document.getElementById("db-stat-users") as HTMLHeadingElement | null
+        const citasStat = document.getElementById("db-stat-citas-month") as HTMLHeadingElement | null
+        const qrStat = document.getElementById("db-stat-qr-active") as HTMLHeadingElement | null
+        const backupDate = document.getElementById("db-stat-backup-date") as HTMLHeadingElement | null
+        const backupTime = document.getElementById("db-stat-backup-time") as HTMLSpanElement | null
+        const tablesContainer = document.getElementById("admin-db-tables") as HTMLDivElement | null
+        const activityContainer = document.getElementById("admin-db-activity") as HTMLDivElement | null
+        const operationTitle = document.getElementById("admin-db-operation-title") as HTMLElement | null
+        const operationDetail = document.getElementById("admin-db-operation-detail") as HTMLElement | null
+        const historyButton = document.getElementById("admin-db-history-open") as HTMLButtonElement | null
+        const backupButton = document.getElementById("admin-db-backup") as HTMLButtonElement | null
+        const exportUsersButton = document.getElementById("admin-db-export-users") as HTMLButtonElement | null
+        const exportCitasButton = document.getElementById("admin-db-export-citas") as HTMLButtonElement | null
+        const cleanupButton = document.getElementById("admin-db-cleanup") as HTMLButtonElement | null
+        const reindexButton = document.getElementById("admin-db-reindex") as HTMLButtonElement | null
+        const tableModal = document.getElementById("admin-db-table-modal") as HTMLDivElement | null
+        const tableModalTitle = document.getElementById("admin-db-table-title") as HTMLHeadingElement | null
+        const tableModalSubtitle = document.getElementById("admin-db-table-subtitle") as HTMLParagraphElement | null
+        const tableModalContent = document.getElementById("admin-db-table-content") as HTMLDivElement | null
+        const tableModalClose = document.getElementById("admin-db-table-close") as HTMLButtonElement | null
+        const rowModal = document.getElementById("admin-db-row-modal") as HTMLDivElement | null
+        const rowModalTitle = document.getElementById("admin-db-row-title") as HTMLHeadingElement | null
+        const rowModalSubtitle = document.getElementById("admin-db-row-subtitle") as HTMLParagraphElement | null
+        const rowForm = document.getElementById("admin-db-row-form") as HTMLFormElement | null
+        const rowFields = document.getElementById("admin-db-row-fields") as HTMLDivElement | null
+        const rowMsg = document.getElementById("admin-db-row-msg") as HTMLParagraphElement | null
+        const rowCancel = document.getElementById("admin-db-row-cancel") as HTMLButtonElement | null
+        const rowSave = document.getElementById("admin-db-row-save") as HTMLButtonElement | null
+
+        if (!usersStat || !citasStat || !qrStat || !backupDate || !backupTime || !tablesContainer || !activityContainer || !operationTitle || !operationDetail || !historyButton || !backupButton || !exportUsersButton || !exportCitasButton || !cleanupButton || !reindexButton || !tableModal || !tableModalTitle || !tableModalSubtitle || !tableModalContent || !tableModalClose || !rowModal || !rowModalTitle || !rowModalSubtitle || !rowForm || !rowFields || !rowMsg || !rowCancel || !rowSave) return
+
+        const formatNumber = (value: number) => new Intl.NumberFormat("es-ES").format(Number(value || 0))
+        let activeTableName = ""
+        let activeTableColumns: Array<any> = []
+        let activeTableRows: Array<Record<string, any>> = []
+        let editingRowIndex = -1
+
+        const formatDateTime = (value: string | null) => {
+            if (!value) return "-"
+            const date = new Date(value)
+            if (Number.isNaN(date.getTime())) return value
+            return date.toLocaleString("es-ES")
+        }
+
+        const statusColor = (status: string) => {
+            if (status === "Activa") return "#2ecc71"
+            if (status === "No creada") return "#e67e22"
+            if (status === "error") return "#e74c3c"
+            return "#f0ce08"
+        }
+
+        const renderTableRow = (table: {
+            name: string
+            status: string
+            rowCount: number
+            sizeLabel: string
+        }) => `
+            <button
+                type="button"
+                class="admin-db-table-row"
+                data-table-name="${table.name}"
+                style="display:grid; grid-template-columns:1.4fr .8fr .8fr .8fr; gap:10px; padding:12px; border-radius:8px; background:var(--secondary); border:none; color:inherit; text-align:left; cursor:pointer;"
+            >
+                <span>${table.name}</span>
+                <span style="color:${statusColor(table.status)};">${table.status}</span>
+                <span>${formatNumber(table.rowCount)}</span>
+                <span>${table.sizeLabel}</span>
+            </button>
+        `
+
+        const renderActivityItem = (item: {
+            title: string
+            detail: string | null
+            created_at?: string
+            status?: string
+        }) => `
+            <div class="admin-surface-row">
+                <strong class="admin-block">${item.title}</strong>
+                <span class="admin-muted">${[item.created_at ? formatDateTime(item.created_at) : null, item.detail || null].filter(Boolean).join(" | ") || "Sin detalle adicional"}</span>
+            </div>
+        `
+
+        const setLastOperation = (title: string, detail: string) => {
+            operationTitle.textContent = title
+            operationDetail.textContent = detail
+        }
+
+        const setRowMessage = (text = "", color = "#e74c3c") => {
+            rowMsg.textContent = text
+            rowMsg.style.display = text ? "block" : "none"
+            rowMsg.style.color = color
+        }
+
+        const closeTableModal = () => {
+            tableModal.classList.remove("active")
+            tableModalContent.innerHTML = ""
+        }
+
+        const closeRowModal = () => {
+            rowModal.classList.remove("active")
+            rowFields.innerHTML = ""
+            rowSave.disabled = false
+            rowSave.textContent = "Guardar cambios"
+            setRowMessage("")
+            editingRowIndex = -1
+        }
+
+        const showTextModal = (title: string, text: string) => {
+            openFeedbackModal("success", title, text)
+        }
+
+        const renderTableModalRows = () => {
+            if (!activeTableRows.length) {
+                tableModalContent.innerHTML = `
+                    <div style="padding:14px; border-radius:8px; background:var(--secondary);">
+                        <strong class="admin-block">La tabla no tiene filas</strong>
+                        <span class="admin-muted">No hay registros para mostrar ahora mismo.</span>
+                    </div>
+                `
+                return
+            }
+
+            tableModalContent.innerHTML = activeTableRows.map((row, index) => {
+                const fields = Object.entries(row).map(([key, value]) => `
+                    <div style="padding:10px; border-radius:8px; background:rgba(255,255,255,.03);">
+                        <strong style="display:block; font-size:12px; opacity:.7; margin-bottom:4px;">${key}</strong>
+                        <span style="font-size:13px; word-break:break-word;">${value === null || value === "" ? "-" : String(value)}</span>
+                    </div>
+                `).join("")
+
+                return `
+                    <div style="display:grid; gap:12px; padding:14px; border-radius:10px; background:var(--secondary);">
+                        <div style="display:flex; justify-content:space-between; gap:12px; align-items:center;">
+                            <strong>Fila ${index + 1}</strong>
+                            <button type="button" class="acsbutton admin-db-edit-row" data-row-index="${index}">Editar</button>
+                        </div>
+                        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:10px;">
+                            ${fields}
+                        </div>
+                    </div>
+                `
+            }).join("")
+
+            tableModalContent.querySelectorAll(".admin-db-edit-row").forEach((button) => {
+                button.addEventListener("click", () => {
+                    const rowIndex = Number((button as HTMLButtonElement).dataset.rowIndex || "-1")
+                    if (rowIndex >= 0) {
+                        openRowEditor(rowIndex)
+                    }
+                })
+            })
+        }
+
+        const openRowEditor = (rowIndex: number) => {
+            const row = activeTableRows[rowIndex]
+            if (!row) return
+
+            editingRowIndex = rowIndex
+            setRowMessage("")
+            rowModalTitle.textContent = `Editar fila de ${activeTableName}`
+            rowModalSubtitle.textContent = "Solo se pueden cambiar los campos permitidos."
+
+            rowFields.innerHTML = activeTableColumns.map((column: any) => {
+                const rawValue = row[column.name]
+                const safeValue = rawValue === null || rawValue === undefined ? "" : String(rawValue)
+                const editable = Boolean(column.editable)
+                const longText = String(column.type || "").toLowerCase().includes("text")
+                const baseStyle = "width:100%; border-radius:8px; padding:10px; background:var(--secondary); color:inherit; border:1px solid rgba(255,255,255,.08);"
+
+                return `
+                    <label style="display:grid; gap:6px; ${longText ? "grid-column:1 / -1;" : ""}">
+                        <span style="font-size:12px; opacity:.75;">${column.name} | ${column.type}${editable ? "" : " | solo lectura"}</span>
+                        ${longText
+                            ? `<textarea name="${column.name}" rows="4" ${editable ? "" : "disabled"} style="${baseStyle}; resize:vertical;">${safeValue}</textarea>`
+                            : `<input name="${column.name}" value="${safeValue.replace(/"/g, "&quot;")}" ${editable ? "" : "disabled"} style="${baseStyle}" />`
+                        }
+                    </label>
+                `
+            }).join("")
+
+            rowModal.classList.add("active")
+        }
+
+        const openTableModal = async (tableName: string) => {
+            tableModalTitle.textContent = `Tabla: ${tableName}`
+            tableModalSubtitle.textContent = "Cargando registros..."
+            tableModalContent.innerHTML = `
+                <div style="padding:14px; border-radius:8px; background:var(--secondary);">
+                    <strong class="admin-block">Cargando filas...</strong>
+                    <span class="admin-muted">Espera un momento</span>
+                </div>
+            `
+            tableModal.classList.add("active")
+
+            try {
+                const res = await fetch(`/api/admin/database/table?name=${encodeURIComponent(tableName)}`)
+                const data = await res.json()
+
+                if (!res.ok) {
+                    throw new Error(data?.message || "No se pudo cargar la tabla.")
+                }
+
+                activeTableName = tableName
+                activeTableColumns = data.columns || []
+                activeTableRows = data.rows || []
+
+                tableModalTitle.textContent = `Tabla: ${tableName}`
+                tableModalSubtitle.textContent = `${activeTableRows.length} filas cargadas.`
+                renderTableModalRows()
+            } catch (error) {
+                tableModalSubtitle.textContent = "No se pudo cargar la tabla"
+                tableModalContent.innerHTML = `
+                    <div style="padding:14px; border-radius:8px; background:var(--secondary);">
+                        <strong class="admin-block">Error al cargar</strong>
+                        <span class="admin-muted">${(error as Error).message || "Error inesperado"}</span>
+                    </div>
+                `
+            }
+        }
+
+        const attachTableListeners = () => {
+            tablesContainer.querySelectorAll(".admin-db-table-row").forEach((button) => {
+                button.addEventListener("click", () => {
+                    const tableName = (button as HTMLButtonElement).dataset.tableName
+                    if (tableName) {
+                        openTableModal(tableName)
+                    }
+                })
+            })
+        }
+
+        const loadOverview = async () => {
+            tablesContainer.innerHTML = renderTableRow({ name: "Cargando...", status: "-", rowCount: 0, sizeLabel: "-" })
+
+            try {
+                const res = await fetch("/api/admin/database/overview")
+                const data = await res.json()
+
+                if (!res.ok) {
+                    throw new Error(data?.message || "No se pudo cargar la base de datos.")
+                }
+
+                usersStat.textContent = formatNumber(data.stats?.usersTotal || 0)
+                citasStat.textContent = formatNumber(data.stats?.citasMonth || 0)
+                qrStat.textContent = formatNumber(data.stats?.qrActive || 0)
+
+                if (data.stats?.latestBackup) {
+                    backupDate.textContent = new Date(data.stats.latestBackup.modifiedAt).toLocaleDateString("es-ES")
+                    backupTime.textContent = `${formatDateTime(data.stats.latestBackup.modifiedAt)} | ${data.stats.latestBackup.path}`
+                } else {
+                    backupDate.textContent = "Sin backup"
+                    backupTime.textContent = "Todavia no hay copias manuales"
+                }
+
+                tablesContainer.innerHTML = (data.tables || []).map(renderTableRow).join("")
+                    || renderTableRow({ name: "Sin tablas", status: "Revisar", rowCount: 0, sizeLabel: "0 B" })
+                attachTableListeners()
+
+                const activity = Array.isArray(data.activity) ? data.activity : []
+                activityContainer.innerHTML = activity.length
+                    ? activity.map(renderActivityItem).join("")
+                    : renderActivityItem({
+                        title: "Sin actividad registrada",
+                        detail: "Todavia no se ha ejecutado ninguna accion desde el panel.",
+                    })
+
+                if (activity[0]) {
+                    setLastOperation(
+                        activity[0].title || "Ultima operacion",
+                        [activity[0].created_at ? formatDateTime(activity[0].created_at) : null, activity[0].detail || null].filter(Boolean).join(" | ")
+                    )
+                }
+            } catch (error) {
+                tablesContainer.innerHTML = renderTableRow({ name: "Error", status: "Revisar", rowCount: 0, sizeLabel: "-" })
+                activityContainer.innerHTML = renderActivityItem({
+                    title: "No se pudo cargar la actividad",
+                    detail: (error as Error).message || "Error inesperado",
+                    status: "error",
+                })
+                setLastOperation("Error al cargar la base", (error as Error).message || "Error inesperado")
+            }
+        }
+
+        const runAction = async (action: "backup" | "cleanup_logs" | "reindex", button: HTMLButtonElement, loadingText: string) => {
+            const originalText = button.textContent || ""
+            button.disabled = true
+            button.textContent = loadingText
+
+            try {
+                const res = await fetch("/api/admin/database/action", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ action }),
+                })
+                const data = await res.json()
+
+                if (!res.ok) {
+                    throw new Error(data?.message || "No se pudo completar la accion.")
+                }
+
+                openFeedbackModal("success", "Operacion completada", data.message || "Accion ejecutada correctamente.")
+                await loadOverview()
+            } catch (error) {
+                openFeedbackModal("error", "Operacion fallida", (error as Error).message || "No se pudo completar la accion.")
+            } finally {
+                button.disabled = false
+                button.textContent = originalText
+            }
+        }
+
+        historyButton.addEventListener("click", async () => {
+            try {
+                const res = await fetch("/api/admin/database/action")
+                const data = await res.json()
+
+                if (!res.ok) {
+                    throw new Error(data?.message || "No se pudo cargar el historial.")
+                }
+
+                const text = (data.activity || []).map((item: any) => {
+                    return `${item.title}\n${[item.created_at ? formatDateTime(item.created_at) : null, item.detail || null].filter(Boolean).join(" | ")}`
+                }).join("\n\n")
+
+                showTextModal("Historial de actividad", text || "No hay actividad registrada.")
+            } catch (error) {
+                openFeedbackModal("error", "Historial no disponible", (error as Error).message || "No se pudo cargar el historial.")
+            }
+        })
+
+        tableModalClose.addEventListener("click", closeTableModal)
+        rowCancel.addEventListener("click", closeRowModal)
+
+        tableModal.addEventListener("click", (event) => {
+            if (event.target === tableModal) {
+                closeTableModal()
+            }
+        })
+
+        rowModal.addEventListener("click", (event) => {
+            if (event.target === rowModal) {
+                closeRowModal()
+            }
+        })
+
+        rowForm.addEventListener("submit", async (event) => {
+            event.preventDefault()
+
+            if (editingRowIndex < 0 || !activeTableRows[editingRowIndex]) return
+
+            const formData = new FormData(rowForm)
+            const updatedValues: Record<string, string> = {}
+            activeTableColumns
+                .filter((column: any) => column.editable)
+                .forEach((column: any) => {
+                    updatedValues[column.name] = String(formData.get(column.name) ?? "")
+                })
+
+            rowSave.disabled = true
+            rowSave.textContent = "Guardando..."
+            setRowMessage("")
+
+            try {
+                const res = await fetch("/api/admin/database/table", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        tableName: activeTableName,
+                        originalValues: activeTableRows[editingRowIndex],
+                        updatedValues,
+                    }),
+                })
+                const data = await res.json()
+
+                if (!res.ok) {
+                    throw new Error(data?.message || "No se pudo actualizar la fila.")
+                }
+
+                closeRowModal()
+                await openTableModal(activeTableName)
+                await loadOverview()
+                openFeedbackModal("success", "Fila actualizada", "Los datos de la tabla se han actualizado correctamente.")
+            } catch (error) {
+                setRowMessage((error as Error).message || "No se pudo actualizar la fila.")
+            } finally {
+                rowSave.disabled = false
+                rowSave.textContent = "Guardar cambios"
+            }
+        })
+
+        backupButton.addEventListener("click", () => {
+            runAction("backup", backupButton, "Creando...")
+        })
+
+        cleanupButton.addEventListener("click", () => {
+            runAction("cleanup_logs", cleanupButton, "Limpiando...")
+        })
+
+        reindexButton.addEventListener("click", () => {
+            runAction("reindex", reindexButton, "Revisando...")
+        })
+
+        exportUsersButton.addEventListener("click", () => {
+            window.location.href = "/api/admin/database/export?type=users"
+            setLastOperation("Exportacion de usuarios iniciada", "Se esta descargando el archivo CSV de usuarios.")
+        })
+
+        exportCitasButton.addEventListener("click", () => {
+            window.location.href = "/api/admin/database/export?type=citas"
+            setLastOperation("Exportacion de citas iniciada", "Se esta descargando el archivo CSV de citas.")
+        })
+
+        loadOverview()
+    }
+
+    const setupAdminServer = () => {
+        const section = document.querySelector(".admin-server.admin-template") as HTMLElement | null
+        if (!section || section.dataset.initialized === "true") return
+
+        section.innerHTML = renderServerTemplate()
+        section.dataset.initialized = "true"
+
+        const cpuValue = document.getElementById("server-cpu-value") as HTMLHeadingElement | null
+        const cpuMeta = document.getElementById("server-cpu-meta") as HTMLSpanElement | null
+        const memoryValue = document.getElementById("server-memory-value") as HTMLHeadingElement | null
+        const memoryMeta = document.getElementById("server-memory-meta") as HTMLSpanElement | null
+        const diskValue = document.getElementById("server-disk-value") as HTMLHeadingElement | null
+        const diskMeta = document.getElementById("server-disk-meta") as HTMLSpanElement | null
+        const uptimeValue = document.getElementById("server-uptime-value") as HTMLHeadingElement | null
+        const uptimeMeta = uptimeValue?.nextElementSibling as HTMLSpanElement | null
+        const cpuBar = document.getElementById("server-cpu-bar") as HTMLDivElement | null
+        const memoryBar = document.getElementById("server-memory-bar") as HTMLDivElement | null
+        const diskBar = document.getElementById("server-disk-bar") as HTMLDivElement | null
+        const cpuBarLabel = document.getElementById("server-cpu-bar-label") as HTMLSpanElement | null
+        const memoryBarLabel = document.getElementById("server-memory-bar-label") as HTMLSpanElement | null
+        const diskBarLabel = document.getElementById("server-disk-bar-label") as HTMLSpanElement | null
+        const historyChart = document.getElementById("server-history-chart") as HTMLDivElement | null
+        const mysqlStatus = document.getElementById("server-service-mysql") as HTMLElement | null
+        const dbLatency = document.getElementById("server-service-db-latency") as HTMLElement | null
+        const backupStatus = document.getElementById("server-service-backup") as HTMLElement | null
+        const alerts = document.getElementById("server-alerts") as HTMLDivElement | null
+        const events = document.getElementById("server-events") as HTMLDivElement | null
+
+        if (!cpuValue || !cpuMeta || !memoryValue || !memoryMeta || !diskValue || !diskMeta || !uptimeValue || !uptimeMeta || !cpuBar || !memoryBar || !diskBar || !cpuBarLabel || !memoryBarLabel || !diskBarLabel || !historyChart || !mysqlStatus || !dbLatency || !backupStatus || !alerts || !events) return
+
+        const history: Array<{ cpu: number; memory: number; disk: number }> = []
+        let intervalId: number | null = null
+
+        const formatBytes = (bytes: number) => {
+            if (!Number.isFinite(bytes) || bytes <= 0) return "0 B"
+            const units = ["B", "KB", "MB", "GB", "TB"]
+            let value = bytes
+            let unitIndex = 0
+
+            while (value >= 1024 && unitIndex < units.length - 1) {
+                value /= 1024
+                unitIndex += 1
+            }
+
+            const decimals = value >= 10 || unitIndex === 0 ? 0 : 1
+            return `${value.toFixed(decimals)} ${units[unitIndex]}`
+        }
+
+        const formatPercent = (value: number | null | undefined) => `${Math.round(Number(value || 0))}%`
+
+        const formatUptime = (seconds: number) => {
+            const days = Math.floor(seconds / 86400)
+            const hours = Math.floor((seconds % 86400) / 3600)
+            const minutes = Math.floor((seconds % 3600) / 60)
+            return `${days}d ${String(hours).padStart(2, "0")}h ${String(minutes).padStart(2, "0")}m`
+        }
+
+        const renderHistory = () => {
+            if (!history.length) return
+
+            historyChart.style.display = "grid"
+            historyChart.style.height = "auto"
+            historyChart.innerHTML = `
+                <div style="display:flex; gap:14px; flex-wrap:wrap; font-size:12px; opacity:.72; margin-bottom:4px;">
+                    <span class="admin-inline-key"><span style="width:10px; height:10px; border-radius:999px; background:#d4af37; display:inline-block;"></span>CPU</span>
+                    <span class="admin-inline-key"><span style="width:10px; height:10px; border-radius:999px; background:#2ecc71; display:inline-block;"></span>RAM</span>
+                    <span class="admin-inline-key"><span style="width:10px; height:10px; border-radius:999px; background:#3498db; display:inline-block;"></span>Disco</span>
+                </div>
+                <div style="display:flex; align-items:flex-end; gap:8px; height:140px;">
+                    ${history.map((item, index) => {
+                        const cpuHeight = Math.max(18, Math.round(item.cpu * 1.05))
+                        const memoryHeight = Math.max(18, Math.round(item.memory * 1.05))
+                        const diskHeight = Math.max(18, Math.round(item.disk * 1.05))
+                        const label = index === history.length - 1 ? "Ahora" : `-${(history.length - 1 - index) * 5}s`
+
+                        return `
+                            <div class="admin-flex-col-sample">
+                                <div style="display:flex; align-items:flex-end; gap:4px; height:110px;">
+                                    <div title="CPU ${formatPercent(item.cpu)}" style="flex:1; height:${cpuHeight}px; border-radius:6px 6px 0 0; background:linear-gradient(180deg, rgba(212,175,55,.95), rgba(212,175,55,.35));"></div>
+                                    <div title="RAM ${formatPercent(item.memory)}" style="flex:1; height:${memoryHeight}px; border-radius:6px 6px 0 0; background:linear-gradient(180deg, rgba(46,204,113,.95), rgba(46,204,113,.35));"></div>
+                                    <div title="Disco ${formatPercent(item.disk)}" style="flex:1; height:${diskHeight}px; border-radius:6px 6px 0 0; background:linear-gradient(180deg, rgba(52,152,219,.95), rgba(52,152,219,.35));"></div>
+                                </div>
+                                <div style="height:24px; font-size:11px; opacity:.5; text-align:center;">${label}</div>
+                            </div>
+                        `
+                    }).join("")}
+                </div>
+                <div style="display:grid; gap:6px; margin-top:4px;">
+                    <span class="admin-note">La altura de cada color representa su porcentaje de uso en ese momento.</span>
+                    <span class="admin-note">La columna más a la derecha es la lectura actual.</span>
+                </div>
+            `
+        }
+
+        const renderAlerts = (cpu: number, memory: number, disk: number) => {
+            const alertItems = [
+                {
+                    title: "CPU sostenida",
+                    text: cpu >= 80 ? "La CPU esta alta. Conviene revisar procesos o picos de trafico." : "CPU en rango normal.",
+                },
+                {
+                    title: "Uso de RAM",
+                    text: memory >= 80 ? "La memoria esta cerca del limite." : "Memoria estable y con margen.",
+                },
+                {
+                    title: "Capacidad de disco",
+                    text: disk >= 80 ? "El disco empieza a estar ajustado." : "El disco tiene espacio suficiente.",
+                },
+            ]
+
+            alerts.innerHTML = alertItems.map((item) => `
+                <div class="admin-surface-row">
+                    <strong class="admin-block">${item.title}</strong>
+                    <span class="admin-muted">${item.text}</span>
+                </div>
+            `).join("")
+        }
+
+        const renderEvents = (data: any) => {
+            const items = [
+                {
+                    title: `Host ${data.host.hostname}`,
+                    text: `${data.host.platform} | ${data.host.arch} | Node ${data.host.node}`,
+                },
+                {
+                    title: "Estado de MySQL",
+                    text: data.services.mysql === "online"
+                        ? `Conectado | ${data.services.dbLatencyMs ?? "-"} ms`
+                        : "Sin conexion con la base de datos",
+                },
+                {
+                    title: "Ultimo backup",
+                    text: data.backup
+                        ? `${new Date(data.backup.modifiedAt).toLocaleString("es-ES")} | ${data.backup.name}`
+                        : "Todavia no hay backup manual guardado",
+                },
+            ]
+
+            events.innerHTML = items.map((item) => `
+                <div class="admin-surface-row">
+                    <strong class="admin-block">${item.title}</strong>
+                    <span class="admin-muted">${item.text}</span>
+                </div>
+            `).join("")
+        }
+
+        const applyMetrics = (data: any) => {
+            const cpu = Number(data.cpu?.usagePercent ?? 0)
+            const memory = Number(data.memory?.usagePercent ?? 0)
+            const disk = Number(data.disk?.usagePercent ?? 0)
+
+            cpuValue.textContent = formatPercent(data.cpu?.usagePercent)
+            cpuMeta.textContent = `${data.host?.cpus ?? "-"} vCPU | carga media ${Math.round(Number(data.cpu?.loadAvg?.[0] || 0) * 100) / 100}`
+            memoryValue.textContent = `${formatBytes(Number(data.memory?.used || 0))} / ${formatBytes(Number(data.memory?.total || 0))}`
+            memoryMeta.textContent = `${formatPercent(memory)} usada | heap ${formatBytes(Number(data.memory?.heapUsed || 0))}`
+            diskValue.textContent = data.disk
+                ? `${formatBytes(Number(data.disk.used || 0))} / ${formatBytes(Number(data.disk.total || 0))}`
+                : "No disponible"
+            diskMeta.textContent = data.disk
+                ? `${formatPercent(disk)} ocupado | libre ${formatBytes(Number(data.disk.free || 0))}`
+                : "No se pudo leer el disco"
+            uptimeValue.textContent = formatUptime(Number(data.host?.uptimeSec || 0))
+            uptimeMeta.textContent = `${data.host?.hostname || "-"} | ${data.host?.platform || "-"} ${data.host?.arch || ""}`
+
+            cpuBar.style.width = `${Math.max(0, Math.min(cpu, 100))}%`
+            memoryBar.style.width = `${Math.max(0, Math.min(memory, 100))}%`
+            diskBar.style.width = `${Math.max(0, Math.min(disk, 100))}%`
+            cpuBarLabel.textContent = formatPercent(cpu)
+            memoryBarLabel.textContent = formatPercent(memory)
+            diskBarLabel.textContent = data.disk ? formatPercent(disk) : "n/d"
+
+            mysqlStatus.textContent = data.services?.mysql === "online" ? "Conectado" : "Offline"
+            mysqlStatus.style.color = data.services?.mysql === "online" ? "#2ecc71" : "#e74c3c"
+            dbLatency.textContent = data.services?.dbLatencyMs != null ? `${data.services.dbLatencyMs} ms` : "n/d"
+            backupStatus.textContent = data.backup ? "Ultimo OK" : "Sin backup"
+            backupStatus.style.color = data.backup ? "#2ecc71" : "#f0ce08"
+
+            history.push({ cpu, memory, disk })
+            if (history.length > 8) history.shift()
+            renderHistory()
+            renderAlerts(cpu, memory, disk)
+            renderEvents(data)
+        }
+
+        const loadMetrics = async () => {
+            try {
+                const res = await fetch("/api/admin/server/metrics")
+                const data = await res.json()
+                if (!res.ok) throw new Error(data?.message || "server_metrics_failed")
+                applyMetrics(data)
+            } catch {
+                cpuMeta.textContent = "No se pudieron cargar las metricas"
+                memoryMeta.textContent = "No se pudieron cargar las metricas"
+                diskMeta.textContent = "No se pudieron cargar las metricas"
+                alerts.innerHTML = `
+                    <div class="admin-surface-row">
+                        <strong class="admin-block">Metricas no disponibles</strong>
+                        <span class="admin-muted">Revisa el endpoint del servidor o la sesion de admin.</span>
+                    </div>
+                `
+            }
+        }
+
+        loadMetrics()
+        intervalId = window.setInterval(loadMetrics, 5000)
+
+        section.addEventListener("DOMNodeRemoved", () => {
+            if (intervalId) window.clearInterval(intervalId)
+        }, { once: true })
+    }
+
+    setupAdminUsers()
+    setupAdminDatabase()
+    setupAdminServer()
+    document.addEventListener("astro:page-load", () => {
+        setupAdminUsers()
+        setupAdminDatabase()
+        setupAdminServer()
+    })
+</script>

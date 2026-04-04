@@ -193,27 +193,29 @@ export default function AlxCalendar() {
         <div className="calendar-container">
             <div className="calendar-header">
                 <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                    <h2 className="calendar-title">{getTitle()}</h2>
+                    
+                </div>
+
+                <div className="calendar-controls">
+                    <div className="calendar-mode">
+                        <button onClick={goToday}>Hoy</button>
+                        <button className={mode === "month" ? "active" : ""} onClick={() => setMode("month")}>Mes</button>
+                        <button className={mode === "week"  ? "active" : ""} onClick={() => setMode("week")}>Semana</button>
+                        <button className={mode === "day"   ? "active" : ""} onClick={() => setMode("day")}>Día</button>
+                        <button
+                        className={`calendar-eye-btn ${hideChrome ? "active" : ""}`}
+                        onClick={() => setHideChrome(prev => !prev)}
+                        title={hideChrome ? "Mostrar header y footer" : "Ocultar header y footer"}
+                    >
+                        <Eye size={20} />
+                    </button>
+                    </div>
                     {pendingCount > 0 && (
                         <div className="pending-badge">
                             <span className="pending-dot" />
                             {pendingCount} pendiente{pendingCount > 1 ? "s" : ""}
                         </div>
                     )}
-                </div>
-
-                <div className="infonav">
-                    <div className="calendar-nav">
-                        <button onClick={prev}>‹</button>
-                        <button onClick={goToday}>Hoy</button>
-                        <button onClick={next}>›</button>
-                    </div>
-                    <div className="calendar-mode">
-                        <button className={mode === "month" ? "active" : ""} onClick={() => setMode("month")}>Mes</button>
-                        <button className={mode === "week"  ? "active" : ""} onClick={() => setMode("week")}>Semana</button>
-                        <button className={mode === "day"   ? "active" : ""} onClick={() => setMode("day")}>Día</button>
-                    </div>
-
                     <div className="search-wrapper">
                         <div className="search-bar">
                             <input
@@ -268,16 +270,16 @@ export default function AlxCalendar() {
                                     ))
                                 )}
                             </div>
+                            
                         )}
                     </div>
 
-                    <button
-                        className={`calendar-eye-btn ${hideChrome ? "active" : ""}`}
-                        onClick={() => setHideChrome(prev => !prev)}
-                        title={hideChrome ? "Mostrar header y footer" : "Ocultar header y footer"}
-                    >
-                        <Eye size={20} />
-                    </button>
+                    
+                </div>
+                <div className="calendar-nav-buttons">
+                <button className="acpbutton" onClick={prev}>‹</button>
+                <h2 className="calendar-title">{getTitle()}</h2>
+                <button className="acpbutton" onClick={next}>›</button>
                 </div>
             </div>
 

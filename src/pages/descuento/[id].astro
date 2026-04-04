@@ -1,0 +1,147 @@
+---
+import Layout from "../../layouts/Layouts.astro"
+import { db } from "../../lib/db"
+import jwt from "jsonwebtoken"
+
+const JWT_SECRET = import.meta.env.JWT_SECRET || "supersecreto_cambiar_en_produccion"
+
+const qrId = Astro.params.id
+const token = Astro.cookies.get("auth_token")?.value
+
+let userId: number | null = null
+let userName = ""
+let qr: any = null
+let error = ""
+let userHasDiscount = false
+let publicTitle = "Descuento especial"
+
+if (!qrId) {
+    error = "No se ha encontrado el descuento."
+} else {
+    if (token) {
+        try {
+            const payload = jwt.verify(token, JWT_SECRET) as any
+            userId = payload.id
+        } catch {}
+    }
+
+    try {
+        const [qrRows] = await db.execute(
+            `SELECT id, titulo_interno, titulo, descuento, tipo_descuento, valor, expires_at, activo
+             FROM qr_codes
+             WHERE id = ? AND tipo = 'descuento'`,
+            [qrId]
+        ) as any
+
+        if (qrRows.length === 0 || !qrRows[0].activo) {
+            error = "Este descuento ya no está disponible."
+        } else {
+            qr = qrRows[0]
+
+            try {
+                const parsedValue = qr.valor ? JSON.parse(qr.valor) : null
+                if (parsedValue?.titulo_visible) {
+                    publicTitle = parsedValue.titulo_visible
+                } else if (qr.titulo) {
+                    publicTitle = qr.titulo
+                }
+            } catch {
+                if (qr.titulo) {
+                    publicTitle = qr.titulo
+                }
+            }
+
+            if (qr.expires_at && new Date(qr.expires_at) < new Date()) {
+                error = "Este descuento ha caducado."
+            }
+        }
+
+        if (!error && userId) {
+            const [usageRows] = await db.execute(
+                "SELECT id FROM qr_usos WHERE qr_id = ? AND user_id = ? LIMIT 1",
+                [qrId, userId]
+            ) as any
+
+            userHasDiscount = usageRows.length > 0
+
+            const [userRows] = await db.execute(
+                "SELECT nombre, username FROM usuarios WHERE id = ?",
+                [userId]
+            ) as any
+
+            if (userRows.length > 0) {
+                userName = userRows[0].nombre || userRows[0].username || ""
+            }
+        }
+    } catch {
+        error = "No hemos podido cargar el descuento."
+    }
+}
+
+const discountLabel = qr
+    ? qr.tipo_descuento === "porcentaje"
+        ? `${qr.descuento}%`
+        : `${qr.descuento}€`
+    : ""
+
+const loginRedirect = qrId
+    ? `/login?redirect=${encodeURIComponent(`/api/qr/scan?id=${qrId}`)}`
+    : "/login"
+
+const registerRedirect = qrId
+    ? `/register?redirect=${encodeURIComponent(`/api/qr/scan?id=${qrId}`)}`
+    : "/register"
+---
+
+<Layout title="Descuento">
+    <main class="discount-page">
+        <section class="discount-card">
+            {error ? (
+                <>
+                    <span class="discount-chip error">No disponible</span>
+                    <h1>No hemos podido aplicar el descuento</h1>
+                    <p>{error}</p>
+                    <a href="/" class="acpbutton discount-link">Volver al inicio</a>
+                </>
+            ) : !userId ? (
+                <>
+                    <span class="discount-chip">Escanea y activa</span>
+                    <h1>{publicTitle}</h1>
+                    <p class="discount-value">{discountLabel}</p>
+                    <p>
+                        Inicia sesión o crea tu cuenta para dejar este descuento
+                        vinculado a ti.
+                    </p>
+                    <div class="discount-actions">
+                        <a href={loginRedirect} class="acpbutton discount-link">Iniciar sesión</a>
+                        <a href={registerRedirect} class="acsbutton discount-link">Registrarme</a>
+                    </div>
+                </>
+            ) : userHasDiscount ? (
+                <>
+                    <span class="discount-chip success">Descuento activado</span>
+                    <h1>{publicTitle}</h1>
+                    <p class="discount-value">{discountLabel}</p>
+                    <p>
+                        {userName ? `${userName}, ` : ""}este descuento ya está
+                        asociado a tu cuenta. Enséñalo o utilízalo cuando te toque.
+                    </p>
+                    <a href="/profile" class="acpbutton discount-link">Ir a mi perfil</a>
+                </>
+            ) : (
+                <>
+                    <span class="discount-chip error">No asociado</span>
+                    <h1>{publicTitle}</h1>
+                    <p class="discount-value">{discountLabel}</p>
+                    <p>
+                        Este enlace no tiene el descuento activado para tu cuenta.
+                        Para evitar usos compartidos, solo se activa al escanear el QR original.
+                    </p>
+                    <a href="/" class="acpbutton discount-link">Volver al inicio</a>
+                </>
+            )}
+        </section>
+    </main>
+</Layout>
+
+

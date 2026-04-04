@@ -2,6 +2,7 @@ import type { APIRoute } from "astro"
 import { db } from "../../../lib/db"
 import jwt from "jsonwebtoken"
 import bcrypt from "bcryptjs"
+import { getMustChangePassword, setMustChangePassword } from "../../../lib/user-security"
 
 const JWT_SECRET = import.meta.env.JWT_SECRET || "supersecreto_cambiar_en_produccion"
 
@@ -28,12 +29,16 @@ export const POST: APIRoute = async ({ request, cookies }) => {
             return new Response(JSON.stringify({ error: "user_not_found" }), { status: 404 })
         }
 
-        const passwordOk = await bcrypt.compare(currentPassword, rows[0].password)
-        if (!passwordOk) {
-            return new Response(JSON.stringify({
-                error: "wrong_password",
-                message: "La contraseña actual no es correcta."
-            }), { status: 400 })
+        const mustChangePassword = await getMustChangePassword(payload.id)
+
+        if (!mustChangePassword) {
+            const passwordOk = await bcrypt.compare(currentPassword, rows[0].password)
+            if (!passwordOk) {
+                return new Response(JSON.stringify({
+                    error: "wrong_password",
+                    message: "La contraseña actual no es correcta."
+                }), { status: 400 })
+            }
         }
 
         const hashedPassword = await bcrypt.hash(newPassword, 12)
@@ -41,10 +46,10 @@ export const POST: APIRoute = async ({ request, cookies }) => {
             "UPDATE usuarios SET password = ? WHERE id = ?",
             [hashedPassword, payload.id]
         )
+        await setMustChangePassword(payload.id, false)
 
         return new Response(JSON.stringify({ success: true }), { status: 200 })
-
-    } catch (err) {
+    } catch {
         return new Response(JSON.stringify({ error: "server_error" }), { status: 500 })
     }
 }

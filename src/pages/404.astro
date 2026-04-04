@@ -1,0 +1,31 @@
+---
+import Layout from "../layouts/Layouts.astro";
+const url = Astro.url.pathname;
+---
+
+<Layout title={`Oops! ${url}`}>
+    <main style="top: 0; height: 100vh;">
+        <div class="error-404">
+            <div class="error-row">
+                <h1>Oops!</h1>
+                <p>No hemos podido encontrar esa pagina que estas buscando  <span class="code-404">{url}</span></p>
+                <span class="code-error">Código de error: <span class="code-404"> 404</span></span>
+            </div>
+            <div class="error-row">
+            <img src="404.png" alt="">
+            </div>
+        </div>
+    </main>
+
+    <style is:inline>
+        header {
+            display: none;
+        }
+
+
+
+        footer {
+            display: none;
+        }
+    </style>
+</Layout>

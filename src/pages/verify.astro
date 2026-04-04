@@ -46,9 +46,13 @@ import Layout from "../layouts/Layouts.astro";
     // — Obtener email de la URL —
     const params = new URLSearchParams(window.location.search)
     const email  = params.get("email")
+    const redirectParam = params.get("redirect")
+    const safeRedirect = redirectParam && redirectParam.startsWith("/")
+        ? redirectParam
+        : null
 
     if (!email) {
-        navigate("/register")
+        navigate(safeRedirect ? `/register?redirect=${encodeURIComponent(safeRedirect)}` : "/register")
     }
 
     // Mostrar email en pantalla
@@ -60,6 +64,11 @@ import Layout from "../layouts/Layouts.astro";
     const verifyError     = document.getElementById("verify-error") as HTMLElement
     const errorContainer  = document.getElementById("verify-error-container") as HTMLElement
     const verifyResend    = document.getElementById("verify-resend") as HTMLButtonElement
+    const registerLink    = document.querySelector('a[href="/register"]') as HTMLAnchorElement | null
+
+    if (registerLink && safeRedirect) {
+        registerLink.href = `/register?redirect=${encodeURIComponent(safeRedirect)}`
+    }
 
     // — Solo números —
     verifyInput.addEventListener("input", () => {
@@ -98,13 +107,22 @@ import Layout from "../layouts/Layouts.astro";
 
             if (data.error === "expired") {
                 // Código expirado → volver al registro
-                setTimeout(() => navigate("/register"), 3000)
+                setTimeout(() => navigate(
+                    safeRedirect
+                        ? `/register?redirect=${encodeURIComponent(safeRedirect)}`
+                        : "/register"
+                ), 3000)
             }
             return
         }
 
         // Éxito → redirigir a login
-        navigate("/login?verified=true")
+        const loginUrl = new URL("/login", window.location.origin)
+        loginUrl.searchParams.set("verified", "true")
+        if (safeRedirect) {
+            loginUrl.searchParams.set("redirect", safeRedirect)
+        }
+        navigate(`${loginUrl.pathname}${loginUrl.search}`)
     })
 
     // — Reenviar código —

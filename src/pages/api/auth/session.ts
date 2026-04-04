@@ -1,6 +1,7 @@
 import type { APIRoute } from "astro"
 import jwt from "jsonwebtoken"
 import { db } from "../../../lib/db"
+import { getMustChangePassword } from "../../../lib/user-security"
 
 const JWT_SECRET = import.meta.env.JWT_SECRET || "supersecreto_cambiar_en_produccion"
 
@@ -25,6 +26,7 @@ export const GET: APIRoute = async ({ cookies }) => {
         }
 
         const usuario = rows[0]
+        const mustChangePassword = await getMustChangePassword(usuario.id)
 
         return new Response(JSON.stringify({
             session: {
@@ -35,7 +37,8 @@ export const GET: APIRoute = async ({ cookies }) => {
                 email:     usuario.email,
                 rol:       usuario.rol,
                 telefono: usuario.telefono || null,
-                created_at: usuario.created_at ? new Date(usuario.created_at).toISOString() : null
+                created_at: usuario.created_at ? new Date(usuario.created_at).toISOString() : null,
+                mustChangePassword,
             }
         }), { status: 200 })
 

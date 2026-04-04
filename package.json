@@ -9,6 +9,7 @@
     "astro": "astro"
   },
   "dependencies": {
+    "@astrojs/node": "^9.5.5",
     "@astrojs/react": "^4.4.2",
     "@supabase/supabase-js": "^2.99.0",
     "@types/react": "^19.2.14",
@@ -18,11 +19,14 @@
     "astro-tunnel": "^0.1.9",
     "bcryptjs": "^3.0.3",
     "date-fns": "^4.1.0",
+    "html-to-image": "^1.11.13",
     "jsonwebtoken": "^9.0.3",
     "lucide": "^1.7.0",
     "lucide-react": "^1.7.0",
+    "middleware": "^1.0.0",
     "mysql2": "^3.19.1",
     "nodemailer": "^8.0.2",
+    "qr-code-styling": "^1.9.2",
     "react": "^19.2.4",
     "react-datepicker": "^9.1.0",
     "react-dom": "^19.2.4"

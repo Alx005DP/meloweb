@@ -1,0 +1,56 @@
+Cosas que faltan:
+
+arreglar lo de recargar todo el rato la foto de perfil y que si estoy en una pagina me heche ✅ falta que se actualice la pagina profile ✅
+
+pagina 404 ✅ /dueño = 
+creador de paginas qr que se puede personalizar y imprimir utilizacion: descuentos en la proxima visita, publicidad, ponerlo en la tienda url etc. 🟠
+url: ----
+
+url de destino
+
+generar codigo
+
+
+color / claro / oscuro
+
+logo central por defecto 
+
+tamaño del qr 
+
+margen 
+
+texto decorativo
+
+descuento : ----
+
+porcentaje / fijo €
+
+descripcion del descuento
+
+validez
+
+usos maximos 
+
+redireccion --
+
+texto decorativo
+
+mensaje
+
+titulo
+
+cuerpo 
+
+
+
+gestor de usuarios 🟠
+
+preguntar melo: 🟠
+
+pagina de facturas, inventario, salarios etc o lo hace todo a mano el hdp y asi me lo ahorro 🔴
+ 
+cancelar citas 🔴
+
+cambiar contraseña del perfil que sea igual al registrarte los mismos requisitos y el olvido de contraseña 🔴
+
+verificar cada pagina para version móvil con tema oscuro/claro 🔴

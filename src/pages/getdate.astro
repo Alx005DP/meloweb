@@ -1,6 +1,7 @@
 ---
 import Layout from "../layouts/Layouts.astro";
 import Calendar from "../components/Calendar.jsx";
+import AppModal from "../components/AppModal.jsx";
 ---
 
 <Layout title="Reservar Cita">
@@ -151,30 +152,7 @@ import Calendar from "../components/Calendar.jsx";
         </form>
     </main>
 
-    <!-- Modal -->
-    <div class="form-modal" id="form-modal">
-        <div class="form-modal-box">
-            <div class="form-row">
-                <i
-                    id="modal-icon"
-                    class="fa-sharp-duotone fa-solid fa-badge-check"></i>
-            </div>
-            <div class="form-row">
-                <h2 id="modal-title"></h2>
-            </div>
-            <div class="form-row">
-                <p id="modal-text"></p>
-            </div>
-            <div class="form-row" id="modal-progress-row" style="display:none">
-                <div class="form-progress">
-                    <div class="form-progress-bar" id="modal-progress"></div>
-                </div>
-            </div>
-            <div class="form-row" id="modal-btn-row">
-                <button class="acpbutton" id="modal-btn">Aceptar</button>
-            </div>
-        </div>
-    </div>
+    <AppModal client:load modalId="booking-feedback" />
 </Layout>
 
 <script>
@@ -217,29 +195,18 @@ import Calendar from "../components/Calendar.jsx";
         ) as HTMLInputElement;
         const codeMsg = document.getElementById("code-msg") as HTMLElement;
 
-        const modal = document.getElementById("form-modal") as HTMLElement;
-        const modalBox = modal.querySelector(".form-modal-box") as HTMLElement;
-        const modalIcon = document.getElementById("modal-icon") as HTMLElement;
-        const modalTitle = document.getElementById(
-            "modal-title",
-        ) as HTMLElement;
-        const modalText = document.getElementById("modal-text") as HTMLElement;
-        const modalProgress = document.getElementById(
-            "modal-progress",
-        ) as HTMLElement;
-        const modalProgressRow = document.getElementById(
-            "modal-progress-row",
-        ) as HTMLElement;
-        const modalBtnRow = document.getElementById(
-            "modal-btn-row",
-        ) as HTMLElement;
-        const modalBtn = document.getElementById(
-            "modal-btn",
-        ) as HTMLButtonElement;
-
         let session: any = null;
         let emailVerificado = false;
         let emailPendiente = "";
+
+        const openModal = (config: Record<string, unknown>) => {
+            window.dispatchEvent(new CustomEvent("app-modal:open", {
+                detail: {
+                    id: "booking-feedback",
+                    config,
+                },
+            }));
+        };
 
         const showModal = (
             type: "success" | "error",
@@ -247,23 +214,20 @@ import Calendar from "../components/Calendar.jsx";
             text: string,
             redirect?: string,
         ) => {
-            modalBox.className = `form-modal-box ${type}`;
-            modalIcon.className =
-                type === "success"
-                    ? "fa-sharp-duotone fa-solid fa-badge-check"
-                    : "fa-sharp-duotone fa-solid fa-circle-xmark";
-            modalTitle.textContent = title;
-            modalText.textContent = text;
-            modal.classList.add("active");
+            openModal({
+                kind: "message",
+                type,
+                title,
+                text,
+                buttonText: "Aceptar",
+                showButton: type !== "success",
+                showProgress: type === "success",
+                closeOnBackdrop: false,
+                showCloseButton: false,
+            });
 
             if (type === "success") {
-                modalProgressRow.style.display = "flex";
-                modalBtnRow.style.display = "none";
-                modalProgress.className = "form-progress-bar animating";
                 setTimeout(() => navigate(redirect || "/"), 2000);
-            } else {
-                modalProgressRow.style.display = "none";
-                modalBtnRow.style.display = "flex";
             }
         };
 
@@ -306,9 +270,6 @@ import Calendar from "../components/Calendar.jsx";
             calendarDesktop.style.display = "block";
         }
 
-        modalBtn.addEventListener("click", () =>
-            modal.classList.remove("active"),
-        );
 
         // — Cargar sesión —
         const res = await fetch("/api/auth/session");
@@ -485,8 +446,8 @@ import Calendar from "../components/Calendar.jsx";
                         "error",
                         "Límite diario alcanzado",
                         session
-                            ? "Has alcanzado el límite de 5 citas por día. Podrás reservar más mañana."
-                            : "Has alcanzado el límite de 3 citas por día. Inicia sesión para tener un límite mayor.",
+                            ? "Has alcanzado el límite de 3 citas por día. Podrás reservar más mañana."
+                            : "Has alcanzado el límite de 2 citas por día. Inicia sesión para tener un límite mayor.",
                     );
                     return;
                 }
@@ -510,7 +471,7 @@ import Calendar from "../components/Calendar.jsx";
                 "success",
                 "¡Cita reservada!",
                 "Tu cita ha sido registrada correctamente. Nos pondremos en contacto contigo para confirmarla.",
-                session ? "/profile#section-citas" : "/",
+                session ? "/profile#my-profile-nextdates" : "/",
             );
         });
     });
