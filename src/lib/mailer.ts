@@ -6,6 +6,14 @@ const env = {
     PUBLIC_SITE_URL: process.env.PUBLIC_SITE_URL || import.meta.env.PUBLIC_SITE_URL,
 }
 
+console.log("[mailer] env", {
+    hasUser: Boolean(env.GMAIL_USER),
+    userPreview: env.GMAIL_USER ? `${String(env.GMAIL_USER).slice(0, 3)}***` : null,
+    hasPass: Boolean(env.GMAIL_PASS),
+    passLength: env.GMAIL_PASS ? String(env.GMAIL_PASS).length : 0,
+    publicSiteUrl: env.PUBLIC_SITE_URL || null,
+})
+
 export const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
@@ -15,8 +23,13 @@ export const transporter = nodemailer.createTransport({
 })
 
 export const sendVerificationEmail = async (email: string, codigo: string, nombre: string) => {
+    console.log("[mailer] sendVerificationEmail", {
+        to: email,
+        hasUser: Boolean(env.GMAIL_USER),
+        hasPass: Boolean(env.GMAIL_PASS),
+    })
     await transporter.sendMail({
-        from:    `"Marco Aldany" <${import.meta.env.GMAIL_USER}>`,
+        from:    `"Marco Aldany" <${env.GMAIL_USER}>`,
         to:      email,
         subject: "Verifica tu cuenta — Marco Aldany",
         html: `
@@ -131,8 +144,13 @@ export const sendPasswordResetEmail = async (
         resetUrl: string
     }
 ) => {
+    console.log("[mailer] sendPasswordResetEmail", {
+        to: email,
+        hasUser: Boolean(env.GMAIL_USER),
+        hasPass: Boolean(env.GMAIL_PASS),
+    })
     await transporter.sendMail({
-        from: `"Marco Aldany" <${import.meta.env.GMAIL_USER}>`,
+        from: `"Marco Aldany" <${env.GMAIL_USER}>`,
         to: email,
         subject: "Restablece tu password - Marco Aldany",
         html: baseEmail(`
