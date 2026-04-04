@@ -6,13 +6,12 @@ const env = {
     PUBLIC_SITE_URL: process.env.PUBLIC_SITE_URL || import.meta.env.PUBLIC_SITE_URL,
 }
 
-console.log("[mailer] env", {
-    hasUser: Boolean(env.GMAIL_USER),
-    userPreview: env.GMAIL_USER ? `${String(env.GMAIL_USER).slice(0, 3)}***` : null,
-    hasPass: Boolean(env.GMAIL_PASS),
-    passLength: env.GMAIL_PASS ? String(env.GMAIL_PASS).length : 0,
-    publicSiteUrl: env.PUBLIC_SITE_URL || null,
+console.log("[mailer]", {
+    user: env.GMAIL_USER || null,
+    passExists: Boolean(env.GMAIL_PASS),
+    passLength: env.GMAIL_PASS ? env.GMAIL_PASS.length : 0,
 })
+
 
 export const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
